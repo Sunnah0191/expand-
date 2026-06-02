@@ -2,7 +2,9 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.tabBtns = document.querySelectorAll('.tab-btn');
+        this.categories = document.querySelectorAll('.catalog-category');
+        this.selectedType = 'mid-poly-rock'; // default to first item in landscape
         this.isVisible = false;
 
         this.initEventListeners();
@@ -14,6 +16,24 @@ export class BuildMenu {
             if (e.key === '1' || e.key === '`' || e.key === '~') {
                 this.toggleVisibility();
             }
+        });
+
+        // Handle tab selection
+        this.tabBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Remove active from all tabs and categories
+                this.tabBtns.forEach(b => b.classList.remove('active'));
+                this.categories.forEach(c => c.classList.remove('active'));
+
+                // Add active to clicked tab
+                btn.classList.add('active');
+
+                // Add active to corresponding category
+                const targetId = btn.dataset.target;
+                document.getElementById(targetId).classList.add('active');
+            });
         });
 
         // Handle item selection
