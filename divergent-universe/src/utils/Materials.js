@@ -4,10 +4,10 @@ import * as THREE from 'three';
 export const glassMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     metalness: 0.1,
-    roughness: 0.2,
-    transmission: 0.95, // glass-like transparency
+    roughness: 0.1,
+    transmission: 1.0, // glass-like transparency
     ior: 1.5,
-    thickness: 2.0,
+    thickness: 2.5,
     transparent: true,
     opacity: 1,
     side: THREE.DoubleSide
@@ -121,4 +121,18 @@ export const oceanMaterial = new THREE.MeshStandardMaterial({
     metalness: 0.8,
     transparent: true,
     opacity: 0.9
+});
+
+// 6. Chrome Material
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.0,
+    metalness: 1.0
+});
+
+// 7. Matte Metal Material
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    roughness: 0.6,
+    metalness: 0.5
 });

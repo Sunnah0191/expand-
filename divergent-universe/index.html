@@ -30,18 +30,55 @@
       <!-- Catalog Overlay -->
       <div id="build-catalog">
         <h3>Construction Modules</h3>
-        <div class="catalog-grid">
+        <div class="catalog-tabs">
+          <button class="tab-btn active" data-target="landscape">Landscape</button>
+          <button class="tab-btn" data-target="architecture">WuWa Architecture</button>
+          <button class="tab-btn" data-target="constructor">Constructor</button>
+        </div>
+        <div class="catalog-category active" id="landscape">
+          <div class="catalog-item" data-type="mid-poly-rock">
+            <div class="icon mid-poly-rock-icon"></div>
+            <span>Rock</span>
+          </div>
+          <div class="catalog-item" data-type="glass-crystal">
+            <div class="icon glass-crystal-icon"></div>
+            <span>Crystal</span>
+          </div>
+          <div class="catalog-item" data-type="neon-tree">
+            <div class="icon neon-tree-icon"></div>
+            <span>Tree</span>
+          </div>
+        </div>
+        <div class="catalog-category" id="architecture">
+          <div class="catalog-item" data-type="wuwa-monolith">
+            <div class="icon wuwa-monolith-icon"></div>
+            <span>Monolith</span>
+          </div>
+          <div class="catalog-item" data-type="dark-tower">
+            <div class="icon dark-tower-icon"></div>
+            <span>Tower</span>
+          </div>
+          <div class="catalog-item" data-type="matte-bridge">
+            <div class="icon matte-bridge-icon"></div>
+            <span>Bridge</span>
+          </div>
+        </div>
+        <div class="catalog-category" id="constructor">
           <div class="catalog-item" data-type="glass-cube">
             <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
+            <span>Glass</span>
           </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
+          <div class="catalog-item" data-type="chrome-block">
+            <div class="icon chrome-block-icon"></div>
+            <span>Chrome</span>
           </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
+          <div class="catalog-item" data-type="neon-block">
+            <div class="icon neon-block-icon"></div>
+            <span>Neon</span>
+          </div>
+          <div class="catalog-item" data-type="matte-metal-block">
+            <div class="icon matte-metal-block-icon"></div>
+            <span>Metal</span>
           </div>
         </div>
       </div>
