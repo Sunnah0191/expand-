@@ -92,14 +92,25 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+    if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(5, 0), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(3, 20, 5), glassMaterial.clone());
+        mesh.material.color = new THREE.Color(0xaaffff);
+        pos.y += 10;
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 8, 40, 6), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-pillar') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
+        pos.y += 10;
     }
 
     if (mesh) {
