@@ -1,0 +1,79 @@
+:root {
+  --wuthering-dark: rgba(15, 18, 25, 0.7);
+  --wuthering-border: rgba(100, 200, 255, 0.4);
+  --wuthering-neon: #64c8ff;
+  --wuthering-text: #e0f2fe;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #050508;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--wuthering-text);
+  user-select: none;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* UI Layer is above the canvas */
+#ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through by default */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: var(--wuthering-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--wuthering-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  pointer-events: auto; /* Enable clicks on the panel itself */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-panel:hover {
+  border-color: var(--wuthering-neon);
+  box-shadow: 0 8px 32px 0 rgba(100, 200, 255, 0.2);
+}
+
+/* Glitch effect for Island 4 text if needed */
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}

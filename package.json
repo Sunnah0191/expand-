@@ -1,5 +1,5 @@
 {
-  "name": "divergent-universe",
+  "name": "diverged-universe",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^8.0.15"
+    "vite": "^8.0.12"
   },
   "dependencies": {
     "three": "^0.184.0"
