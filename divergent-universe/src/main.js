@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, metalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,14 +92,62 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        case 'rock':
+            mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(5, 1), monolithMaterial);
+            pos.y += 5;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(new THREE.ConeGeometry(3, 10, 5), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 10, 8), monolithMaterial);
+            const leaves = new THREE.Mesh(new THREE.ConeGeometry(4, 8, 8), neonCyanMaterial);
+            leaves.position.y = 5;
+            mesh.add(trunk);
+            mesh.add(leaves);
+            pos.y += 5;
+            break;
+        case 'wuwa-monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 30, 10), monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'dark-tower':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 40, 4), monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(20, 2, 8), glassMaterial);
+            pos.y += 1;
+            break;
+        case 'glass-cube':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'metal-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), metalMaterial);
+            pos.y += 5;
+            break;
+        // Fallbacks for older defaults
+        case 'monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'neon-pillar':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
+            pos.y += 10;
+            break;
     }
 
     if (mesh) {
@@ -118,6 +166,13 @@ function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
+
+    if (!isGodMode) {
+        const time = clock.getElapsedTime();
+        camera.position.x = Math.sin(time * 0.1) * 150;
+        camera.position.z = Math.cos(time * 0.1) * 150;
+        camera.lookAt(0, 50, 0);
+    }
 
     if (world) {
         world.update(delta);
