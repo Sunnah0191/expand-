@@ -2,7 +2,9 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.tabs = document.querySelectorAll('.catalog-tab');
+        this.grids = document.querySelectorAll('.catalog-grid');
+        this.selectedType = 'mid-poly-rock'; // default to first item in landscape
         this.isVisible = false;
 
         this.initEventListeners();
@@ -14,6 +16,22 @@ export class BuildMenu {
             if (e.key === '1' || e.key === '`' || e.key === '~') {
                 this.toggleVisibility();
             }
+        });
+
+        // Handle tab switching
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const category = tab.dataset.category;
+
+                // Update tabs
+                this.tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update grids
+                this.grids.forEach(g => g.classList.remove('active'));
+                document.getElementById(`grid-${category}`).classList.add('active');
+            });
         });
 
         // Handle item selection
@@ -31,8 +49,9 @@ export class BuildMenu {
         });
 
         // Select first item by default
-        if (this.items.length > 0) {
-            this.items[0].classList.add('selected');
+        const firstItem = document.querySelector('.catalog-item[data-type="mid-poly-rock"]');
+        if (firstItem) {
+            firstItem.classList.add('selected');
         }
     }
 
