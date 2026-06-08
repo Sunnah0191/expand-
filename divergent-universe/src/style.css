@@ -152,18 +152,48 @@ body, html {
   display: none; /* Hidden by default */
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
+.catalog-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+  justify-content: center;
+}
+
+.catalog-tab {
   font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 5px 10px;
+}
+
+.catalog-tab:hover {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+
+.catalog-tab.active {
+  color: var(--neon-cyan);
+  border-bottom: 2px solid var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.catalog-content {
+  position: relative;
 }
 
 .catalog-grid {
-  display: flex;
+  display: none;
   gap: 15px;
+  justify-content: center;
+}
+
+.catalog-grid.active {
+  display: flex;
 }
 
 .catalog-item {

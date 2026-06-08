@@ -39,5 +39,38 @@ export function createIslandOne() {
     }
     group.add(trees);
 
+    // Glowing semi-transparent grass (InstancedMesh)
+    const grassGeo = new THREE.ConeGeometry(0.5, 5, 3);
+    grassGeo.translate(0, 2.5, 0);
+    const grassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x55ffaa,
+        emissive: 0x11aa55,
+        emissiveIntensity: 0.5,
+        transmission: 0.8,
+        transparent: true,
+        opacity: 0.9,
+        roughness: 0.2
+    });
+
+    const grassCount = 300;
+    const grass = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
+
+    for (let i = 0; i < grassCount; i++) {
+        const r = Math.random() * 45;
+        const theta = Math.random() * Math.PI * 2;
+        // Basic height estimation to sit roughly on the hills
+        const x = r * Math.cos(theta);
+        const z = r * Math.sin(theta);
+        const y = 10 - (r/45)*5 + Math.random()*2;
+
+        dummy.position.set(x, y, z);
+        dummy.rotation.x = (Math.random() - 0.5) * 0.5;
+        dummy.rotation.z = (Math.random() - 0.5) * 0.5;
+        dummy.scale.setScalar(0.5 + Math.random() * 1.0);
+        dummy.updateMatrix();
+        grass.setMatrixAt(i, dummy.matrix);
+    }
+    group.add(grass);
+
     return group;
 }

@@ -75,5 +75,30 @@ export function createMainContinent() {
     core.name = "CentralCore";
     group.add(core);
 
+    // Glowing particles around the core
+    const particleCount = 500;
+    const particlesGeo = new THREE.BufferGeometry();
+    const posArray = new Float32Array(particleCount * 3);
+
+    for(let i = 0; i < particleCount * 3; i++) {
+        // Random positions around the core
+        posArray[i] = (Math.random() - 0.5) * 150;
+    }
+
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMat = new THREE.PointsMaterial({
+        size: 2,
+        color: 0x00f0ff, // neon cyan
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(particlesGeo, particlesMat);
+    particles.position.y = 100;
+    particles.name = "CoreParticles";
+    group.add(particles);
+
     return group;
 }
