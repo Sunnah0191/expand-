@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -140,36 +146,81 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  padding: 20px;
+  padding: 0;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  width: 800px;
+  height: 500px;
+  display: flex;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+  overflow: hidden;
+}
+
+.catalog-sidebar {
+  width: 200px;
+  background: rgba(0, 0, 0, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.category-btn {
+  padding: 20px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.3s;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.category-btn:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.category-btn.active {
+  background: rgba(0, 240, 255, 0.2);
+  border-left-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 5px var(--neon-cyan);
+}
+
+.catalog-content {
+  flex-grow: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  margin: 0 0 20px 0;
+  font-weight: 300;
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  flex-wrap: wrap;
+  overflow-y: auto;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.4);
+  width: 100px;
+  height: 100px;
+  background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 8px;
   display: flex;
@@ -178,26 +229,38 @@ body, html {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
 }
 
 .catalog-item:hover, .catalog-item.selected {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
   background: rgba(0, 240, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .catalog-item span {
-  font-size: 10px;
-  margin-top: 8px;
+  font-size: 11px;
+  margin-top: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Custom Icons */
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 2px solid rgba(255,255,255,0.8); backdrop-filter: blur(4px); }
+.neon-pillar-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.monolith-icon { background: #111; border: 1px solid #444; }
+.rock-icon { background: #5a5a66; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+.crystal-icon { background: rgba(0, 255, 255, 0.5); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border: 1px solid cyan; }
+.neon-tree-icon { background: #0f0; box-shadow: 0 0 10px #0f0; border-radius: 50%; width: 20px; height: 40px; }
+.dark-tower-icon { background: #050510; border: 1px solid #333; height: 50px; width: 20px; }
+.matte-bridge-icon { background: #334; border-top: 2px solid var(--neon-cyan); width: 50px; height: 10px; margin-top: 15px;}
+.chrome-block-icon { background: linear-gradient(135deg, #eee 0%, #999 50%, #fff 100%); }
+.matte-metal-icon { background: #4a4a52; border: 1px solid #222; }
