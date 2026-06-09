@@ -33,7 +33,35 @@ export class BuildMenu {
         // Select first item by default
         if (this.items.length > 0) {
             this.items[0].classList.add('selected');
+            this.selectedType = this.items[0].dataset.type;
         }
+
+        // Handle category switching
+        this.categoryBtns = document.querySelectorAll('.category-btn');
+        this.catalogTitle = document.getElementById('catalog-title');
+
+        this.categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Update active button
+                this.categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update title
+                this.catalogTitle.innerText = btn.innerText;
+
+                // Show/hide items based on category
+                const category = btn.dataset.category;
+                this.items.forEach(item => {
+                    if (item.classList.contains(category)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
     }
 
     toggleVisibility() {

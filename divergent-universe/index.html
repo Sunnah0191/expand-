@@ -29,20 +29,60 @@
     <div id="ui-layer" style="display: none;">
       <!-- Catalog Overlay -->
       <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+        <div class="catalog-sidebar">
+            <div class="category-btn active" data-category="landscape">Ландшафт</div>
+            <div class="category-btn" data-category="architecture">Архитектура WuWa</div>
+            <div class="category-btn" data-category="blocks">Конструктор</div>
+        </div>
+        <div class="catalog-content">
+            <h3 id="catalog-title">Ландшафт</h3>
+            <div class="catalog-grid">
+              <!-- Landscape -->
+              <div class="catalog-item landscape" data-type="rock">
+                <div class="icon rock-icon"></div>
+                <span>Rock</span>
+              </div>
+              <div class="catalog-item landscape" data-type="crystal">
+                <div class="icon crystal-icon"></div>
+                <span>Crystal</span>
+              </div>
+              <div class="catalog-item landscape" data-type="neon-tree">
+                <div class="icon neon-tree-icon"></div>
+                <span>Neon Tree</span>
+              </div>
+
+              <!-- Architecture -->
+              <div class="catalog-item architecture" data-type="monolith" style="display: none;">
+                <div class="icon monolith-icon"></div>
+                <span>Monolith</span>
+              </div>
+              <div class="catalog-item architecture" data-type="dark-tower" style="display: none;">
+                <div class="icon dark-tower-icon"></div>
+                <span>Dark Tower</span>
+              </div>
+              <div class="catalog-item architecture" data-type="matte-bridge" style="display: none;">
+                <div class="icon matte-bridge-icon"></div>
+                <span>Matte Bridge</span>
+              </div>
+
+              <!-- Blocks -->
+              <div class="catalog-item blocks" data-type="glass-cube" style="display: none;">
+                <div class="icon glass-cube-icon"></div>
+                <span>Glass Block</span>
+              </div>
+              <div class="catalog-item blocks" data-type="chrome-block" style="display: none;">
+                <div class="icon chrome-block-icon"></div>
+                <span>Chrome Block</span>
+              </div>
+              <div class="catalog-item blocks" data-type="neon-block" style="display: none;">
+                <div class="icon neon-pillar-icon"></div>
+                <span>Neon Block</span>
+              </div>
+              <div class="catalog-item blocks" data-type="matte-metal-block" style="display: none;">
+                <div class="icon matte-metal-icon"></div>
+                <span>Matte Metal</span>
+              </div>
+            </div>
         </div>
       </div>
 
