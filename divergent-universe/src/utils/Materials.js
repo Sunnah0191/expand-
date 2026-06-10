@@ -46,7 +46,22 @@ export const neonWhiteMaterial = new THREE.MeshStandardMaterial({
     metalness: 0.5
 });
 
-// 4. Glitch Material (Custom Shader)
+// 4. Base blocks materials
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+export const frostedMetalMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xaabbcc,
+    metalness: 0.8,
+    roughness: 0.5,
+    clearcoat: 0.2,
+    clearcoatRoughness: 0.3
+});
+
+// 5. Glitch Material (Custom Shader)
 const glitchVertexShader = `
     varying vec2 vUv;
     varying vec3 vPosition;
@@ -114,7 +129,7 @@ export function updateMaterials(delta, time) {
     glitchMaterial.uniforms.time.value = time;
 }
 
-// 5. Ocean Material (Dark, slightly reflective)
+// 6. Ocean Material (Dark, slightly reflective)
 export const oceanMaterial = new THREE.MeshStandardMaterial({
     color: 0x02050a,
     roughness: 0.1,

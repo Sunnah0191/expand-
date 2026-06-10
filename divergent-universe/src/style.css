@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6), inset 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.1);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -161,9 +173,41 @@ body, html {
   color: #ccc;
 }
 
+.catalog-categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+.category-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s;
+  text-transform: uppercase;
+}
+
+.category-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.category-btn.active {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: var(--neon-cyan);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
 .catalog-grid {
   display: flex;
   gap: 15px;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -200,4 +244,11 @@ body, html {
 
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.monolith-icon { background: #1a1a24; border: 1px solid #555; }
+.rock-icon { background: #888; border-radius: 4px 8px 4px 8px; }
+.glass-crystal-icon { background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(170,255,255,0.4)); transform: rotate(45deg); }
+.neon-tree-icon { background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%); }
+.levi-tower-icon { background: #2a2a34; border-top: 2px solid var(--neon-cyan); }
+.frosted-bridge-icon { background: rgba(200, 220, 255, 0.6); border-bottom: 2px solid rgba(255,255,255,0.8); }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #888); }
+.frosted-metal-icon { background: #aab; border: 1px solid #889; opacity: 0.8; }
