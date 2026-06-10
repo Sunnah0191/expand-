@@ -2,13 +2,41 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.categoryBtns = document.querySelectorAll('.category-btn');
+        this.grids = document.querySelectorAll('.catalog-grid');
+        this.selectedType = 'rock'; // default to first item in first category
         this.isVisible = false;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
+        // Category switching
+        this.categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Update active button
+                this.categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show corresponding grid
+                const category = btn.dataset.category;
+                this.grids.forEach(grid => {
+                    if (grid.id === `grid-${category}`) {
+                        grid.style.display = 'flex';
+                        // Auto-select first item in new category
+                        const firstItem = grid.querySelector('.catalog-item');
+                        if (firstItem) {
+                            this.selectItem(firstItem);
+                        }
+                    } else {
+                        grid.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         // Toggle on '1' or '`'
         window.addEventListener('keydown', (e) => {
             if (e.key === '1' || e.key === '`' || e.key === '~') {
@@ -20,20 +48,27 @@ export class BuildMenu {
         this.items.forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-
-                // Remove selected class from all
-                this.items.forEach(i => i.classList.remove('selected'));
-
-                // Add to clicked
-                item.classList.add('selected');
-                this.selectedType = item.dataset.type;
+                this.selectItem(item);
             });
         });
 
         // Select first item by default
-        if (this.items.length > 0) {
-            this.items[0].classList.add('selected');
+        const initialGrid = document.getElementById('grid-landscape');
+        if (initialGrid) {
+            const firstItem = initialGrid.querySelector('.catalog-item');
+            if (firstItem) {
+                this.selectItem(firstItem);
+            }
         }
+    }
+
+    selectItem(item) {
+        // Remove selected class from all
+        this.items.forEach(i => i.classList.remove('selected'));
+
+        // Add to clicked
+        item.classList.add('selected');
+        this.selectedType = item.dataset.type;
     }
 
     toggleVisibility() {
