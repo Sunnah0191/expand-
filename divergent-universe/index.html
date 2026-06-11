@@ -30,19 +30,65 @@
       <!-- Catalog Overlay -->
       <div id="build-catalog">
         <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+
+        <div class="catalog-tabs">
+            <div class="catalog-tab active" data-target="landscape">Ландшафт</div>
+            <div class="catalog-tab" data-target="wuwa">Архитектура WuWa</div>
+            <div class="catalog-tab" data-target="constructor">Конструктор</div>
+        </div>
+
+        <div class="catalog-content">
+            <!-- Ландшафт (Landscape) -->
+            <div class="catalog-grid active" id="cat-landscape">
+                <div class="catalog-item" data-type="midpoly-rock">
+                    <div class="icon rock-icon"></div>
+                    <span>Mid-poly Скала</span>
+                </div>
+                <div class="catalog-item" data-type="glass-crystal">
+                    <div class="icon glass-crystal-icon"></div>
+                    <span>Стеклянный Кристалл</span>
+                </div>
+                <div class="catalog-item" data-type="neon-tree">
+                    <div class="icon neon-tree-icon"></div>
+                    <span>Неоновое Дерево</span>
+                </div>
+            </div>
+
+            <!-- Архитектура WuWa -->
+            <div class="catalog-grid" id="cat-wuwa">
+                <div class="catalog-item" data-type="futuristic-monolith">
+                    <div class="icon monolith-icon"></div>
+                    <span>Футуристичный Монолит</span>
+                </div>
+                <div class="catalog-item" data-type="levitating-tower">
+                    <div class="icon tower-icon"></div>
+                    <span>Левитирующая Башня</span>
+                </div>
+                <div class="catalog-item" data-type="matte-bridge">
+                    <div class="icon bridge-icon"></div>
+                    <span>Матовый Мост</span>
+                </div>
+            </div>
+
+            <!-- Конструктор -->
+            <div class="catalog-grid" id="cat-constructor">
+                <div class="catalog-item" data-type="glass-cube">
+                    <div class="icon glass-cube-icon"></div>
+                    <span>Стекло</span>
+                </div>
+                <div class="catalog-item" data-type="chrome-block">
+                    <div class="icon chrome-icon"></div>
+                    <span>Хром</span>
+                </div>
+                <div class="catalog-item" data-type="neon-pillar">
+                    <div class="icon neon-pillar-icon"></div>
+                    <span>Неон</span>
+                </div>
+                <div class="catalog-item" data-type="matte-metal">
+                    <div class="icon metal-icon"></div>
+                    <span>Матовый Металл</span>
+                </div>
+            </div>
         </div>
       </div>
 
