@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    border-color: rgba(0, 240, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
 }
 
 .login-form button {
@@ -100,6 +115,24 @@ body, html {
 }
 
 /* ================= GOD MODE FLASH ================= */
+@keyframes goldBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.8) 0%, transparent 10%);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 1) 0%, rgba(255, 215, 0, 0.2) 50%, transparent 100%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0) 0%, transparent 100%);
+  }
+}
+
 #god-mode-flash {
   position: absolute;
   top: 0;
@@ -107,14 +140,12 @@ body, html {
   width: 100vw;
   height: 100vh;
   z-index: 200;
-  background-color: var(--neon-gold);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.8s ease-out;
 }
 
 .flash-active {
-  opacity: 0.8 !important;
+  animation: goldBurst 1s ease-out forwards;
 }
 
 /* ================= UI LAYER ================= */
@@ -156,14 +187,25 @@ body, html {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #fff;
+}
+
+.category-title {
+  margin: 10px 0 10px 0;
+  font-size: 12px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 4px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  margin-bottom: 15px;
 }
 
 .catalog-item {
@@ -201,3 +243,11 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #5a5a5a; border-radius: 4px; }
+.glass-crystal-icon { background: rgba(100, 200, 255, 0.6); border: 1px solid #64c8ff; transform: rotate(45deg); }
+.neon-tree-icon { background: #00ff88; border-radius: 50% 50% 0 0; }
+.dark-tower-icon { background: #111; border: 1px solid #333; height: 40px; }
+.matte-bridge-icon { background: #444; border-top: 2px solid #888; border-bottom: 2px solid #888; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee 0%, #aaa 100%); border: 1px solid #fff; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.matte-metal-icon { background: #777; border: 1px solid #555; }
