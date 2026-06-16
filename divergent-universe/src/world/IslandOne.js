@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { glassMaterial } from '../utils/Materials.js';
+import { glassMaterial, glowingGrassMaterial } from '../utils/Materials.js';
 
 export function createIslandOne() {
     const group = new THREE.Group();
@@ -38,6 +38,40 @@ export function createIslandOne() {
         trees.setMatrixAt(i, dummy.matrix);
     }
     group.add(trees);
+
+    // Semi-transparent glowing grass ("полупрозрачная трава, которая светится изнутри")
+    const grassGeo = new THREE.ConeGeometry(0.5, 4, 3); // low-poly blade of grass
+    grassGeo.translate(0, 2, 0);
+    const grassCount = 500;
+    const grass = new THREE.InstancedMesh(grassGeo, glowingGrassMaterial, grassCount);
+
+    for (let i = 0; i < grassCount; i++) {
+        const r = Math.random() * 45;
+        const theta = Math.random() * Math.PI * 2;
+        const x = r * Math.cos(theta);
+        const z = r * Math.sin(theta);
+
+        // simple terrain height approximation based on distance from center
+        let y = 10;
+        if (r > 30) {
+            y = 10 - (r - 30) * 0.5; // slope down
+        }
+
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(
+            (Math.random() - 0.5) * 0.5,
+            Math.random() * Math.PI * 2,
+            (Math.random() - 0.5) * 0.5
+        );
+        dummy.scale.set(
+            0.5 + Math.random() * 0.5,
+            0.5 + Math.random() * 1.5,
+            0.5 + Math.random() * 0.5
+        );
+        dummy.updateMatrix();
+        grass.setMatrixAt(i, dummy.matrix);
+    }
+    group.add(grass);
 
     return group;
 }

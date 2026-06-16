@@ -39,5 +39,45 @@ export function createIslandTwo() {
         }
     }
 
+    // Mid-poly arches
+    const archCount = 5;
+    for (let i = 0; i < archCount; i++) {
+        const archGroup = new THREE.Group();
+
+        // Pillars
+        const pillarGeo = new THREE.BoxGeometry(10, 40, 10);
+        const pillar1 = new THREE.Mesh(pillarGeo, monolithMaterial);
+        pillar1.position.set(-15, 20, 0);
+        const pillar2 = new THREE.Mesh(pillarGeo, monolithMaterial);
+        pillar2.position.set(15, 20, 0);
+
+        // Top cross piece
+        const topGeo = new THREE.BoxGeometry(40, 10, 10);
+        const top = new THREE.Mesh(topGeo, monolithMaterial);
+        top.position.set(0, 45, 0);
+
+        archGroup.add(pillar1);
+        archGroup.add(pillar2);
+        archGroup.add(top);
+
+        archGroup.position.set(
+            (Math.random() - 0.5) * 120,
+            (Math.random() - 0.5) * 40,
+            (Math.random() - 0.5) * 120
+        );
+
+        archGroup.rotation.y = Math.random() * Math.PI;
+
+        // Add neon accents to arches sometimes
+        if (Math.random() > 0.5) {
+            const crackGeo = new THREE.BoxGeometry(42, 2, 12);
+            const crack = new THREE.Mesh(crackGeo, neonBlueMaterial);
+            crack.position.set(0, 45, 0);
+            archGroup.add(crack);
+        }
+
+        group.add(archGroup);
+    }
+
     return group;
 }
