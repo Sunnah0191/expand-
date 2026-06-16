@@ -3,7 +3,10 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import {
+    glassMaterial, neonCyanMaterial, monolithMaterial,
+    chromeMaterial, matteMetalMaterial
+} from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,17 +95,63 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
+    // Ландшафт
+    if (type === 'rock') {
+        const rockGeo = new THREE.DodecahedronGeometry(5, 1);
+        const rockMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9 });
+        mesh = new THREE.Mesh(rockGeo, rockMat);
+        pos.y += 4;
+    } else if (type === 'crystal') {
+        const crystalGeo = new THREE.ConeGeometry(3, 12, 5);
+        mesh = new THREE.Mesh(crystalGeo, glassMaterial);
+        mesh.material.color = new THREE.Color(0xaaffff);
+        pos.y += 6;
+    } else if (type === 'neon-tree') {
+        const treeGroup = new THREE.Group();
+        const trunkGeo = new THREE.CylinderGeometry(1, 1, 8);
+        const trunk = new THREE.Mesh(trunkGeo, monolithMaterial);
+        trunk.position.y = 4;
+        const leavesGeo = new THREE.ConeGeometry(4, 10, 5);
+        const leaves = new THREE.Mesh(leavesGeo, neonCyanMaterial);
+        leaves.position.y = 12;
+        treeGroup.add(trunk);
+        treeGroup.add(leaves);
+        mesh = treeGroup;
+    }
+    // Архитектура WuWa
+    else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 8, 40, 8), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteMetalMaterial);
+        pos.y += 1;
+    }
+    // Конструктор (Блоки)
+    else if (type === 'glass-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
+        // Only apply cast/receive shadow to Meshes directly, or traverse Groups
+        mesh.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
         mesh.position.copy(pos);
         scene.add(mesh);
     }
