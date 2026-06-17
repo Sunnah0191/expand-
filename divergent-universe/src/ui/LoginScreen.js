@@ -63,6 +63,23 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+
+            // Spawn golden particles
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'golden-particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                // random slight delay and duration for a better burst effect
+                particle.style.animationDelay = (Math.random() * 0.2) + 's';
+                particle.style.animationDuration = (0.5 + Math.random() * 1.5) + 's';
+                document.body.appendChild(particle);
+
+                // Clean up particle
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
         }
 
         // Fade out login screen

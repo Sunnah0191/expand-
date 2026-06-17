@@ -100,6 +100,25 @@ function onPlaceBlock(event) {
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(5, 1), monolithMaterial);
+        pos.y += 5;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(5), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(2, 10, 5), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 40, 10), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), monolithMaterial);
+        pos.y += 1;
+    } else if (type === 'chrome-block') {
+        const chromeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1.0, roughness: 0.1 });
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMat);
+        pos.y += 5;
     }
 
     if (mesh) {

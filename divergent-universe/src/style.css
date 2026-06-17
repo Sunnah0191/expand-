@@ -75,9 +75,23 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.6);
+    border-color: var(--neon-cyan);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
 }
 
 .login-form button {
@@ -115,6 +129,23 @@ body, html {
 
 .flash-active {
   opacity: 0.8 !important;
+}
+
+@keyframes particleFade {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  100% { transform: scale(0.1) translateY(-100px); opacity: 0; }
+}
+
+.golden-particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--neon-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--neon-gold);
+  pointer-events: none;
+  animation: particleFade 1s forwards ease-out;
+  z-index: 201;
 }
 
 /* ================= UI LAYER ================= */
@@ -161,9 +192,21 @@ body, html {
   color: #ccc;
 }
 
+#build-catalog h4 {
+  margin: 10px 0 10px 0;
+  text-align: left;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #aaa;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+}
+
 .catalog-grid {
   display: flex;
   gap: 15px;
+  margin-bottom: 15px;
 }
 
 .catalog-item {
@@ -201,3 +244,9 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #444; border-radius: 50%; }
+.glass-crystal-icon { background: rgba(100, 200, 255, 0.4); border: 1px solid var(--neon-cyan); transform: rotate(45deg); }
+.neon-tree-icon { background: transparent; border-bottom: 20px solid var(--neon-cyan); border-left: 10px solid transparent; border-right: 10px solid transparent; width: 0; height: 0; }
+.dark-tower-icon { background: #1a1a24; border: 1px solid #333; height: 25px; width: 10px; }
+.matte-bridge-icon { background: #222; border-top: 2px solid #555; width: 25px; height: 5px; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee 0%, #888 100%); border: 1px solid #ccc; }
