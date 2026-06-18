@@ -92,12 +92,12 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+    if (type === 'glass-cube' || type === 'wuwa-bridge' || type === 'landscape-crystal') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
+    } else if (type === 'neon-pillar' || type === 'landscape-tree') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
         pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
+    } else if (type === 'monolith' || type === 'wuwa-monolith' || type === 'landscape-rock') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
     }
