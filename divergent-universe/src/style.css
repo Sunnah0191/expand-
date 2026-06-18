@@ -150,6 +150,13 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  /* display: flex; */
+  gap: 30px;
+}
+
+#build-catalog .catalog-category {
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {

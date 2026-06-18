@@ -6,8 +6,8 @@ export function createMainContinent() {
     group.name = "MainContinent";
 
     // Base island
-    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 16);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.2 });
+    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 8); // Octagonal for mid-poly
+    const baseMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.1 });
     const base = new THREE.Mesh(baseGeo, baseMat);
     base.position.y = -10;
     base.receiveShadow = true;
@@ -21,7 +21,8 @@ export function createMainContinent() {
     // We'll create some glass buildings and some solid white buildings
     const buildingCount = 100;
     const glassBuildings = new THREE.InstancedMesh(buildingGeo, glassMaterial, Math.floor(buildingCount * 0.6));
-    const solidBuildings = new THREE.InstancedMesh(buildingGeo, baseMat, Math.floor(buildingCount * 0.4));
+    const solidMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.05, metalness: 0.1 }); // Pure glossy white
+    const solidBuildings = new THREE.InstancedMesh(buildingGeo, solidMat, Math.floor(buildingCount * 0.4));
 
     glassBuildings.castShadow = true;
     glassBuildings.receiveShadow = true;

@@ -39,5 +39,28 @@ export function createIslandTwo() {
         }
     }
 
+    // Giant geometric arches
+    const archGeo = new THREE.TorusGeometry(40, 5, 8, 4, Math.PI);
+    for (let i = 0; i < 3; i++) {
+        const arch = new THREE.Mesh(archGeo, monolithMaterial);
+        arch.position.set(
+            (Math.random() - 0.5) * 50,
+            20 + Math.random() * 20,
+            (Math.random() - 0.5) * 50
+        );
+        arch.rotation.set(
+            Math.random() * 0.5,
+            Math.random() * Math.PI,
+            (Math.random() - 0.5) * 0.5
+        );
+
+        // Neon trim inside arch
+        const neonTrimGeo = new THREE.TorusGeometry(39, 1, 8, 4, Math.PI);
+        const neonTrim = new THREE.Mesh(neonTrimGeo, neonBlueMaterial);
+        arch.add(neonTrim);
+
+        group.add(arch);
+    }
+
     return group;
 }
