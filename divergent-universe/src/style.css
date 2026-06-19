@@ -150,25 +150,52 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#build-catalog::-webkit-scrollbar {
+  width: 8px;
+}
+
+#build-catalog::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+#build-catalog::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
+  margin: 10px 0 5px 0;
+  text-align: left;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+}
+
+#build-catalog h3:first-child {
+  margin-top: 0;
 }
 
 .catalog-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 8px;
@@ -178,6 +205,9 @@ body, html {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
 }
 
 .catalog-item:hover, .catalog-item.selected {
@@ -190,14 +220,25 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  line-height: 1.2;
 }
 
 .icon {
   width: 30px;
   height: 30px;
   background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #5a5a66; border-radius: 8px; }
+.crystal-icon { background: rgba(170, 255, 255, 0.8); border: 1px solid #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border-radius: 0; }
+.neon-tree-icon { background: var(--neon-cyan); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border-radius: 0; }
+
+.wuwa-monolith-icon { background: #222; border: 1px solid #555; }
+.dark-tower-icon { background: #111; border: 1px solid var(--neon-cyan); width: 20px; }
+.matte-bridge-icon { background: #444; height: 10px; width: 40px; margin: 10px 0; }
+
+.block-glass-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.block-chrome-icon { background: linear-gradient(135deg, #eee 0%, #999 100%); border: 1px solid #ccc; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-metal-icon { background: #4a4a4a; border: 1px solid #333; }
