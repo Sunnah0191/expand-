@@ -12,6 +12,7 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let bgGroup;
 
 init();
 animate();
@@ -69,6 +70,33 @@ function init() {
     // Initialize Controls (disabled initially)
     controls = new GodModeControls(camera, renderer.domElement, scene, () => buildMenu.getSelectedType());
 
+    // 3D Background for Login Screen
+    bgGroup = new THREE.Group();
+    scene.add(bgGroup);
+
+    // Monolith
+    const bgMonolithGeo = new THREE.BoxGeometry(40, 80, 40);
+    const bgMonolith = new THREE.Mesh(bgMonolithGeo, monolithMaterial);
+    bgGroup.add(bgMonolith);
+
+    // Particles
+    const particlesGeo = new THREE.BufferGeometry();
+    const particlesCount = 500;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i = 0; i < particlesCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 150;
+    }
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMat = new THREE.PointsMaterial({
+        size: 0.5,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+    });
+    const bgParticles = new THREE.Points(particlesGeo, particlesMat);
+    bgGroup.add(bgParticles);
+
     // Event Listeners
     window.addEventListener('resize', onWindowResize);
     window.addEventListener('placeBlock', onPlaceBlock);
@@ -76,6 +104,12 @@ function init() {
 
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
+
+    // Hide login background
+    if (bgGroup) {
+        bgGroup.visible = false;
+    }
+
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
@@ -100,6 +134,21 @@ function onPlaceBlock(event) {
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(5), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(3, 15), neonCyanMaterial);
+        pos.y += 7.5;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 40), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(20, 2, 5), glassMaterial);
+        pos.y += 1;
+    } else if (type === 'metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshStandardMaterial({color: 0x888888, metalness: 0.9, roughness: 0.2}));
+        pos.y += 5;
     }
 
     if (mesh) {
@@ -125,6 +174,11 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (bgGroup && bgGroup.visible) {
+        bgGroup.rotation.y += delta * 0.1;
+        bgGroup.rotation.x += delta * 0.05;
     }
 
     renderer.render(scene, camera);
