@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite;
 }
 
 .login-form button {
@@ -186,6 +192,39 @@ body, html {
   background: rgba(0, 240, 255, 0.1);
 }
 
+.catalog-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+.tab-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 12px;
+}
+
+.tab-btn:hover, .tab-btn.active {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: var(--neon-cyan);
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.catalog-category {
+  display: none;
+}
+
+.catalog-category.active {
+  display: block;
+}
+
 .catalog-item span {
   font-size: 10px;
   margin-top: 8px;
@@ -198,6 +237,13 @@ body, html {
   background-color: #555;
 }
 
+.rock-icon { background: #444; border-radius: 5px; }
+.crystal-icon { background: #aaffff; border: 1px solid #fff; border-radius: 50%; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; }
+.dark-tower-icon { background: #111; border: 1px solid var(--neon-cyan); }
+.matte-bridge-icon { background: #333; border-top: 2px solid var(--neon-cyan); }
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.chrome-block-icon { background: #eee; border: 1px solid #aaa; }
 .neon-pillar-icon { background: var(--neon-cyan); }
+.metal-block-icon { background: #666; border: 1px solid #444; }
 .monolith-icon { background: #222; border: 1px solid #555; }

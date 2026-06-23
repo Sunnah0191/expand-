@@ -2,13 +2,30 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.selectedType = 'glass-block'; // default updated
         this.isVisible = false;
+
+        this.tabs = document.querySelectorAll('.tab-btn');
+        this.categories = document.querySelectorAll('.catalog-category');
 
         this.initEventListeners();
     }
 
     initEventListeners() {
+        // Tab Switching
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                this.tabs.forEach(t => t.classList.remove('active'));
+                this.categories.forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                const targetId = 'tab-' + tab.dataset.tab;
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
         // Toggle on '1' or '`'
         window.addEventListener('keydown', (e) => {
             if (e.key === '1' || e.key === '`' || e.key === '~') {

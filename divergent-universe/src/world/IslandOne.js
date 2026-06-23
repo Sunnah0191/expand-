@@ -20,6 +20,33 @@ export function createIslandOne() {
     hill2.position.set(30, -5, 20);
     group.add(hill2);
 
+    // Glowing grass (InstancedMesh)
+    const grassGeo = new THREE.ConeGeometry(0.5, 5, 4);
+    grassGeo.translate(0, 2.5, 0);
+    const grassMat = new THREE.MeshStandardMaterial({
+        color: 0x00ffcc,
+        emissive: 0x00ffcc,
+        emissiveIntensity: 0.5,
+        transparent: true,
+        opacity: 0.8,
+        roughness: 0.2
+    });
+    const grassCount = 500;
+    const grass = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
+
+    const grassDummy = new THREE.Object3D();
+    for (let i = 0; i < grassCount; i++) {
+        const r = Math.random() * 45;
+        const theta = Math.random() * Math.PI * 2;
+        grassDummy.position.set(r * Math.cos(theta), 0, r * Math.sin(theta));
+        grassDummy.rotation.x = (Math.random() - 0.5) * 0.4;
+        grassDummy.rotation.z = (Math.random() - 0.5) * 0.4;
+        grassDummy.scale.setScalar(0.5 + Math.random() * 1.0);
+        grassDummy.updateMatrix();
+        grass.setMatrixAt(i, grassDummy.matrix);
+    }
+    group.add(grass);
+
     // Glass trees (InstancedMesh)
     const treeGeo = new THREE.ConeGeometry(3, 20, 5);
     treeGeo.translate(0, 10, 0);

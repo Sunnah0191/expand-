@@ -43,6 +43,28 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Add glowing particles
+        const particleCount = 1000;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            particlePositions[i * 3] = (Math.random() - 0.5) * 800; // x
+            particlePositions[i * 3 + 1] = Math.random() * 400 - 100; // y
+            particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 800; // z
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2.0,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        this.particles = new THREE.Points(particleGeo, particleMat);
+        this.group.add(this.particles);
+
         this.scene.add(this.group);
     }
 
@@ -58,6 +80,16 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update particles
+        if (this.particles) {
+            this.particles.rotation.y += 0.05 * delta;
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += Math.sin(this.time + i) * 0.1; // slow wave
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
