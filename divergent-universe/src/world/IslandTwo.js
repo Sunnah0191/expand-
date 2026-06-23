@@ -39,5 +39,34 @@ export function createIslandTwo() {
         }
     }
 
+    // Massive Arches
+    const archGeo = new THREE.BoxGeometry(10, 60, 10);
+    const archTopGeo = new THREE.BoxGeometry(50, 10, 10);
+
+    for (let i = 0; i < 3; i++) {
+        const archGroup = new THREE.Group();
+
+        const pillar1 = new THREE.Mesh(archGeo, monolithMaterial);
+        pillar1.position.set(-20, 30, 0);
+        archGroup.add(pillar1);
+
+        const pillar2 = new THREE.Mesh(archGeo, monolithMaterial);
+        pillar2.position.set(20, 30, 0);
+        archGroup.add(pillar2);
+
+        const top = new THREE.Mesh(archTopGeo, monolithMaterial);
+        top.position.set(0, 65, 0);
+        archGroup.add(top);
+
+        archGroup.position.set(
+            (Math.random() - 0.5) * 80,
+            0,
+            (Math.random() - 0.5) * 80
+        );
+        archGroup.rotation.y = Math.random() * Math.PI;
+
+        group.add(archGroup);
+    }
+
     return group;
 }
