@@ -100,6 +100,12 @@ function onPlaceBlock(event) {
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'glass-tree') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(3, 20, 5), glassMaterial);
+        pos.y += 10;
+    } else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(20, 60, 20), monolithMaterial);
+        pos.y += 30;
     }
 
     if (mesh) {

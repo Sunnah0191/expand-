@@ -43,11 +43,31 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Add background particles
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 2000;
+        const positions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 4000;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6
+        });
+        this.particles = new THREE.Points(particleGeo, particleMat);
+        this.group.add(this.particles);
+
         this.scene.add(this.group);
     }
 
     update(delta) {
         this.time += delta;
+        if (this.particles) {
+            this.particles.rotation.y += 0.02 * delta;
+        }
 
         // Rotate the central core slightly
         const core = this.mainContinent.getObjectByName("CentralCore");
