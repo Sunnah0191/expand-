@@ -75,9 +75,18 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  from {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.8);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite alternate;
 }
 
 .login-form button {
