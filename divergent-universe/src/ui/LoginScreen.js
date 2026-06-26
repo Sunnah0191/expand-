@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.createGoldParticles();
         }
 
         // Fade out login screen
@@ -79,6 +80,39 @@ export class LoginScreen {
                 this.onSuccess(isAdmin);
             }
         }, 1000); // Wait for transition
+    }
+
+    createGoldParticles() {
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '5px';
+            particle.style.height = '5px';
+            particle.style.background = '#ffd700';
+            particle.style.borderRadius = '50%';
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '300';
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 10 + Math.random() * 20;
+            const tx = Math.cos(angle) * velocity * 20;
+            const ty = Math.sin(angle) * velocity * 20;
+
+            particle.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            document.body.appendChild(particle);
+
+            // Trigger reflow
+            particle.offsetWidth;
+
+            particle.style.transform = `translate(${tx}px, ${ty}px) scale(0)`;
+            particle.style.opacity = '0';
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1000);
+        }
     }
 
     playActivationSound() {
