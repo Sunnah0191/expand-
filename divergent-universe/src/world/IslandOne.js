@@ -1,43 +1,60 @@
 import * as THREE from 'three';
-import { glassMaterial } from '../utils/Materials.js';
+import { glassTreeMaterial, glassGroundMaterial } from './Materials.js';
 
-export function createIslandOne() {
-    const group = new THREE.Group();
-    group.name = "IslandOne_GlassBiome";
+export class IslandOne {
+  constructor(scene) {
+    this.scene = scene;
+    this.group = new THREE.Group();
+    // Initial position
+    this.baseX = 80;
+    this.baseZ = 0;
+    this.group.position.set(this.baseX, 0, this.baseZ);
+    this.init();
+    this.scene.add(this.group);
+  }
 
-    // Smooth, round glass hills
-    const hillGeo = new THREE.DodecahedronGeometry(50, 1); // mid-poly look
-    const hillMat = glassMaterial.clone();
-    hillMat.color = new THREE.Color(0xaaffff);
+  init() {
+    // Glass ground
+    const groundGeo = new THREE.DodecahedronGeometry(20, 1);
+    const ground = new THREE.Mesh(groundGeo, glassGroundMaterial);
+    ground.position.y = -10;
+    ground.scale.y = 0.5;
+    ground.receiveShadow = true;
+    this.group.add(ground);
 
-    const hill1 = new THREE.Mesh(hillGeo, hillMat);
-    hill1.scale.set(1, 0.4, 1);
-    hill1.position.set(0, 0, 0);
-    group.add(hill1);
-
-    const hill2 = new THREE.Mesh(hillGeo, hillMat);
-    hill2.scale.set(0.6, 0.3, 0.6);
-    hill2.position.set(30, -5, 20);
-    group.add(hill2);
-
-    // Glass trees (InstancedMesh)
-    const treeGeo = new THREE.ConeGeometry(3, 20, 5);
-    treeGeo.translate(0, 10, 0);
+    // Instanced Trees
     const treeCount = 50;
-    const trees = new THREE.InstancedMesh(treeGeo, hillMat, treeCount);
+    const trunkGeo = new THREE.CylinderGeometry(0.5, 1, 5, 5);
+    const leavesGeo = new THREE.IcosahedronGeometry(3, 0);
+
+    // Combine geometry for simplicity in instancing (or use separate)
+    const treeGeo = new THREE.BufferGeometry(); // Just use leaves for simple instancing to save code
+
+    this.treeMesh = new THREE.InstancedMesh(leavesGeo, glassTreeMaterial, treeCount);
+    this.treeMesh.castShadow = true;
+    this.treeMesh.receiveShadow = true;
 
     const dummy = new THREE.Object3D();
     for (let i = 0; i < treeCount; i++) {
-        const r = Math.random() * 40;
-        const theta = Math.random() * Math.PI * 2;
-        dummy.position.set(r * Math.cos(theta), 10, r * Math.sin(theta));
-        dummy.rotation.x = (Math.random() - 0.5) * 0.2;
-        dummy.rotation.z = (Math.random() - 0.5) * 0.2;
-        dummy.scale.setScalar(0.5 + Math.random() * 1.5);
-        dummy.updateMatrix();
-        trees.setMatrixAt(i, dummy.matrix);
-    }
-    group.add(trees);
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 15;
+      dummy.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
 
-    return group;
+      // Raycast down to find surface (simplified: just offset y)
+      dummy.position.y = 2 + Math.random() * 3;
+
+      dummy.rotation.y = Math.random() * Math.PI;
+      dummy.scale.setScalar(0.5 + Math.random() * 1);
+
+      dummy.updateMatrix();
+      this.treeMesh.setMatrixAt(i, dummy.matrix);
+    }
+
+    this.group.add(this.treeMesh);
+  }
+
+  setPosition(x, z) {
+    this.group.position.x = x;
+    this.group.position.z = z;
+  }
 }
