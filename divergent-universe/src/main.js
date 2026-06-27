@@ -1,131 +1,196 @@
 import * as THREE from 'three';
-import { World } from './world/World.js';
-import { LoginScreen } from './ui/LoginScreen.js';
-import { GodModeControls } from './controls/GodModeControls.js';
-import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
 
-// Global variables
-let camera, scene, renderer;
-let clock;
-let world;
-let controls;
-let buildMenu;
-let isGodMode = false;
+let scene, camera, renderer;
 
-init();
-animate();
+export function init() {
+  const container = document.getElementById('canvas-container');
 
-function init() {
-    const container = document.getElementById('app');
+  // Scene setup
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x050a15); // Deep dark ocean blue
+  scene.fog = new THREE.FogExp2(0x050a15, 0.002);
 
-    // Scene
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050a10);
-    scene.fog = new THREE.FogExp2(0x050a10, 0.002);
+  // Camera setup
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.set(0, 50, 100);
+  camera.lookAt(0, 0, 0);
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.set(0, 50, 150);
-    camera.lookAt(0, 0, 0);
+  // Renderer setup
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
 
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+  // Basic Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
 
-    // Clock
-    clock = new THREE.Clock();
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(100, 200, 50);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 2048;
+  dirLight.shadow.mapSize.height = 2048;
+  dirLight.shadow.camera.near = 0.5;
+  dirLight.shadow.camera.far = 500;
+  dirLight.shadow.camera.left = -200;
+  dirLight.shadow.camera.right = 200;
+  dirLight.shadow.camera.top = 200;
+  dirLight.shadow.camera.bottom = -200;
+  scene.add(dirLight);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
+  const hemisphereLight = new THREE.HemisphereLight(0x00ffff, 0x050a15, 0.5); // Cyan sky, dark ground
+  scene.add(hemisphereLight);
 
-    const dirLight = new THREE.DirectionalLight(0xaaccff, 2);
-    dirLight.position.set(-100, 200, 50);
-    dirLight.castShadow = true;
-    dirLight.shadow.camera.top = 200;
-    dirLight.shadow.camera.bottom = -200;
-    dirLight.shadow.camera.left = -200;
-    dirLight.shadow.camera.right = 200;
-    dirLight.shadow.camera.near = 0.1;
-    dirLight.shadow.camera.far = 1000;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    scene.add(dirLight);
+  // Window Resize
+  window.addEventListener('resize', onWindowResize);
 
-    // Initialize World
-    world = new World(scene);
-
-    // Initialize UI
-    buildMenu = new BuildMenu();
-    const login = new LoginScreen(onLoginSuccess);
-
-    // Initialize Controls (disabled initially)
-    controls = new GodModeControls(camera, renderer.domElement, scene, () => buildMenu.getSelectedType());
-
-    // Event Listeners
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('placeBlock', onPlaceBlock);
-}
-
-function onLoginSuccess(isAdmin) {
-    isGodMode = isAdmin;
-    if (isAdmin) {
-        document.getElementById('ui-layer').style.display = 'block';
-        controls.enable();
-    } else {
-        // Simple spectator mode logic could go here
-        console.log("Logged in as spectator");
-    }
-}
-
-function onPlaceBlock(event) {
-    if (!isGodMode) return;
-
-    const pos = event.detail.position;
-    const type = buildMenu.getSelectedType();
-
-    let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
-    }
-
-    if (mesh) {
-        mesh.position.copy(pos);
-        scene.add(mesh);
-    }
+  // Start Animation Loop
+  renderer.setAnimationLoop(animate);
 }
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function animate() {
-    requestAnimationFrame(animate);
+  const delta = clock.getDelta();
+  const elapsedTime = clock.getElapsedTime();
 
-    const delta = clock.getDelta();
+  if (chunkSystem) chunkSystem.update(delta);
+  if (divergenceMath) divergenceMath.update(delta, elapsedTime);
+  if (flyControls) flyControls.update(delta);
+  if (raycastingGrid) raycastingGrid.update();
 
-    if (world) {
-        world.update(delta);
-    }
+  renderer.render(scene, camera);
+}
 
-    if (controls) {
-        controls.update(delta);
-    }
+import { LoginScreen } from './ui/LoginScreen.js';
+import { ChunkSystem } from './world/ChunkSystem.js';
+import { DivergenceMath } from './utils/DivergenceMath.js';
+import { FlyControls } from './controls/FlyControls.js';
+import { RaycastingGrid } from './controls/RaycastingGrid.js';
+import { BuildingCatalog } from './ui/BuildingCatalog.js';
+import * as Materials from './world/Materials.js';
 
-    renderer.render(scene, camera);
+// Global getters for other modules
+export function getScene() { return scene; }
+export function getCamera() { return camera; }
+export function getRenderer() { return renderer; }
+
+let isGodMode = false;
+let chunkSystem;
+let divergenceMath;
+let flyControls;
+let raycastingGrid;
+let buildingCatalog;
+let clock = new THREE.Clock();
+
+let currentBuildItem = null;
+
+// Initialize
+init();
+
+chunkSystem = new ChunkSystem(scene);
+divergenceMath = new DivergenceMath(chunkSystem.getIslands());
+flyControls = new FlyControls(camera, renderer.domElement);
+raycastingGrid = new RaycastingGrid(scene, camera, renderer.domElement);
+
+buildingCatalog = new BuildingCatalog((item) => {
+  currentBuildItem = item;
+  if (isGodMode && currentBuildItem) {
+    raycastingGrid.setEnabled(true);
+  } else {
+    raycastingGrid.setEnabled(false);
+  }
+});
+
+const loginScreen = new LoginScreen((godMode) => {
+  isGodMode = godMode;
+  if (isGodMode) {
+    console.log("God mode activated");
+    flyControls.enabled = true;
+    // Building catalog is toggled with '1' key automatically by its class
+  }
+});
+
+// Click to place
+renderer.domElement.addEventListener('mousedown', (e) => {
+  if (!isGodMode || !currentBuildItem || !raycastingGrid.enabled || e.button !== 0) return;
+
+  // Don't build if we clicked UI
+  if (e.target !== renderer.domElement) return;
+
+  const pos = raycastingGrid.getPosition();
+  placeBuilding(currentBuildItem, pos);
+});
+
+function placeBuilding(item, position) {
+  let geo, mat;
+
+  switch(item.type) {
+    case 'rock':
+      geo = new THREE.DodecahedronGeometry(2, 1);
+      mat = Materials.monolithicMaterial;
+      break;
+    case 'crystal':
+      geo = new THREE.OctahedronGeometry(1.5, 0);
+      mat = Materials.glassTreeMaterial;
+      break;
+    case 'tree':
+      geo = new THREE.CylinderGeometry(0.5, 1, 5, 6);
+      mat = Materials.glassTreeMaterial;
+      break;
+    case 'monolith':
+      geo = new THREE.BoxGeometry(3, 10, 3);
+      mat = Materials.monolithicMaterial;
+      break;
+    case 'tower':
+      geo = new THREE.CylinderGeometry(2, 3, 15, 8);
+      mat = Materials.glassFacadeMaterial;
+      break;
+    case 'bridge':
+      geo = new THREE.BoxGeometry(10, 0.5, 3);
+      mat = Materials.glassFacadeMaterial;
+      break;
+    case 'block_glass':
+      geo = new THREE.BoxGeometry(1, 1, 1);
+      mat = Materials.glassFacadeMaterial;
+      break;
+    case 'block_neon':
+      geo = new THREE.BoxGeometry(1, 1, 1);
+      mat = Materials.neonGlowMaterial;
+      break;
+    case 'block_metal':
+      geo = new THREE.BoxGeometry(1, 1, 1);
+      mat = Materials.whiteBuildingMaterial;
+      break;
+    default:
+      geo = new THREE.BoxGeometry(1, 1, 1);
+      mat = Materials.whiteBuildingMaterial;
+  }
+
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(position);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
+  // If it's a tree or tower, shift up by half height so it sits on grid
+  if (geo.parameters && geo.parameters.height) {
+     mesh.position.y += geo.parameters.height / 2;
+  } else if (item.type === 'rock' || item.type === 'crystal') {
+     mesh.position.y += 1;
+  }
+
+  // Random slight rotation for organics
+  if (['rock', 'crystal', 'tree'].includes(item.type)) {
+    mesh.rotation.y = Math.random() * Math.PI;
+  }
+
+  scene.add(mesh);
 }

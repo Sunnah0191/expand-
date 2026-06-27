@@ -1,53 +1,30 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Divergent Universe</title>
+    <title>Расходящаяся вселенная</title>
     <link rel="stylesheet" href="/src/style.css">
   </head>
   <body>
-    <!-- 3D Canvas Container -->
-    <div id="app"></div>
+    <!-- Canvas for Three.js -->
+    <div id="canvas-container"></div>
 
-    <!-- Login Screen (Wuthering Waves UI style) -->
-    <div id="login-screen">
+    <!-- Login Screen UI -->
+    <div id="login-overlay">
       <div class="login-form">
-        <h2>System Login</h2>
-        <input type="text" id="username" placeholder="Nickname" autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" autocomplete="off" />
-        <button id="login-btn">Initialize</button>
-        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Invalid credentials</p>
-      </div>
-    </div>
-
-    <!-- God Mode Flash Effect -->
-    <div id="god-mode-flash"></div>
-
-    <!-- Build UI Layer -->
-    <div id="ui-layer" style="display: none;">
-      <!-- Catalog Overlay -->
-      <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+        <h1 class="login-title">Инициализация</h1>
+        <div class="input-group">
+          <input type="text" id="username" placeholder="Ник" autocomplete="off" />
         </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Пароль" />
+        </div>
+        <button id="login-btn">Войти</button>
       </div>
-
-      <div id="crosshair">+</div>
     </div>
+
+    <div id="catalog-overlay" style="display: none;"></div>
 
     <script type="module" src="/src/main.js"></script>
   </body>

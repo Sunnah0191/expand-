@@ -1,79 +1,55 @@
 import * as THREE from 'three';
-import { glassMaterial, neonCyanMaterial } from '../utils/Materials.js';
+import { whiteBuildingMaterial, glassFacadeMaterial } from './Materials.js';
 
-export function createMainContinent() {
-    const group = new THREE.Group();
-    group.name = "MainContinent";
+export class MainContinent {
+  constructor(scene) {
+    this.scene = scene;
+    this.group = new THREE.Group();
+    this.init();
+    this.scene.add(this.group);
+  }
 
-    // Base island
-    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 16);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.2 });
-    const base = new THREE.Mesh(baseGeo, baseMat);
-    base.position.y = -10;
-    base.receiveShadow = true;
-    group.add(base);
+  init() {
+    // Ground
+    const groundGeo = new THREE.CylinderGeometry(50, 45, 10, 8);
+    const ground = new THREE.Mesh(groundGeo, whiteBuildingMaterial);
+    ground.position.y = -5;
+    ground.receiveShadow = true;
+    this.group.add(ground);
 
-    // City Buildings (InstancedMesh for optimization)
-    const buildingGeo = new THREE.BoxGeometry(10, 1, 10);
-    // Move geometry center to bottom so scaling scales upwards
-    buildingGeo.translate(0, 0.5, 0);
+    // Buildings
+    const buildingGeo = new THREE.BoxGeometry(1, 1, 1);
 
-    // We'll create some glass buildings and some solid white buildings
-    const buildingCount = 100;
-    const glassBuildings = new THREE.InstancedMesh(buildingGeo, glassMaterial, Math.floor(buildingCount * 0.6));
-    const solidBuildings = new THREE.InstancedMesh(buildingGeo, baseMat, Math.floor(buildingCount * 0.4));
+    // Core Monolith
+    const core = new THREE.Mesh(buildingGeo, glassFacadeMaterial);
+    core.scale.set(10, 40, 10);
+    core.position.y = 20;
+    core.castShadow = true;
+    core.receiveShadow = true;
+    this.group.add(core);
 
-    glassBuildings.castShadow = true;
-    glassBuildings.receiveShadow = true;
-    solidBuildings.castShadow = true;
-    solidBuildings.receiveShadow = true;
+    // Surrounding buildings
+    for (let i = 0; i < 20; i++) {
+      const b = new THREE.Mesh(buildingGeo, Math.random() > 0.5 ? whiteBuildingMaterial : glassFacadeMaterial);
+      const w = 2 + Math.random() * 5;
+      const h = 5 + Math.random() * 20;
+      const d = 2 + Math.random() * 5;
 
-    let glassIndex = 0;
-    let solidIndex = 0;
+      b.scale.set(w, h, d);
 
-    const dummy = new THREE.Object3D();
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 15 + Math.random() * 25;
+      b.position.set(Math.cos(angle) * radius, h/2, Math.sin(angle) * radius);
 
-    for (let i = 0; i < buildingCount; i++) {
-        // Random position within radius
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 150;
-
-        dummy.position.set(
-            Math.cos(angle) * radius,
-            0,
-            Math.sin(angle) * radius
-        );
-
-        // Random height
-        const height = 10 + Math.random() * 80;
-        // Make center buildings taller
-        const distFactor = 1.0 - (radius / 150);
-        const finalHeight = height + distFactor * 100;
-
-        dummy.scale.set(
-            1 + Math.random() * 3,
-            finalHeight,
-            1 + Math.random() * 3
-        );
-
-        dummy.updateMatrix();
-
-        if (Math.random() > 0.4 && glassIndex < glassBuildings.count) {
-            glassBuildings.setMatrixAt(glassIndex++, dummy.matrix);
-        } else if (solidIndex < solidBuildings.count) {
-            solidBuildings.setMatrixAt(solidIndex++, dummy.matrix);
-        }
+      b.rotation.y = Math.random() * Math.PI;
+      b.castShadow = true;
+      b.receiveShadow = true;
+      this.group.add(b);
     }
+  }
 
-    group.add(glassBuildings);
-    group.add(solidBuildings);
-
-    // Central core (God mode monolith)
-    const coreGeo = new THREE.OctahedronGeometry(20, 0);
-    const core = new THREE.Mesh(coreGeo, neonCyanMaterial);
-    core.position.y = 120;
-    core.name = "CentralCore";
-    group.add(core);
-
-    return group;
+  update(deltaTime) {
+    // Main continent is static, or slowly rotates
+    this.group.rotation.y += deltaTime * 0.05;
+  }
 }
