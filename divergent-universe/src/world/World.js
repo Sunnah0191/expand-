@@ -56,6 +56,13 @@ export class World {
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
         }
 
+        const particles = this.mainContinent.getObjectByName("CoreParticles");
+        if (particles) {
+            particles.rotation.y -= 0.3 * delta;
+            particles.rotation.x += 0.1 * delta;
+            particles.position.copy(core.position);
+        }
+
         // Update custom shaders
         updateMaterials(delta, this.time);
 

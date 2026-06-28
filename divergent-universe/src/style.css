@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -152,6 +158,16 @@ body, html {
   display: none; /* Hidden by default */
 }
 
+#build-catalog {
+  display: flex;
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
 #build-catalog h3 {
   margin: 0 0 15px 0;
   text-align: center;
@@ -159,10 +175,13 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
 
@@ -201,3 +220,10 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #666; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.crystal-icon { background: rgba(100, 200, 255, 0.6); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: #111; border: 1px solid var(--neon-cyan); border-radius: 50%; }
+.dark-tower-icon { background: #1a1a24; border-left: 2px solid var(--neon-cyan); border-right: 2px solid var(--neon-cyan); }
+.bridge-icon { background: #444; height: 10px !important; margin-top: 10px; }
+.chrome-icon { background: linear-gradient(135deg, #eee, #999); }
+.matte-icon { background: #555; box-shadow: inset 0 0 10px #222; }
