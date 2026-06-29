@@ -43,7 +43,35 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Ambient particles
+        this.createAmbientParticles();
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 1500;
+        const particleGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 4000;
+            positions[i + 1] = Math.random() * 500;
+            positions[i + 2] = (Math.random() - 0.5) * 4000;
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.particles = new THREE.Points(particleGeo, particleMat);
+        this.group.add(this.particles);
     }
 
     update(delta) {
@@ -82,6 +110,20 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Animate particles
+        if (this.particles) {
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] -= delta * 10; // drift down
+                positions[i] += Math.sin(this.time + positions[i+2]) * delta * 5; // gentle wave
+
+                if (positions[i + 1] < 0) {
+                    positions[i + 1] = 500;
+                }
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
         }
     }
 }

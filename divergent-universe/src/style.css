@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite;
 }
 
 .login-form button {
@@ -150,20 +156,35 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  display: flex; /* Added for categories */
+  gap: 20px;
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+  width: 100%;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 300px;
 }
 
 .catalog-item {
@@ -198,6 +219,15 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #555; border-radius: 5px; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+.crystal-icon { background: rgba(200, 255, 255, 0.8); border: 1px solid white; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: var(--neon-cyan); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+
+.dark-tower-icon { background: #222; border: 1px solid #555; height: 40px; width: 15px; }
+.matte-bridge-icon { background: #888; width: 40px; height: 10px; }
+.hover-tower-icon { background: #333; border: 1px solid var(--neon-cyan); height: 35px; width: 20px; margin-bottom: 5px; }
+
+.glass-block-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255,255,255,0.8); }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #ccc; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.matte-metal-block-icon { background: #666; border: 1px solid #444; }
