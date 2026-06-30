@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.8), inset 0 0 10px rgba(0, 240, 255, 0.4);
+    border-color: var(--neon-cyan);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite;
 }
 
 .login-form button {
@@ -152,18 +167,29 @@ body, html {
   display: none; /* Hidden by default */
 }
 
+#build-catalog .catalog-category {
+  margin-bottom: 20px;
+}
+
+#build-catalog .catalog-category:last-child {
+  margin-bottom: 0;
+}
+
 #build-catalog h3 {
   margin: 0 0 15px 0;
-  text-align: center;
+  text-align: left;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
