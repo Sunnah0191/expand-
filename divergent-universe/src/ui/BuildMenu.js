@@ -2,38 +2,78 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.categoryBtns = document.querySelectorAll('.category-btn');
+        this.grids = document.querySelectorAll('.catalog-grid');
+        this.selectedType = 'rock'; // default
         this.isVisible = false;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1', '`', '~', 'Ё', or 'ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key === 'Ё' || e.key === 'ё') {
                 this.toggleVisibility();
             }
+        });
+
+        // Handle category selection
+        this.categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Update active button
+                this.categoryBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show matching grid
+                const category = btn.dataset.category;
+                let firstItemToSelect = null;
+
+                this.grids.forEach(grid => {
+                    if (grid.id === `grid-${category}`) {
+                        grid.style.display = 'flex';
+                        if (!firstItemToSelect) {
+                            firstItemToSelect = grid.querySelector('.catalog-item');
+                        }
+                    } else {
+                        grid.style.display = 'none';
+                    }
+                });
+
+                // Auto-select first item in new category
+                if (firstItemToSelect) {
+                    this.selectItem(firstItemToSelect);
+                }
+            });
         });
 
         // Handle item selection
         this.items.forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
-
-                // Remove selected class from all
-                this.items.forEach(i => i.classList.remove('selected'));
-
-                // Add to clicked
-                item.classList.add('selected');
-                this.selectedType = item.dataset.type;
+                this.selectItem(item);
             });
         });
 
         // Select first item by default
-        if (this.items.length > 0) {
-            this.items[0].classList.add('selected');
+        const initialGrid = document.getElementById('grid-landscape');
+        if (initialGrid) {
+            const firstItem = initialGrid.querySelector('.catalog-item');
+            if (firstItem) {
+                this.selectItem(firstItem);
+            }
         }
+    }
+
+    selectItem(item) {
+        // Remove selected class from all
+        this.items.forEach(i => i.classList.remove('selected'));
+
+        // Add to clicked
+        item.classList.add('selected');
+        this.selectedType = item.dataset.type;
     }
 
     toggleVisibility() {
