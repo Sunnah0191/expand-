@@ -3,15 +3,21 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, neonBlueMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
 let clock;
+let globalTime = 0;
 let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let particlesMesh;
+
+// Custom Materials for blocks (Instantiated once for performance)
+const blockChromeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 1.0, roughness: 0.1 });
+const blockMetalMat = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.8, roughness: 0.6 });
 
 init();
 animate();
@@ -59,6 +65,24 @@ function init() {
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
+    // Glowing particles for login screen
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 2000;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i = 0; i < particlesCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 600;
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({
+        size: 1.5,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+    });
+    particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
     // Initialize World
     world = new World(scene);
 
@@ -76,6 +100,12 @@ function init() {
 
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
+
+    // Hide particles when entering the world (optional, but looks cleaner)
+    if (particlesMesh) {
+        particlesMesh.visible = false;
+    }
+
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
@@ -92,18 +122,69 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        // Landscape
+        case 'rock':
+            mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 1), monolithMaterial);
+            pos.y += 8;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(new THREE.ConeGeometry(5, 20, 4), glassMaterial);
+            pos.y += 10;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Mesh(new THREE.SphereGeometry(8, 16, 16), neonCyanMaterial);
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 10), monolithMaterial);
+            trunk.position.y = -8;
+            mesh.add(trunk);
+            pos.y += 13;
+            break;
+
+        // WuWa
+        case 'futuristic-monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 40, 10), monolithMaterial);
+            const accent = new THREE.Mesh(new THREE.BoxGeometry(11, 2, 11), neonBlueMaterial);
+            mesh.add(accent);
+            pos.y += 20;
+            break;
+        case 'levitating-tower':
+            mesh = new THREE.Group();
+            const base = new THREE.Mesh(new THREE.CylinderGeometry(8, 10, 5, 8), monolithMaterial);
+            const top = new THREE.Mesh(new THREE.CylinderGeometry(6, 8, 30, 8), monolithMaterial);
+            top.position.y = 20;
+            mesh.add(base);
+            mesh.add(top);
+            pos.y += 2; // hover slightly
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 10), glassMaterial);
+            pos.y += 1;
+            break;
+
+        // Blocks
+        case 'block-glass':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'block-chrome':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), blockChromeMat);
+            pos.y += 5;
+            break;
+        case 'block-neon':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'block-metal':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), blockMetalMat);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         scene.add(mesh);
     }
 }
@@ -118,6 +199,18 @@ function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
+    globalTime += delta;
+
+    if (!isGodMode) {
+        // Rotating camera blur effect on login
+        camera.position.x = Math.sin(globalTime * 0.1) * 200;
+        camera.position.z = Math.cos(globalTime * 0.1) * 200;
+        camera.lookAt(0, 50, 0);
+
+        if (particlesMesh) {
+            particlesMesh.rotation.y = globalTime * 0.05;
+        }
+    }
 
     if (world) {
         world.update(delta);
