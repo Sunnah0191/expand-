@@ -43,7 +43,48 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Add glowing particles
+        this.createParticles();
+
         this.scene.add(this.group);
+    }
+
+    createParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+
+        const color = new THREE.Color(0x00f0ff);
+        const goldColor = new THREE.Color(0xffd700);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Random positions in a large area
+            positions[i * 3] = (Math.random() - 0.5) * 3000;
+            positions[i * 3 + 1] = (Math.random() - 0.2) * 1000; // Mostly above ocean
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 3000;
+
+            // Mix cyan and gold particles
+            const pColor = Math.random() > 0.8 ? goldColor : color;
+            colors[i * 3] = pColor.r;
+            colors[i * 3 + 1] = pColor.g;
+            colors[i * 3 + 2] = pColor.b;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 4,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.group.add(this.particles);
     }
 
     update(delta) {
@@ -58,6 +99,21 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update particles
+        if (this.particles) {
+            this.particles.rotation.y += 0.05 * delta;
+
+            // Slowly move particles down to simulate falling/floating
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] -= 10 * delta;
+                if (positions[i + 1] < -100) {
+                    positions[i + 1] = 800; // Reset height
+                }
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second

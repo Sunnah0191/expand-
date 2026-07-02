@@ -75,9 +75,23 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulseBorder {
+  0% {
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  }
+  100% {
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulseBorder 1.5s infinite;
 }
 
 .login-form button {
@@ -100,6 +114,11 @@ body, html {
 }
 
 /* ================= GOD MODE FLASH ================= */
+@keyframes goldenParticles {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
 #god-mode-flash {
   position: absolute;
   top: 0;
@@ -107,10 +126,15 @@ body, html {
   width: 100vw;
   height: 100vh;
   z-index: 200;
-  background-color: var(--neon-gold);
+  background: radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,215,0,0.2) 40%, rgba(0,0,0,0) 80%);
+  background-size: 200% 200%;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease-out;
+}
+
+#god-mode-flash.flash-active {
+  animation: goldenParticles 1s ease-out forwards;
 }
 
 .flash-active {
@@ -140,30 +164,61 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--glass-bg);
+  transform: translate(-50%, -50%);
+  background: rgba(10, 15, 25, 0.8);
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  width: 80%;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.1);
+  display: flex; /* overridden by JS toggle */
+  flex-direction: column;
+  gap: 30px;
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
+/* Custom Scrollbar for Catalog */
+#build-catalog::-webkit-scrollbar {
+  width: 8px;
+}
+#build-catalog::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+#build-catalog::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 4px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.catalog-category h3 {
+  margin: 0;
   font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 10px;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
@@ -190,6 +245,7 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {

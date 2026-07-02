@@ -92,14 +92,51 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
+
+    // Ландшафт
+    if (type === 'mid-poly-rock') {
+        mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(8, 0), monolithMaterial);
+        pos.y += 8;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(5, 20, 4), glassMaterial);
+        pos.y += 10;
+    } else if (type === 'neon-tree') {
+        const treeGroup = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10, 4), monolithMaterial);
+        trunk.position.y = 5;
+        const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(6, 1), neonCyanMaterial);
+        leaves.position.y = 12;
+        treeGroup.add(trunk);
+        treeGroup.add(leaves);
+        mesh = treeGroup;
+    }
+
+    // Архитектура WuWa
+    else if (type === 'futuristic-monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 50, 10), monolithMaterial);
+        pos.y += 25;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), monolithMaterial);
+        pos.y += 1;
+    }
+
+    // Конструктор (Блоки)
+    else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-block') {
+        // Since there is no explicit chrome material, using glassMaterial which looks reflective
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-pillar') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
+        pos.y += 10;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), monolithMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
