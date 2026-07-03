@@ -1,43 +1,53 @@
 import * as THREE from 'three';
-import { monolithMaterial, neonBlueMaterial } from '../utils/Materials.js';
+
+// 🪨 3. Второй остров: «Монолитный разлом» (Средний круг)
+// Гигантские геометрические блоки и плит, которые левитируют друг над другом. Неоновый свет.
 
 export function createIslandTwo() {
-    const group = new THREE.Group();
-    group.name = "IslandTwo_MonolithicRift";
+  const group = new THREE.Group();
 
-    // Massive floating cubes
-    const cubeGeo = new THREE.BoxGeometry(30, 30, 30);
-    const cubeCount = 20;
+  const darkMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    roughness: 0.9,
+    metalness: 0.2,
+    flatShading: true
+  });
 
-    for (let i = 0; i < cubeCount; i++) {
-        const mesh = new THREE.Mesh(cubeGeo, monolithMaterial);
+  const neonMat = new THREE.MeshStandardMaterial({
+    color: 0xff0055,
+    emissive: 0xff0055,
+    emissiveIntensity: 2
+  });
 
-        mesh.position.set(
-            (Math.random() - 0.5) * 100,
-            (Math.random() - 0.5) * 60,
-            (Math.random() - 0.5) * 100
-        );
+  // Levitating blocks
+  const blockGeo = new THREE.BoxGeometry(1,1,1);
+  const blocks = new THREE.InstancedMesh(blockGeo, darkMat, 60);
+  const neonBlocks = new THREE.InstancedMesh(blockGeo, neonMat, 15);
 
-        mesh.rotation.set(
-            Math.random() * Math.PI,
-            Math.random() * Math.PI,
-            Math.random() * Math.PI
-        );
+  const dummy = new THREE.Object3D();
 
-        mesh.scale.setScalar(0.5 + Math.random() * 2);
+  for (let i = 0; i < 60; i++) {
+    dummy.position.set((Math.random() - 0.5)*100, (Math.random() - 0.5)*60, (Math.random() - 0.5)*100);
+    dummy.scale.set(10+Math.random()*20, 5+Math.random()*15, 10+Math.random()*20);
+    dummy.rotation.set(Math.random()*0.2, Math.random()*Math.PI, Math.random()*0.2);
+    dummy.updateMatrix();
+    blocks.setMatrixAt(i, dummy.matrix);
+  }
 
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
+  for (let i = 0; i < 15; i++) {
+    dummy.position.set((Math.random() - 0.5)*80, (Math.random() - 0.5)*40, (Math.random() - 0.5)*80);
+    dummy.scale.set(2, 20+Math.random()*30, 2);
+    dummy.updateMatrix();
+    neonBlocks.setMatrixAt(i, dummy.matrix);
+  }
 
-        group.add(mesh);
+  group.add(blocks);
+  group.add(neonBlocks);
 
-        // Add neon cracks/accents to some cubes
-        if (Math.random() > 0.5) {
-            const crackGeo = new THREE.BoxGeometry(32, 2, 32);
-            const crack = new THREE.Mesh(crackGeo, neonBlueMaterial);
-            mesh.add(crack);
-        }
-    }
+  // Very slow rotation
+  group.userData.update = (delta) => {
+    group.rotation.y += delta * 0.05;
+  };
 
-    return group;
+  return group;
 }

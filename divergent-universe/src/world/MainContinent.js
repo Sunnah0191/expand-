@@ -1,79 +1,67 @@
 import * as THREE from 'three';
-import { glassMaterial, neonCyanMaterial } from '../utils/Materials.js';
+
+// 🏢 1. Центральный континент: «Ядро Системы»
+// Монументальный футуристичный мегаполис в минималистичном стиле.
+// Белоснежные mid-poly здания со стеклянными фасадами.
 
 export function createMainContinent() {
-    const group = new THREE.Group();
-    group.name = "MainContinent";
+  const group = new THREE.Group();
 
-    // Base island
-    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 16);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.2 });
-    const base = new THREE.Mesh(baseGeo, baseMat);
-    base.position.y = -10;
-    base.receiveShadow = true;
-    group.add(base);
+  // Base platform
+  const baseGeo = new THREE.CylinderGeometry(100, 120, 20, 16);
+  const baseMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.2,
+    metalness: 0.1
+  });
+  const base = new THREE.Mesh(baseGeo, baseMat);
+  base.position.y = -10;
+  group.add(base);
 
-    // City Buildings (InstancedMesh for optimization)
-    const buildingGeo = new THREE.BoxGeometry(10, 1, 10);
-    // Move geometry center to bottom so scaling scales upwards
-    buildingGeo.translate(0, 0.5, 0);
+  // Materials
+  const buildingMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1 });
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    transmission: 0.9,
+    opacity: 1,
+    metalness: 0,
+    roughness: 0.1,
+    ior: 1.5,
+    thickness: 5,
+  });
 
-    // We'll create some glass buildings and some solid white buildings
-    const buildingCount = 100;
-    const glassBuildings = new THREE.InstancedMesh(buildingGeo, glassMaterial, Math.floor(buildingCount * 0.6));
-    const solidBuildings = new THREE.InstancedMesh(buildingGeo, baseMat, Math.floor(buildingCount * 0.4));
+  // Buildings (InstancedMesh for optimization)
+  const bldgGeo = new THREE.BoxGeometry(1, 1, 1);
+  const numBuildings = 50;
+  const buildings = new THREE.InstancedMesh(bldgGeo, buildingMat, numBuildings);
 
-    glassBuildings.castShadow = true;
-    glassBuildings.receiveShadow = true;
-    solidBuildings.castShadow = true;
-    solidBuildings.receiveShadow = true;
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < numBuildings; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 80;
+    const h = 10 + Math.random() * 80;
+    const w = 5 + Math.random() * 15;
+    const d = 5 + Math.random() * 15;
 
-    let glassIndex = 0;
-    let solidIndex = 0;
+    dummy.position.set(Math.cos(angle)*radius, h/2, Math.sin(angle)*radius);
+    dummy.scale.set(w, h, d);
+    dummy.updateMatrix();
+    buildings.setMatrixAt(i, dummy.matrix);
+  }
+  group.add(buildings);
 
-    const dummy = new THREE.Object3D();
+  // Floating platforms
+  const platGeo = new THREE.BoxGeometry(20, 1, 20);
+  const platforms = new THREE.InstancedMesh(platGeo, glassMat, 10);
+  for (let i = 0; i < 10; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 90;
+    dummy.position.set(Math.cos(angle)*radius, 20 + Math.random()*60, Math.sin(angle)*radius);
+    dummy.scale.set(1,1,1);
+    dummy.updateMatrix();
+    platforms.setMatrixAt(i, dummy.matrix);
+  }
+  group.add(platforms);
 
-    for (let i = 0; i < buildingCount; i++) {
-        // Random position within radius
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 150;
-
-        dummy.position.set(
-            Math.cos(angle) * radius,
-            0,
-            Math.sin(angle) * radius
-        );
-
-        // Random height
-        const height = 10 + Math.random() * 80;
-        // Make center buildings taller
-        const distFactor = 1.0 - (radius / 150);
-        const finalHeight = height + distFactor * 100;
-
-        dummy.scale.set(
-            1 + Math.random() * 3,
-            finalHeight,
-            1 + Math.random() * 3
-        );
-
-        dummy.updateMatrix();
-
-        if (Math.random() > 0.4 && glassIndex < glassBuildings.count) {
-            glassBuildings.setMatrixAt(glassIndex++, dummy.matrix);
-        } else if (solidIndex < solidBuildings.count) {
-            solidBuildings.setMatrixAt(solidIndex++, dummy.matrix);
-        }
-    }
-
-    group.add(glassBuildings);
-    group.add(solidBuildings);
-
-    // Central core (God mode monolith)
-    const coreGeo = new THREE.OctahedronGeometry(20, 0);
-    const core = new THREE.Mesh(coreGeo, neonCyanMaterial);
-    core.position.y = 120;
-    core.name = "CentralCore";
-    group.add(core);
-
-    return group;
+  return group;
 }

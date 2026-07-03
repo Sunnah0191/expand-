@@ -1,131 +1,71 @@
 import * as THREE from 'three';
-import { World } from './world/World.js';
-import { LoginScreen } from './ui/LoginScreen.js';
-import { GodModeControls } from './controls/GodModeControls.js';
-import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { setupUI } from './ui/UIManager.js';
+import { initWorld, updateWorld } from './world/WorldManager.js';
+import { initControls, updateControls } from './controls/ControlsManager.js';
 
-// Global variables
-let camera, scene, renderer;
-let clock;
-let world;
-let controls;
-let buildMenu;
-let isGodMode = false;
+// Global application state
+const appState = {
+  isGodMode: false,
+  isCatalogOpen: false,
+  selectedBlock: null
+};
 
-init();
-animate();
+// Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050a10); // Deep dark ocean blue
+scene.fog = new THREE.FogExp2(0x050a10, 0.001);
 
-function init() {
-    const container = document.getElementById('app');
+// Camera setup
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+camera.position.set(0, 50, 150);
+camera.lookAt(0, 0, 0);
 
-    // Scene
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050a10);
-    scene.fog = new THREE.FogExp2(0x050a10, 0.002);
+// Renderer setup
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// renderer.shadowMap.enabled = true; // Disabled for performance, using baked/fake shadows
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+// Start with blur for login screen
+renderer.domElement.classList.add('blur-canvas');
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.set(0, 50, 150);
-    camera.lookAt(0, 0, 0);
+// Initial lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
 
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+const directionalLight = new THREE.DirectionalLight(0xe0ffff, 1);
+directionalLight.position.set(100, 200, 50);
+scene.add(directionalLight);
 
-    // Clock
-    clock = new THREE.Clock();
+// Clock for animations
+const clock = new THREE.Clock();
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
+// Initialize components
+initWorld(scene);
+initControls(camera, renderer.domElement, scene, appState);
+setupUI(appState, renderer.domElement, camera, scene);
 
-    const dirLight = new THREE.DirectionalLight(0xaaccff, 2);
-    dirLight.position.set(-100, 200, 50);
-    dirLight.castShadow = true;
-    dirLight.shadow.camera.top = 200;
-    dirLight.shadow.camera.bottom = -200;
-    dirLight.shadow.camera.left = -200;
-    dirLight.shadow.camera.right = 200;
-    dirLight.shadow.camera.near = 0.1;
-    dirLight.shadow.camera.far = 1000;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    scene.add(dirLight);
+// Handle window resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-    // Initialize World
-    world = new World(scene);
-
-    // Initialize UI
-    buildMenu = new BuildMenu();
-    const login = new LoginScreen(onLoginSuccess);
-
-    // Initialize Controls (disabled initially)
-    controls = new GodModeControls(camera, renderer.domElement, scene, () => buildMenu.getSelectedType());
-
-    // Event Listeners
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('placeBlock', onPlaceBlock);
-}
-
-function onLoginSuccess(isAdmin) {
-    isGodMode = isAdmin;
-    if (isAdmin) {
-        document.getElementById('ui-layer').style.display = 'block';
-        controls.enable();
-    } else {
-        // Simple spectator mode logic could go here
-        console.log("Logged in as spectator");
-    }
-}
-
-function onPlaceBlock(event) {
-    if (!isGodMode) return;
-
-    const pos = event.detail.position;
-    const type = buildMenu.getSelectedType();
-
-    let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
-    }
-
-    if (mesh) {
-        mesh.position.copy(pos);
-        scene.add(mesh);
-    }
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
+// Animation loop
 function animate() {
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    const delta = clock.getDelta();
+  const delta = clock.getDelta();
+  const elapsedTime = clock.getElapsedTime();
 
-    if (world) {
-        world.update(delta);
-    }
+  updateWorld(delta, elapsedTime);
+  updateControls(delta);
 
-    if (controls) {
-        controls.update(delta);
-    }
-
-    renderer.render(scene, camera);
+  renderer.render(scene, camera);
 }
+
+animate();
