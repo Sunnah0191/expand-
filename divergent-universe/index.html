@@ -1,52 +1,266 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Divergent Universe</title>
-    <link rel="stylesheet" href="/src/style.css">
+    <title>Расходящаяся вселенная</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: white;
+      }
+      #app {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10;
+        pointer-events: none; /* Let clicks pass through if not UI */
+      }
+      .ui-layer {
+        pointer-events: auto;
+      }
+      canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        transition: filter 0.5s ease;
+      }
+      .blur-canvas {
+        filter: blur(10px);
+      }
+
+      /* Login Screen */
+      #login-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 20;
+      }
+      .login-box {
+        background: rgba(20, 25, 35, 0.4);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 40px;
+        width: 320px;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+      .login-box:hover {
+        border-color: rgba(0, 255, 255, 0.3);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      }
+      h1 {
+        text-align: center;
+        margin: 0 0 10px 0;
+        font-size: 24px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        color: #e0ffff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .input-group label {
+        font-size: 12px;
+        color: #8bb;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .input-group input {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        color: #fff;
+        padding: 12px 16px;
+        border-radius: 6px;
+        outline: none;
+        font-size: 16px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+      .input-group input:focus, .input-group input:hover {
+        border-color: rgba(0, 255, 255, 0.8);
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      }
+      #login-btn {
+        background: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        color: #0ff;
+        padding: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+      }
+      #login-btn:hover {
+        background: rgba(0, 255, 255, 0.3);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        text-shadow: 0 0 5px #fff;
+      }
+
+      /* Crosshair */
+      #crosshair {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(0, 255, 255, 0.8);
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      /* Catalog Overlay */
+      #catalog-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(10, 15, 25, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 30;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      .catalog-title {
+        font-size: 32px;
+        color: #0ff;
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        margin-bottom: 40px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      .catalog-categories {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+      .category-btn {
+        background: transparent;
+        border: none;
+        color: #8bb;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 10px 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .category-btn.active, .category-btn:hover {
+        color: #0ff;
+        border-bottom-color: #0ff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      }
+      .catalog-items {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        max-width: 800px;
+        justify-content: center;
+      }
+      .catalog-item {
+        width: 120px;
+        height: 120px;
+        background: rgba(0, 255, 255, 0.05);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      .catalog-item:hover {
+        background: rgba(0, 255, 255, 0.15);
+        border-color: rgba(0, 255, 255, 0.8);
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+      }
+      .catalog-item span {
+        font-size: 14px;
+        color: #e0ffff;
+        pointer-events: none;
+      }
+
+      /* Flash effect */
+      #flash-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #ffd700;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100;
+        transition: opacity 1s ease-out;
+      }
+    </style>
   </head>
   <body>
-    <!-- 3D Canvas Container -->
-    <div id="app"></div>
+    <div id="flash-overlay"></div>
+    <div id="crosshair"></div>
 
-    <!-- Login Screen (Wuthering Waves UI style) -->
-    <div id="login-screen">
-      <div class="login-form">
-        <h2>System Login</h2>
-        <input type="text" id="username" placeholder="Nickname" autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" autocomplete="off" />
-        <button id="login-btn">Initialize</button>
-        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Invalid credentials</p>
-      </div>
-    </div>
-
-    <!-- God Mode Flash Effect -->
-    <div id="god-mode-flash"></div>
-
-    <!-- Build UI Layer -->
-    <div id="ui-layer" style="display: none;">
-      <!-- Catalog Overlay -->
-      <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
+    <div id="app">
+      <div id="login-screen" class="ui-layer">
+        <div class="login-box">
+          <h1>ВХОД В СИСТЕМУ</h1>
+          <div class="input-group">
+            <label>Ник</label>
+            <input type="text" id="username" autocomplete="off" />
           </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
+          <div class="input-group">
+            <label>Пароль</label>
+            <input type="password" id="password" autocomplete="off" />
           </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+          <button id="login-btn">Войти</button>
         </div>
       </div>
 
-      <div id="crosshair">+</div>
+      <div id="catalog-overlay" class="ui-layer">
+        <div class="catalog-title">Каталог Строительства</div>
+        <div class="catalog-categories">
+          <button class="category-btn active" data-category="landscape">Ландшафт</button>
+          <button class="category-btn" data-category="wuwa">Архитектура WuWa</button>
+          <button class="category-btn" data-category="blocks">Конструктор (Блоки)</button>
+        </div>
+        <div class="catalog-items" id="catalog-items-container">
+          <!-- Items will be populated here -->
+        </div>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>
