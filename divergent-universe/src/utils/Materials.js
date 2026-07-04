@@ -122,3 +122,24 @@ export const oceanMaterial = new THREE.MeshStandardMaterial({
     transparent: true,
     opacity: 0.9
 });
+
+// 6. Additional Catalog Materials
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcccccc,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+export const metalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x444444,
+    roughness: 0.6,
+    metalness: 0.6
+});
+
+export const neonGreenMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    emissive: 0x00ff00,
+    emissiveIntensity: 2.0,
+    roughness: 0.2,
+    metalness: 0.8
+});
