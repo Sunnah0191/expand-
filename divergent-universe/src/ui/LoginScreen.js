@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.createGoldenParticles();
         }
 
         // Fade out login screen
@@ -79,6 +80,39 @@ export class LoginScreen {
                 this.onSuccess(isAdmin);
             }
         }, 1000); // Wait for transition
+    }
+
+    createGoldenParticles() {
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.classList.add('gold-particle');
+
+            // Random start position around center
+            p.style.left = `calc(50vw + ${(Math.random() - 0.5) * 50}px)`;
+            p.style.top = `calc(50vh + ${(Math.random() - 0.5) * 50}px)`;
+
+            // Random direction
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 100 + Math.random() * 300;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            p.style.setProperty('--tx', `${tx}px`);
+            p.style.setProperty('--ty', `${ty}px`);
+
+            // Random delay and duration
+            p.style.animationDelay = `${Math.random() * 0.2}s`;
+            p.style.animationDuration = `${0.5 + Math.random() * 0.5}s`;
+
+            this.flashEl.appendChild(p);
+
+            // Cleanup
+            setTimeout(() => {
+                if (this.flashEl.contains(p)) {
+                    this.flashEl.removeChild(p);
+                }
+            }, 1500);
+        }
     }
 
     playActivationSound() {

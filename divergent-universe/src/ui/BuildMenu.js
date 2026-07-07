@@ -2,7 +2,7 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.selectedType = 'block-glass'; // default to a safe block
         this.isVisible = false;
 
         this.initEventListeners();
@@ -16,7 +16,9 @@ export class BuildMenu {
             }
         });
 
-        // Handle item selection
+        // Handle item selection (need to re-query in case DOM changed, though it is static here)
+        this.items = document.querySelectorAll('.catalog-item');
+
         this.items.forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -38,7 +40,7 @@ export class BuildMenu {
 
     toggleVisibility() {
         this.isVisible = !this.isVisible;
-        this.container.style.display = this.isVisible ? 'block' : 'none';
+        this.container.style.display = this.isVisible ? 'flex' : 'none'; // We changed to flex in CSS
 
         // When menu is open, release pointer lock so user can click
         if (this.isVisible) {
