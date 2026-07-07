@@ -20,6 +20,9 @@ export class World {
         this.mainContinent = createMainContinent();
         this.group.add(this.mainContinent);
 
+        // Particle System
+        this.createParticles();
+
         // Arrays to hold divergent islands
         this.islands = [];
 
@@ -46,8 +49,64 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Distribute particles in a large cylinder/sphere around the center
+            const r = 50 + Math.random() * 400;
+            const theta = Math.random() * Math.PI * 2;
+            const y = (Math.random() - 0.5) * 300;
+
+            positions[i * 3] = r * Math.cos(theta);
+            positions[i * 3 + 1] = y;
+            positions[i * 3 + 2] = r * Math.sin(theta);
+
+            sizes[i] = Math.random() * 2;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        // Create a simple circular texture programmatically
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 16;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(8, 8, 0, 8, 8, 8);
+        gradient.addColorStop(0, 'rgba(255,255,255,1)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 16, 16);
+        const texture = new THREE.CanvasTexture(canvas);
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            map: texture,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.group.add(this.particles);
+    }
+
     update(delta) {
         this.time += delta;
+
+        if (this.particles) {
+            this.particles.rotation.y = this.time * 0.02;
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += Math.sin(this.time + positions[i]) * 0.1;
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Rotate the central core slightly
         const core = this.mainContinent.getObjectByName("CentralCore");
