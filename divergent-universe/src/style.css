@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -143,61 +149,141 @@ body, html {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  background: rgba(10, 15, 25, 0.85); /* Darker glass for WuWa style */
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2), inset 0 0 10px rgba(0, 240, 255, 0.1);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for catalog */
+#build-catalog::-webkit-scrollbar {
+  width: 6px;
+}
+#build-catalog::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+#build-catalog::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 3px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 25px 0;
   text-align: center;
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.catalog-category {
+  margin-bottom: 25px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 15px 0;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
+  color: #e0f7fa;
   letter-spacing: 1px;
-  color: #ccc;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, rgba(20, 30, 45, 0.8), rgba(10, 15, 25, 0.9));
+  border: 1px solid rgba(0, 240, 255, 0.2);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hologram scanline effect */
+.catalog-item::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  animation: hologram-scan 3s infinite linear;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.catalog-item:hover::before, .catalog-item.selected::before {
+  opacity: 1;
+}
+
+@keyframes hologram-scan {
+  0% { transform: translateY(-100%) rotate(45deg); }
+  100% { transform: translateY(100%) rotate(45deg); }
 }
 
 .catalog-item:hover, .catalog-item.selected {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 100, 150, 0.4), rgba(0, 40, 80, 0.6));
+  transform: translateY(-2px);
 }
 
 .catalog-item span {
-  font-size: 10px;
-  margin-top: 8px;
+  font-size: 11px;
+  margin-top: 10px;
   text-transform: uppercase;
+  color: #cceeff;
+  letter-spacing: 1px;
+  text-align: center;
+  z-index: 2;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   background-color: #555;
+  border-radius: 4px;
+  z-index: 2;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Icons for categories */
+.rock-icon { background: #5a5a60; border-top: 2px solid #888; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.crystal-icon { background: rgba(170, 255, 255, 0.6); border: 1px solid #00ffff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.tree-icon { background: #00f0ff; clip-path: polygon(50% 0%, 80% 40%, 100% 100%, 60% 100%, 50% 70%, 40% 100%, 0% 100%, 20% 40%); }
+
+.monolith-icon { background: #1a1a24; border: 2px solid #333; }
+.tower-icon { background: linear-gradient(to bottom, #222, #050510); border: 1px solid #444; width: 20px; }
+.bridge-icon { background: #333; border-top: 3px solid #555; border-bottom: 3px solid #555; height: 15px; }
+
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 2px solid rgba(255, 255, 255, 0.8); }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.metal-cube-icon { background: #444; border: 2px solid #222; }
