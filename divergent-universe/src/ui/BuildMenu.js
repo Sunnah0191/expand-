@@ -2,16 +2,16 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.selectedType = 'rock'; // default
         this.isVisible = false;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1', '`', '~', 'Ё', or 'ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key.toLowerCase() === 'ё') {
                 this.toggleVisibility();
             }
         });
@@ -38,7 +38,7 @@ export class BuildMenu {
 
     toggleVisibility() {
         this.isVisible = !this.isVisible;
-        this.container.style.display = this.isVisible ? 'block' : 'none';
+        this.container.style.display = this.isVisible ? 'flex' : 'none';
 
         // When menu is open, release pointer lock so user can click
         if (this.isVisible) {
