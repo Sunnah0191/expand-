@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, metalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -27,7 +27,8 @@ function init() {
     // Camera
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.position.set(0, 50, 150);
-    camera.lookAt(0, 0, 0);
+    // Point camera upwards to see the monolith clearly on the login screen
+    camera.lookAt(0, 100, 0);
 
     // Renderer
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -92,14 +93,64 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch(type) {
+        // Landscape
+        case 'rock':
+            mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 1), monolithMaterial);
+            mesh.scale.set(1, 0.5 + Math.random() * 0.5, 1);
+            pos.y += 5;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), glassMaterial);
+            mesh.scale.set(0.5, 2, 0.5);
+            pos.y += 15;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 15), monolithMaterial);
+            trunk.position.y = 7.5;
+            const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(6, 1), neonCyanMaterial);
+            leaves.position.y = 15;
+            mesh.add(trunk);
+            mesh.add(leaves);
+            break;
+
+        // WuWa Architecture
+        case 'wuwa-monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'wuwa-tower':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(10, 12, 50, 8), monolithMaterial);
+            pos.y += 25;
+            // Add some neon accents
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(12, 0.5, 8, 24), neonCyanMaterial);
+            ring.rotation.x = Math.PI / 2;
+            mesh.add(ring);
+            break;
+        case 'wuwa-bridge':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 10), glassMaterial);
+            pos.y += 1;
+            break;
+
+        // Blocks Constructor
+        case 'block-glass':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'block-chrome':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'block-neon':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'block-metal':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), metalMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {

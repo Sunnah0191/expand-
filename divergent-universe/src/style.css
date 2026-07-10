@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 2s infinite;
 }
 
 .login-form button {
@@ -140,29 +146,48 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  transform: translate(-50%, -50%);
+  background: rgba(10, 15, 25, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 30px 0;
   text-align: center;
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  margin-bottom: 25px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 15px 0;
   font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  font-size: 16px;
+  color: var(--neon-cyan);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
 }
 
