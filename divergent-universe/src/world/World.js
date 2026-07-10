@@ -43,7 +43,33 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Add glowing particles
+        this.createParticles();
+
         this.scene.add(this.group);
+    }
+
+    createParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 800; // Spread across a wide area
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.group.add(this.particles);
     }
 
     update(delta) {
@@ -82,6 +108,12 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Slowly rotate particles
+        if (this.particles) {
+            this.particles.rotation.y += 0.05 * delta;
+            this.particles.rotation.x += 0.02 * delta;
         }
     }
 }
