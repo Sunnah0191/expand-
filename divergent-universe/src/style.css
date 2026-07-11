@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 5px var(--neon-cyan); }
+  50% { box-shadow: 0 0 20px var(--neon-cyan); }
+  100% { box-shadow: 0 0 5px var(--neon-cyan); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite;
 }
 
 .login-form button {
@@ -117,6 +123,23 @@ body, html {
   opacity: 0.8 !important;
 }
 
+.gold-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--neon-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--neon-gold), 0 0 30px var(--neon-gold);
+  z-index: 201;
+  pointer-events: none;
+  animation: explode-particle ease-out forwards;
+}
+
+@keyframes explode-particle {
+  0% { transform: scale(1) translate(0, 0); opacity: 1; }
+  100% { transform: scale(3) translate(calc((var(--r-x, 0.5) - 0.5) * 400px), calc((var(--r-y, 0.5) - 0.5) * 400px)); opacity: 0; }
+}
+
 /* ================= UI LAYER ================= */
 #ui-layer {
   position: absolute;
@@ -150,20 +173,38 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 20px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 18px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  margin-bottom: 20px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--neon-cyan);
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {

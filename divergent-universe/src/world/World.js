@@ -56,6 +56,12 @@ export class World {
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
         }
 
+        const particles = this.mainContinent.getObjectByName("CoreParticles");
+        if (particles) {
+            particles.rotation.y -= 0.2 * delta; // Counter-rotate particles
+            particles.position.y = 120 + Math.sin(this.time * 2) * 5; // Bob with core
+        }
+
         // Update custom shaders
         updateMaterials(delta, this.time);
 
