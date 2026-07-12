@@ -75,9 +75,14 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: var(--neon-cyan); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8), 0 0 5px rgba(0, 240, 255, 0.8) inset; border-color: #ffffff; }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); border-color: var(--neon-cyan); }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -117,6 +122,28 @@ body, html {
   opacity: 0.8 !important;
 }
 
+.gold-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: var(--neon-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-gold), 0 0 20px var(--neon-gold);
+  pointer-events: none;
+}
+
+.god-mode-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-cyan), 0 0 15px rgba(0, 240, 255, 0.6);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.6;
+}
+
 /* ================= UI LAYER ================= */
 #ui-layer {
   position: absolute;
@@ -150,6 +177,15 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #build-catalog h3 {
@@ -159,11 +195,20 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+  width: 100%;
 }
 
 .catalog-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 15px;
+}
+
+/* Specific to Constructor where we have 4 items */
+.catalog-category:last-child .catalog-grid {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .catalog-item {
@@ -198,6 +243,13 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid white; }
+.neon-pillar-icon { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.monolith-icon { background: #1a1a24; border: 1px solid #555; }
+.rock-icon { background: #5a5a5a; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.crystal-icon { background: rgba(170, 255, 255, 0.6); border: 1px solid #aaffff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.tree-icon { background: #00ffaa; border-radius: 50% 50% 0 0; }
+.tower-icon { background: #111; border: 1px solid #00f0ff; height: 40px !important; width: 15px !important; }
+.bridge-icon { background: #333; height: 10px !important; width: 40px !important; border-top: 2px solid #555; }
+.chrome-icon { background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 50%, #aaaaaa 100%); border: 1px solid #fff; }
+.matte-icon { background: #444; border: 1px solid #666; }
