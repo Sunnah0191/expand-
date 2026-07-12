@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.createGoldenParticles();
         }
 
         // Fade out login screen
@@ -79,6 +80,53 @@ export class LoginScreen {
                 this.onSuccess(isAdmin);
             }
         }, 1000); // Wait for transition
+    }
+
+    createGoldenParticles() {
+        const particleCount = 50;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('gold-particle');
+
+            // Random direction and speed
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 2 + Math.random() * 5;
+            const life = 500 + Math.random() * 500;
+
+            particle.style.left = centerX + 'px';
+            particle.style.top = centerY + 'px';
+
+            this.flashEl.appendChild(particle);
+
+            const startTime = Date.now();
+            let currentX = centerX;
+            let currentY = centerY;
+
+            const animateParticle = () => {
+                const now = Date.now();
+                const progress = (now - startTime) / life;
+
+                if (progress < 1) {
+                    currentX += Math.cos(angle) * velocity;
+                    currentY += Math.sin(angle) * velocity;
+
+                    particle.style.left = currentX + 'px';
+                    particle.style.top = currentY + 'px';
+                    particle.style.opacity = 1 - progress;
+
+                    requestAnimationFrame(animateParticle);
+                } else {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }
+            };
+
+            requestAnimationFrame(animateParticle);
+        }
     }
 
     playActivationSound() {
