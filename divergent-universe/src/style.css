@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 5px rgba(0, 240, 255, 0.1);
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 10px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 5px rgba(0, 240, 255, 0.1);
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
 }
 
 .login-form button {
@@ -140,30 +155,44 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  transform: translate(-50%, -50%);
+  background: rgba(15, 15, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  display: none; /* Hidden by default, changed to flex in JS */
+  flex-direction: column;
+  gap: 30px;
+  width: 80vw;
+  max-width: 1000px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255,255,255,0.05);
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-category h3 {
+  margin: 0 0 20px 0;
+  font-weight: 300;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
@@ -199,5 +228,9 @@ body, html {
 }
 
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.neon-pillar-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.monolith-icon { background: #1a1a24; border: 1px solid #555; }
+.crystal-rock-icon { background: rgba(100, 200, 255, 0.4); border: 1px solid #64c8ff; border-radius: 4px; transform: rotate(45deg); width: 20px; height: 20px; margin-top: 5px;}
+.neon-tree-icon { background: transparent; border-bottom: 20px solid var(--neon-cyan); border-left: 10px solid transparent; border-right: 10px solid transparent; width: 0; height: 0; filter: drop-shadow(0 0 5px var(--neon-cyan));}
+.wuwa-tower-icon { background: #111; border: 1px solid #333; width: 15px; height: 35px; margin-top: -5px;}
+.chrome-block-icon { background: linear-gradient(135deg, #ddd, #fff, #aaa); border: 1px solid #fff; }
