@@ -56,6 +56,20 @@ export class World {
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
         }
 
+        // Animate core particles
+        const particles = this.mainContinent.getObjectByName("CoreParticles");
+        if (particles) {
+            particles.rotation.y -= 0.2 * delta; // Rotate slowly opposite to core
+            const positions = particles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += 10 * delta; // Move up
+                if (positions[i + 1] > 200) {
+                    positions[i + 1] = 80; // Reset to bottom
+                }
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+        }
+
         // Update custom shaders
         updateMaterials(delta, this.time);
 
