@@ -2,18 +2,40 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.tabs = document.querySelectorAll('.catalog-tab');
+        this.grids = document.querySelectorAll('.catalog-grid');
+        this.selectedType = 'rock'; // default to first item in first tab
         this.isVisible = false;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1', '`', '~', 'ё', or 'Ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key === 'ё' || e.key === 'Ё') {
                 this.toggleVisibility();
             }
+        });
+
+        // Handle tab switching
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const targetTab = tab.dataset.tab;
+
+                // Update active tab style
+                this.tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update active grid visibility
+                this.grids.forEach(grid => {
+                    grid.classList.remove('active');
+                    if (grid.id === `grid-${targetTab}`) {
+                        grid.classList.add('active');
+                    }
+                });
+            });
         });
 
         // Handle item selection
@@ -31,8 +53,10 @@ export class BuildMenu {
         });
 
         // Select first item by default
-        if (this.items.length > 0) {
-            this.items[0].classList.add('selected');
+        const firstItem = document.querySelector('.catalog-grid.active .catalog-item');
+        if (firstItem) {
+            firstItem.classList.add('selected');
+            this.selectedType = firstItem.dataset.type;
         }
     }
 

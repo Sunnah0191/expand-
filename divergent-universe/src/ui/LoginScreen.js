@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.createGoldenParticles();
         }
 
         // Fade out login screen
@@ -72,6 +73,8 @@ export class LoginScreen {
             this.container.style.display = 'none';
             if (isAdmin) {
                 this.flashEl.classList.remove('flash-active');
+                // Clean up particles
+                this.flashEl.innerHTML = '';
             }
 
             // Callback to main game loop to init controls
@@ -81,6 +84,32 @@ export class LoginScreen {
         }, 1000); // Wait for transition
     }
 
+    createGoldenParticles() {
+        const particleCount = 50;
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('golden-particle');
+
+            // Initial position (center)
+            particle.style.left = `${centerX}px`;
+            particle.style.top = `${centerY}px`;
+
+            // Random destination
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 100 + Math.random() * 500;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+
+            this.flashEl.appendChild(particle);
+        }
+    }
+
     playActivationSound() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -88,22 +117,31 @@ export class LoginScreen {
 
             // Simple synth sound
             const osc = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
             const gainNode = ctx.createGain();
 
             osc.type = 'sine';
             osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-            osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
+            osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+            osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.6);
+
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(220, ctx.currentTime);
+            osc2.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+            osc2.frequency.exponentialRampToValueAtTime(20, ctx.currentTime + 0.6);
 
             gainNode.gain.setValueAtTime(0, ctx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            gainNode.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
 
             osc.connect(gainNode);
+            osc2.connect(gainNode);
             gainNode.connect(ctx.destination);
 
             osc.start();
-            osc.stop(ctx.currentTime + 0.5);
+            osc2.start();
+            osc.stop(ctx.currentTime + 0.6);
+            osc2.stop(ctx.currentTime + 0.6);
         } catch (e) {
             console.warn("AudioContext not supported or blocked");
         }

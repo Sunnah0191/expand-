@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, rockMaterial, crystalMaterial, chromeMaterial, metalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,18 +92,76 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+    switch (type) {
+        // Ландшафт
+        case 'rock':
+            mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 1), rockMaterial);
+            pos.y += 6;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), crystalMaterial);
+            mesh.scale.set(1, 2, 1);
+            pos.y += 12;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.5, 10), monolithMaterial);
+            trunk.position.y = 5;
+            const foliage = new THREE.Mesh(new THREE.IcosahedronGeometry(6, 0), neonCyanMaterial);
+            foliage.position.y = 12;
+            mesh.add(trunk, foliage);
+            break;
+
+        // Архитектура WuWa
+        case 'monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'tower':
+            mesh = new THREE.Group();
+            const base = new THREE.Mesh(new THREE.BoxGeometry(12, 40, 12), monolithMaterial);
+            base.position.y = 20;
+            const core = new THREE.Mesh(new THREE.BoxGeometry(4, 30, 4), neonCyanMaterial);
+            core.position.y = 20;
+            const top = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), chromeMaterial);
+            top.position.y = 45;
+            mesh.add(base, core, top);
+            break;
+        case 'bridge':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), glassMaterial);
+            pos.y += 1;
+            break;
+
+        // Конструктор (Блоки)
+        case 'glass-cube':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-cube':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-cube':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'metal-cube':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), metalMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+        if (mesh.type !== 'Group') {
+             mesh.castShadow = true;
+             mesh.receiveShadow = true;
+        } else {
+             mesh.children.forEach(c => {
+                 c.castShadow = true;
+                 c.receiveShadow = true;
+             });
+        }
         scene.add(mesh);
     }
 }
