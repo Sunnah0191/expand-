@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -156,14 +162,29 @@ body, html {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: #ccc;
 }
 
+.catalog-category {
+  margin-bottom: 15px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  color: #e0f7fa;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 5px;
+}
+
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
@@ -198,6 +219,13 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.landscape-rock-icon { background: #222; border: 1px solid #555; }
+.landscape-crystal-icon { background: rgba(100, 200, 255, 0.5); border: 1px solid #64c8ff; }
+.landscape-tree-icon { background: var(--neon-cyan); }
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid #333; }
+.wuwa-tower-icon { background: #1a1a24; border: 1px solid #555; }
+.wuwa-bridge-icon { background: #555; border: 1px solid #777; }
+.block-glass-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.block-chrome-icon { background: #e0e0e0; border: 1px solid #fff; }
+.block-neon-icon { background: var(--neon-cyan); border: 1px solid #fff; }
+.block-matte-icon { background: #444; border: 1px solid #666; }
