@@ -1,203 +1,229 @@
-:root {
-  --glass-bg: rgba(20, 25, 35, 0.6);
-  --glass-border: rgba(100, 200, 255, 0.4);
-  --neon-cyan: #00f0ff;
-  --neon-gold: #ffd700;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body, html {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: #050a10;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000;
   color: #fff;
 }
 
-#app {
-  width: 100vw;
-  height: 100vh;
+/* Three.js Canvas Container */
+#canvas-container {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 1;
 }
 
-/* ================= LOGIN SCREEN ================= */
-#login-screen {
+/* Base UI z-index */
+#auth-screen, #build-catalog, #reticle {
   position: absolute;
+  z-index: 10;
+}
+
+/* Auth Screen */
+#auth-screen {
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(15px); /* Background blur */
-  -webkit-backdrop-filter: blur(15px);
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
-  transition: opacity 1s ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.login-form {
-  background: var(--glass-bg);
-  padding: 40px;
+.auth-form {
+  background: rgba(20, 25, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  padding: 40px;
+  width: 350px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-.login-form h2 {
-  margin: 0 0 20px 0;
+.auth-form h1 {
   text-align: center;
+  margin-bottom: 30px;
   font-weight: 300;
   letter-spacing: 2px;
-  color: #e0f7fa;
+  color: #e0e0e0;
 }
 
-.login-form input {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 12px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  outline: none;
-  font-size: 16px;
-  transition: all 0.3s ease;
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-}
-
-.login-form button {
-  background: transparent;
-  color: white;
-  border: 1px solid var(--neon-cyan);
-  padding: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 6px;
+.input-group label {
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-bottom: 8px;
+  color: #aaa;
+}
+
+.input-group input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 12px;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:hover, .input-group input:focus {
+  border-color: #00ffcc;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+#login-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 10px;
 }
 
-.login-form button:hover {
-  background: rgba(0, 240, 255, 0.2);
-  box-shadow: 0 0 15px var(--neon-cyan);
+#login-btn:hover {
+  background: rgba(0, 255, 204, 0.2);
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
 }
 
-/* ================= GOD MODE FLASH ================= */
-#god-mode-flash {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 200;
-  background-color: var(--neon-gold);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease-out;
-}
-
-.flash-active {
-  opacity: 0.8 !important;
-}
-
-/* ================= UI LAYER ================= */
-#ui-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 50;
-  pointer-events: none; /* Let clicks pass through to canvas by default */
-}
-
-#crosshair {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 24px;
-}
-
-/* ================= BUILD CATALOG ================= */
+/* Build Catalog */
 #build-catalog {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 30vh;
+  background: rgba(10, 15, 20, 0.8);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(0, 255, 204, 0.3);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+  transform: translateY(0);
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+#build-catalog.hidden {
+  transform: translateY(100%);
 }
 
-.catalog-grid {
+.catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.catalog-header h2 {
+  font-weight: 300;
+  font-size: 20px;
+  color: #00ffcc;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.catalog-categories {
   display: flex;
   gap: 15px;
 }
 
+.category-btn {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: color 0.3s ease;
+}
+
+.category-btn:hover, .category-btn.active {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.catalog-content {
+  flex-grow: 1;
+  padding: 20px 30px;
+  overflow-y: auto;
+}
+
+.catalog-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.catalog-grid.hidden {
+  display: none;
+}
+
 .catalog-item {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  padding: 10px;
+  user-select: none;
 }
 
 .catalog-item:hover, .catalog-item.selected {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(0, 255, 204, 0.1);
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+  color: #00ffcc;
 }
 
-.catalog-item span {
-  font-size: 10px;
-  margin-top: 8px;
-  text-transform: uppercase;
+/* Reticle */
+#reticle {
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: #00ffcc;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 10px #00ffcc;
 }
 
-.icon {
-  width: 30px;
-  height: 30px;
-  background-color: #555;
+/* Helpers */
+.hidden {
+  display: none !important;
 }
-
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }

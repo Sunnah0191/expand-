@@ -1,79 +1,47 @@
 import * as THREE from 'three';
-import { glassMaterial, neonCyanMaterial } from '../utils/Materials.js';
+import { Chunk } from './Chunk.js';
 
-export function createMainContinent() {
-    const group = new THREE.Group();
-    group.name = "MainContinent";
+export class MainContinent extends Chunk {
+  constructor(scene) {
+    // Motherland is at center (0,0,0) and doesn't diverge (0 vector)
+    super(scene, 'MainContinent', new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0));
+  }
 
-    // Base island
-    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 16);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.2 });
-    const base = new THREE.Mesh(baseGeo, baseMat);
-    base.position.y = -10;
-    base.receiveShadow = true;
-    group.add(base);
+  generate() {
+    // Base platform
+    const platformGeom = new THREE.CylinderGeometry(150, 150, 20, 64);
+    const platformMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.8,
+      metalness: 0.1,
+    });
+    const platform = new THREE.Mesh(platformGeom, platformMat);
+    platform.position.y = -10;
+    platform.receiveShadow = true;
+    this.group.add(platform);
 
-    // City Buildings (InstancedMesh for optimization)
-    const buildingGeo = new THREE.BoxGeometry(10, 1, 10);
-    // Move geometry center to bottom so scaling scales upwards
-    buildingGeo.translate(0, 0.5, 0);
+    // Some simple mid-poly white metropolis buildings
+    const buildingMat = new THREE.MeshStandardMaterial({
+      color: 0xf0f0f0,
+      roughness: 0.3,
+      metalness: 0.1
+    });
 
-    // We'll create some glass buildings and some solid white buildings
-    const buildingCount = 100;
-    const glassBuildings = new THREE.InstancedMesh(buildingGeo, glassMaterial, Math.floor(buildingCount * 0.6));
-    const solidBuildings = new THREE.InstancedMesh(buildingGeo, baseMat, Math.floor(buildingCount * 0.4));
+    for(let i=0; i<20; i++) {
+      const height = 20 + Math.random() * 80;
+      const geom = new THREE.BoxGeometry(10 + Math.random()*15, height, 10 + Math.random()*15);
+      const mesh = new THREE.Mesh(geom, buildingMat);
 
-    glassBuildings.castShadow = true;
-    glassBuildings.receiveShadow = true;
-    solidBuildings.castShadow = true;
-    solidBuildings.receiveShadow = true;
-
-    let glassIndex = 0;
-    let solidIndex = 0;
-
-    const dummy = new THREE.Object3D();
-
-    for (let i = 0; i < buildingCount; i++) {
-        // Random position within radius
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 150;
-
-        dummy.position.set(
-            Math.cos(angle) * radius,
-            0,
-            Math.sin(angle) * radius
-        );
-
-        // Random height
-        const height = 10 + Math.random() * 80;
-        // Make center buildings taller
-        const distFactor = 1.0 - (radius / 150);
-        const finalHeight = height + distFactor * 100;
-
-        dummy.scale.set(
-            1 + Math.random() * 3,
-            finalHeight,
-            1 + Math.random() * 3
-        );
-
-        dummy.updateMatrix();
-
-        if (Math.random() > 0.4 && glassIndex < glassBuildings.count) {
-            glassBuildings.setMatrixAt(glassIndex++, dummy.matrix);
-        } else if (solidIndex < solidBuildings.count) {
-            solidBuildings.setMatrixAt(solidIndex++, dummy.matrix);
-        }
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 120;
+      mesh.position.set(Math.cos(angle)*radius, height/2, Math.sin(angle)*radius);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      this.group.add(mesh);
     }
+  }
 
-    group.add(glassBuildings);
-    group.add(solidBuildings);
-
-    // Central core (God mode monolith)
-    const coreGeo = new THREE.OctahedronGeometry(20, 0);
-    const core = new THREE.Mesh(coreGeo, neonCyanMaterial);
-    core.position.y = 120;
-    core.name = "CentralCore";
-    group.add(core);
-
-    return group;
+  update(dt, speed, time) {
+    // Main continent does not diverge, but we might add some idle animations here
+  }
 }

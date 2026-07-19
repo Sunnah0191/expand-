@@ -1,40 +1,38 @@
 import * as THREE from 'three';
-import { glitchMaterial } from '../utils/Materials.js';
+import { Chunk } from './Chunk.js';
 
-export function createIslandFour() {
-    const group = new THREE.Group();
-    group.name = "IslandFour_GlitchEdge";
+export class IslandFour extends Chunk {
+  constructor(scene) {
+    // Diverged Limit, diverges along -Z
+    super(scene, 'IslandFour', new THREE.Vector3(0, 0, -300), new THREE.Vector3(0, 0, -1));
+  }
 
-    // Abstract fractals / complex geometry
-    const icosahedronGeo = new THREE.IcosahedronGeometry(15, 0);
+  generate() {
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0xff00ff,
+      wireframe: true, // glitchy abstract feel
+      emissive: 0x550055,
+    });
 
-    // We will just create a chaotic cluster
-    for (let i = 0; i < 30; i++) {
-        const mesh = new THREE.Mesh(icosahedronGeo, glitchMaterial);
+    const geom = new THREE.IcosahedronGeometry(40, 1);
+    const core = new THREE.Mesh(geom, mat);
+    this.group.add(core);
 
-        mesh.position.set(
-            (Math.random() - 0.5) * 80,
-            (Math.random() - 0.5) * 80,
-            (Math.random() - 0.5) * 80
-        );
+    // Fractal bits
+    for(let i=0; i<50; i++) {
+      const bitGeom = new THREE.IcosahedronGeometry(Math.random() * 10, 0);
+      const bit = new THREE.Mesh(bitGeom, mat);
 
-        mesh.rotation.set(
-            Math.random() * Math.PI,
-            Math.random() * Math.PI,
-            Math.random() * Math.PI
-        );
+      const angle = Math.random() * Math.PI * 2;
+      const angle2 = Math.random() * Math.PI * 2;
+      const radius = 50 + Math.random() * 50;
 
-        // Sometimes wireframe
-        if (Math.random() > 0.7) {
-            const wireframeGeo = new THREE.WireframeGeometry(icosahedronGeo);
-            const wireframeMat = new THREE.LineBasicMaterial({ color: 0xff00ff });
-            const line = new THREE.LineSegments(wireframeGeo, wireframeMat);
-            mesh.add(line);
-            mesh.material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2 });
-        }
-
-        group.add(mesh);
+      bit.position.set(
+        Math.cos(angle) * Math.sin(angle2) * radius,
+        Math.sin(angle) * Math.sin(angle2) * radius,
+        Math.cos(angle2) * radius
+      );
+      this.group.add(bit);
     }
-
-    return group;
+  }
 }
