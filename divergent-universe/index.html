@@ -1,53 +1,66 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Divergent Universe</title>
-    <link rel="stylesheet" href="/src/style.css">
+    <title>Расходящаяся вселенная</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <!-- 3D Canvas Container -->
-    <div id="app"></div>
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
 
-    <!-- Login Screen (Wuthering Waves UI style) -->
-    <div id="login-screen">
-      <div class="login-form">
-        <h2>System Login</h2>
-        <input type="text" id="username" placeholder="Nickname" autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" autocomplete="off" />
-        <button id="login-btn">Initialize</button>
-        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Invalid credentials</p>
+    <!-- Login Screen (Auth) -->
+    <div id="auth-screen">
+      <div class="auth-form">
+        <h1>Авторизация</h1>
+        <div class="input-group">
+          <label for="username">Ник</label>
+          <input type="text" id="username" autocomplete="off" />
+        </div>
+        <div class="input-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" autocomplete="off" />
+        </div>
+        <button id="login-btn">Войти</button>
       </div>
     </div>
 
-    <!-- God Mode Flash Effect -->
-    <div id="god-mode-flash"></div>
-
-    <!-- Build UI Layer -->
-    <div id="ui-layer" style="display: none;">
-      <!-- Catalog Overlay -->
-      <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+    <!-- Build Catalog (God Mode) -->
+    <div id="build-catalog" class="hidden">
+      <div class="catalog-header">
+        <h2>Режим Строительства</h2>
+        <div class="catalog-categories">
+          <button class="category-btn active" data-category="landscape">Ландшафт</button>
+          <button class="category-btn" data-category="wuwa">Архитектура WuWa</button>
+          <button class="category-btn" data-category="blocks">Конструктор (Блоки)</button>
         </div>
       </div>
-
-      <div id="crosshair">+</div>
+      <div class="catalog-content">
+        <!-- Landscape -->
+        <div class="catalog-grid" id="grid-landscape">
+          <div class="catalog-item" data-type="rock">Скалы</div>
+          <div class="catalog-item" data-type="crystal">Кристаллы</div>
+          <div class="catalog-item" data-type="tree">Неоновые деревья</div>
+        </div>
+        <!-- WuWa Architecture -->
+        <div class="catalog-grid hidden" id="grid-wuwa">
+          <div class="catalog-item" data-type="monolith">Монолит</div>
+          <div class="catalog-item" data-type="tower">Левитирующая башня</div>
+          <div class="catalog-item" data-type="bridge">Матовый мост</div>
+        </div>
+        <!-- Blocks -->
+        <div class="catalog-grid hidden" id="grid-blocks">
+          <div class="catalog-item" data-type="glass_block">Стеклянный блок</div>
+          <div class="catalog-item" data-type="chrome_block">Хромированный блок</div>
+          <div class="catalog-item" data-type="neon_block">Неоновый блок</div>
+          <div class="catalog-item" data-type="metal_block">Матовый металл</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Reticle for God Mode Building -->
+    <div id="reticle" class="hidden"></div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
