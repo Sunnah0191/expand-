@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial, darkTowerMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -94,12 +94,39 @@ function onPlaceBlock(event) {
     let mesh;
     if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
         pos.y += 10; // offset so it sits on ground
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'mid-poly-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 0), monolithMaterial);
+        pos.y += 8;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), glassMaterial);
+        pos.y += 6;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), monolithMaterial);
+        trunk.position.y = 5;
+        const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(5, 0), neonCyanMaterial);
+        leaves.position.y = 12;
+        mesh.add(trunk);
+        mesh.add(leaves);
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 10, 40, 6), darkTowerMaterial);
+        pos.y += 20;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 8), matteMetalMaterial);
+        pos.y += 1;
+    } else if (type === 'chrome-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
