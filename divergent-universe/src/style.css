@@ -75,9 +75,23 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% {
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 240, 255, 1);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  }
+  100% {
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -117,6 +131,38 @@ body, html {
   opacity: 0.8 !important;
 }
 
+#god-mode-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 201;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  background-color: var(--neon-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--neon-gold);
+  pointer-events: none;
+  opacity: 0;
+  animation: particle-fly 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes particle-fly {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
 /* ================= UI LAYER ================= */
 #ui-layer {
   position: absolute;
@@ -150,6 +196,14 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  /* Re-enabled to flex when opened by JS */
+  flex-direction: row;
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -158,12 +212,16 @@ body, html {
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #e0f7fa;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
-  display: flex;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .catalog-item {
@@ -198,6 +256,15 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.midpoly-rock-icon { background: #5a5a5a; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.glass-crystal-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: transparent; border: 2px solid var(--neon-cyan); border-radius: 50%; }
+
+.wuwa-monolith-icon { background: #111; border: 1px solid #444; }
+.dark-tower-icon { background: #0a0a0f; border-top: 2px solid var(--neon-cyan); }
+.matte-bridge-icon { background: #2a2a35; border-radius: 4px; height: 10px !important; margin-top: 10px; }
+
+.block-glass-icon { background: rgba(200, 220, 255, 0.4); border: 1px solid #fff; }
+.block-chrome-icon { background: linear-gradient(135deg, #eee, #888, #eee); border-radius: 2px; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.block-metal-icon { background: #444; border: 2px solid #666; }

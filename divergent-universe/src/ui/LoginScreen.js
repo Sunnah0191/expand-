@@ -7,6 +7,7 @@ export class LoginScreen {
         this.loginBtn = document.getElementById('login-btn');
         this.errorMsg = document.getElementById('login-error');
         this.flashEl = document.getElementById('god-mode-flash');
+        this.particlesContainer = document.getElementById('god-mode-particles');
 
         this.initEventListeners();
     }
@@ -63,6 +64,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.createGoldenParticles();
         }
 
         // Fade out login screen
@@ -91,21 +93,75 @@ export class LoginScreen {
             const gainNode = ctx.createGain();
 
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-            osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
+            // Futuristic boot up sound
+            osc.frequency.setValueAtTime(220, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.2);
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.6);
 
             gainNode.gain.setValueAtTime(0, ctx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            gainNode.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
 
             osc.connect(gainNode);
             gainNode.connect(ctx.destination);
 
             osc.start();
-            osc.stop(ctx.currentTime + 0.5);
+            osc.stop(ctx.currentTime + 0.6);
+
+            // Add a secondary osc for a "chord" feeling
+            const osc2 = ctx.createOscillator();
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(110, ctx.currentTime);
+            osc2.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+            osc2.connect(gainNode);
+            osc2.start();
+            osc2.stop(ctx.currentTime + 0.6);
         } catch (e) {
             console.warn("AudioContext not supported or blocked");
+        }
+    }
+
+    createGoldenParticles() {
+        if (!this.particlesContainer) return;
+
+        const numParticles = 100;
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+
+        for (let i = 0; i < numParticles; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            // Random size
+            const size = Math.random() * 8 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Start at center
+            particle.style.left = `${cx}px`;
+            particle.style.top = `${cy}px`;
+
+            // Random destination
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * Math.max(cx, cy) + 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+
+            particle.style.setProperty('--tx', `${tx}px`);
+            particle.style.setProperty('--ty', `${ty}px`);
+
+            // Random delay
+            const delay = Math.random() * 0.2;
+            particle.style.animationDelay = `${delay}s`;
+
+            this.particlesContainer.appendChild(particle);
+
+            // Clean up
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 1000 + delay * 1000);
         }
     }
 }
