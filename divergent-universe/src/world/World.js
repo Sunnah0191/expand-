@@ -44,6 +44,42 @@ export class World {
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
         this.scene.add(this.group);
+
+        // Particle System for Central Area ("сквозь который пролетают светящиеся частицы")
+        this.createParticles();
+    }
+
+    createParticles() {
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 600; // x
+            positions[i * 3 + 1] = (Math.random() * 300); // y
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 600; // z
+
+            velocities.push({
+                x: (Math.random() - 0.5) * 2,
+                y: (Math.random() * 2), // slightly upward
+                z: (Math.random() - 0.5) * 2
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.particleVelocities = velocities;
+        this.group.add(this.particles);
     }
 
     update(delta) {
@@ -58,6 +94,26 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update particles
+        if (this.particles) {
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 0; i < this.particleVelocities.length; i++) {
+                positions[i * 3] += this.particleVelocities[i].x * delta * 5;
+                positions[i * 3 + 1] += this.particleVelocities[i].y * delta * 5;
+                positions[i * 3 + 2] += this.particleVelocities[i].z * delta * 5;
+
+                // Reset particle if it goes too high or too far
+                if (positions[i * 3 + 1] > 400 ||
+                    Math.abs(positions[i * 3]) > 400 ||
+                    Math.abs(positions[i * 3 + 2]) > 400) {
+                    positions[i * 3] = (Math.random() - 0.5) * 600;
+                    positions[i * 3 + 1] = 0;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 600;
+                }
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
