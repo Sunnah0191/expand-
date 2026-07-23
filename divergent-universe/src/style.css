@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.1); border-color: rgba(0, 240, 255, 0.4); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6), inset 0 0 10px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2), inset 0 0 5px rgba(0, 240, 255, 0.1); border-color: rgba(0, 240, 255, 0.4); }
+}
+
 .login-form input:focus, .login-form input:hover {
+  animation: neonPulse 1.5s infinite;
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
 .login-form button {
@@ -100,6 +106,12 @@ body, html {
 }
 
 /* ================= GOD MODE FLASH ================= */
+@keyframes goldFlash {
+  0% { opacity: 0; background-color: transparent; }
+  20% { opacity: 0.9; background-color: var(--neon-gold); }
+  100% { opacity: 0; background-color: var(--neon-gold); }
+}
+
 #god-mode-flash {
   position: absolute;
   top: 0;
@@ -110,11 +122,10 @@ body, html {
   background-color: var(--neon-gold);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.8s ease-out;
 }
 
 .flash-active {
-  opacity: 0.8 !important;
+  animation: goldFlash 1s ease-out forwards;
 }
 
 /* ================= UI LAYER ================= */
@@ -140,44 +151,74 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--glass-bg);
+  background: rgba(10, 15, 25, 0.85); /* Darker glassmorphism */
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.05);
+  display: flex;
+  gap: 30px; /* Space between categories */
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
+  margin: 0 0 20px 0;
   text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 8px;
+  width: 100%;
 }
 
 .catalog-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
+}
+/* If single line is better for 3 items, maybe auto-fill */
+.catalog-category:nth-child(1) .catalog-grid,
+.catalog-category:nth-child(2) .catalog-grid {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  width: 90px;
+  height: 90px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.catalog-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
 }
 
 .catalog-item:hover, .catalog-item.selected {
@@ -193,11 +234,26 @@ body, html {
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   background-color: #555;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  margin-bottom: 5px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Category 1: Ландшафт */
+.rock-icon { background: #4a4a4a; border-radius: 8px 4px 8px 2px; }
+.crystal-icon { background: rgba(100, 200, 255, 0.8); border: 1px solid #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: #00ffaa; border-radius: 50%; box-shadow: 0 0 10px #00ffaa; }
+
+/* Category 2: Архитектура WuWa */
+.monolith-icon { background: #1a1a24; border: 1px solid #555; height: 40px; width: 20px; }
+.hover-tower-icon { background: linear-gradient(to bottom, #2a2a35, #111); border-bottom: 2px solid var(--neon-cyan); }
+.matte-bridge-icon { background: #334; border-radius: 10px 10px 0 0; border: 1px solid #556; }
+
+/* Category 3: Конструктор */
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(2px); }
+.chrome-cube-icon { background: linear-gradient(135deg, #ccc 0%, #fff 50%, #999 100%); border: 1px solid #fff; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.metal-block-icon { background: #2b2b2b; border: 2px solid #555; }
