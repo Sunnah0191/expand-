@@ -75,9 +75,16 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 2s infinite;
 }
 
 .login-form button {
@@ -140,64 +147,113 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+}
+
+#build-catalog::-webkit-scrollbar {
+  width: 8px;
+}
+#build-catalog::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+#build-catalog::-webkit-scrollbar-thumb {
+  background: var(--neon-cyan);
+  border-radius: 4px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 30px 0;
   text-align: center;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  margin-bottom: 30px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: var(--neon-cyan);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 5px;
   letter-spacing: 1px;
-  color: #ccc;
 }
 
 .catalog-grid {
-  display: flex;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 20px;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
+  height: 120px;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
+  padding: 10px;
+  text-align: center;
 }
 
 .catalog-item:hover, .catalog-item.selected {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
   background: rgba(0, 240, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .catalog-item span {
-  font-size: 10px;
-  margin-top: 8px;
-  text-transform: uppercase;
+  font-size: 11px;
+  margin-top: 12px;
+  color: #ccc;
+  line-height: 1.2;
+}
+
+.catalog-item:hover span, .catalog-item.selected span {
+  color: #fff;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
-  background-color: #555;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Icons */
+.mid-poly-rock-icon { background: #5a5a5a; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+.glass-crystal-icon { background: rgba(200, 255, 255, 0.6); border: 1px solid #fff; transform: rotate(45deg) scale(0.8); }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50% 50% 0 0; }
+
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid #444; width: 30px; height: 50px; }
+.wuwa-tower-icon { background: #111; border-top: 2px solid var(--neon-cyan); width: 20px; height: 50px; }
+.wuwa-bridge-icon { background: #333; height: 10px; width: 50px; border-bottom: 2px solid rgba(255,255,255,0.5); }
+
+.block-glass-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid white; }
+.block-chrome-icon { background: linear-gradient(135deg, #eee, #999, #eee); border: 1px solid #ccc; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-metal-icon { background: #444; border: 1px solid #222; }

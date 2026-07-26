@@ -9,9 +9,9 @@ export class BuildMenu {
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1' or '`' or '~' or 'ё' / 'Ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key.toLowerCase() === 'ё') {
                 this.toggleVisibility();
             }
         });
