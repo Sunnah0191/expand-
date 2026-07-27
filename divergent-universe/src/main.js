@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, neonWhiteMaterial, monolithMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,14 +92,24 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+    if (type === 'landscape-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 1), monolithMaterial);
+        pos.y += 10;
+    } else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'block-glass') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonWhiteMaterial);
+        pos.y += 5;
+    } else if (type === 'block-matte-metal') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), monolithMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
