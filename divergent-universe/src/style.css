@@ -152,18 +152,26 @@ body, html {
   display: none; /* Hidden by default */
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
+.catalog-category {
+  margin-top: 15px;
+}
+
+.catalog-category:first-child {
+  margin-top: 0;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: var(--neon-cyan);
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
