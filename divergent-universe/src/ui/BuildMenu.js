@@ -2,16 +2,19 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+
+        // Dynamically select the first item as default, if available
+        this.selectedType = this.items.length > 0 ? this.items[0].dataset.type : 'glass-cube';
+
         this.isVisible = false;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1', '`', '~', 'Ё', 'ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key === 'Ё' || e.key === 'ё' || e.code === 'Backquote') {
                 this.toggleVisibility();
             }
         });

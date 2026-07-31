@@ -156,14 +156,24 @@ body, html {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: #ccc;
+}
+
+.category-title {
+  margin: 15px 0 10px 0;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
@@ -201,3 +211,18 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #666; border-radius: 4px; }
+.glass-crystal-icon { background: rgba(170, 255, 255, 0.5); clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; }
+.dark-tower-icon { background: #1a1a24; border: 1px solid #00f0ff; height: 40px; }
+.matte-bridge-icon { background: #333; width: 40px; height: 10px; }
+.chrome-icon { background: linear-gradient(135deg, #eee, #aaa); border: 1px solid #fff; }
+.matte-metal-icon { background: #444; border: 1px solid #777; }
+
+/* Keep text readable */
+.catalog-item span {
+  font-size: 10px;
+  margin-top: 8px;
+  text-transform: uppercase;
+  text-align: center;
+}
