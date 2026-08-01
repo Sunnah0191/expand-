@@ -21,6 +21,38 @@ export const monolithMaterial = new THREE.MeshStandardMaterial({
     flatShading: true
 });
 
+export const darkTowerMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0a0a10,
+    roughness: 0.9,
+    metalness: 0.1,
+    flatShading: true
+});
+
+export const rockMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555566,
+    roughness: 0.9,
+    metalness: 0.05,
+    flatShading: true
+});
+
+export const matteBridgeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x22222a,
+    roughness: 0.7,
+    metalness: 0.3
+});
+
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888899,
+    roughness: 0.6,
+    metalness: 0.6
+});
+
 // 3. Neon/Emissive Materials
 export const neonCyanMaterial = new THREE.MeshStandardMaterial({
     color: 0x00f0ff,
@@ -28,6 +60,25 @@ export const neonCyanMaterial = new THREE.MeshStandardMaterial({
     emissiveIntensity: 2.0,
     roughness: 0.2,
     metalness: 0.8
+});
+
+export const neonTreeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff88,
+    emissive: 0x00ff88,
+    emissiveIntensity: 1.5,
+    roughness: 0.4,
+    metalness: 0.2
+});
+
+export const glassCrystalMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x88ffff,
+    metalness: 0.2,
+    roughness: 0.1,
+    transmission: 0.9,
+    ior: 1.8,
+    thickness: 5.0,
+    transparent: true,
+    opacity: 1
 });
 
 export const neonBlueMaterial = new THREE.MeshStandardMaterial({

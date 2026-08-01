@@ -3,10 +3,11 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, darkTowerMaterial, rockMaterial, matteBridgeMaterial, chromeMaterial, matteMetalMaterial, neonTreeMaterial, glassCrystalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
+let particles;
 let clock;
 let world;
 let controls;
@@ -59,8 +60,32 @@ function init() {
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
+    // Blue Particles background (Login)
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleCount = 2000;
+    const posArray = new Float32Array(particleCount * 3);
+    for(let i = 0; i < particleCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 1000;
+    }
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particleMaterial = new THREE.PointsMaterial({
+        size: 2,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending
+    });
+    particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
     // Initialize World
     world = new World(scene);
+
+    window.addEventListener('godModeActivated', () => {
+        // Change particles to gold
+        particleMaterial.color.setHex(0xffd700);
+        particleMaterial.size = 3;
+    });
 
     // Initialize UI
     buildMenu = new BuildMenu();
@@ -94,12 +119,37 @@ function onPlaceBlock(event) {
     let mesh;
     if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+        pos.y += 10;
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), glassCrystalMaterial);
+        pos.y += 8;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(5, 20, 8), neonTreeMaterial);
+        pos.y += 10;
+    } else if (type === 'mid-poly-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 1), rockMaterial);
+        pos.y += 6;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 8, 40, 6), darkTowerMaterial);
+        pos.y += 20;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteBridgeMaterial);
+        pos.y += 1;
+    } else if (type === 'neon-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
@@ -125,6 +175,11 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (particles) {
+        particles.rotation.y += delta * 0.05;
+        particles.rotation.x += delta * 0.02;
     }
 
     renderer.render(scene, camera);
