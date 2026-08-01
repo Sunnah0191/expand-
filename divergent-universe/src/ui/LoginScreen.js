@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            window.dispatchEvent(new Event('godModeActivated'));
         }
 
         // Fade out login screen
