@@ -63,6 +63,7 @@ export class LoginScreen {
         // Flash effect
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            this.spawnGoldenParticles();
         }
 
         // Fade out login screen
@@ -72,6 +73,7 @@ export class LoginScreen {
             this.container.style.display = 'none';
             if (isAdmin) {
                 this.flashEl.classList.remove('flash-active');
+                this.clearGoldenParticles();
             }
 
             // Callback to main game loop to init controls
@@ -79,6 +81,35 @@ export class LoginScreen {
                 this.onSuccess(isAdmin);
             }
         }, 1000); // Wait for transition
+    }
+
+    spawnGoldenParticles() {
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+
+            // Randomize position, size, and animation duration
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            const size = Math.random() * 5 + 2; // 2px to 7px
+            const duration = Math.random() * 0.5 + 0.5; // 0.5s to 1s
+            const delay = Math.random() * 0.2;
+
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+
+            this.flashEl.appendChild(particle);
+        }
+    }
+
+    clearGoldenParticles() {
+        while (this.flashEl.firstChild) {
+            this.flashEl.removeChild(this.flashEl.firstChild);
+        }
     }
 
     playActivationSound() {
