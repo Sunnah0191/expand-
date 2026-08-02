@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.8), inset 0 0 10px rgba(0, 240, 255, 0.4);
+    border-color: rgba(0, 240, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -111,10 +126,31 @@ body, html {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease-out;
+  overflow: hidden;
 }
 
 .flash-active {
   opacity: 0.8 !important;
+}
+
+.particle {
+  position: absolute;
+  background: var(--neon-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 10px var(--neon-gold), 0 0 20px var(--neon-gold);
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(0);
+    opacity: 0;
+  }
 }
 
 /* ================= UI LAYER ================= */
@@ -140,29 +176,69 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--glass-bg);
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  max-width: 900px;
+  background: rgba(10, 15, 25, 0.7);
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.05);
+  pointer-events: auto;
+  display: none;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for catalog */
+#build-catalog::-webkit-scrollbar {
+  width: 8px;
+}
+#build-catalog::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+#build-catalog::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3);
+  border-radius: 4px;
+}
+#build-catalog::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.6);
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 25px 0;
   text-align: center;
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.catalog-category {
+  margin-bottom: 25px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 15px 0;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
+  color: var(--neon-cyan);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  padding-bottom: 5px;
+  text-transform: uppercase;
   letter-spacing: 1px;
-  color: #ccc;
 }
 
 .catalog-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 15px;
 }
 

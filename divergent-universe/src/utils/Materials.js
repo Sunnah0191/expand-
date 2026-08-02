@@ -21,6 +21,13 @@ export const monolithMaterial = new THREE.MeshStandardMaterial({
     flatShading: true
 });
 
+export const rockMaterial = new THREE.MeshStandardMaterial({
+    color: 0x3a3a44,
+    roughness: 0.9,
+    metalness: 0.1,
+    flatShading: true
+});
+
 // 3. Neon/Emissive Materials
 export const neonCyanMaterial = new THREE.MeshStandardMaterial({
     color: 0x00f0ff,
@@ -107,6 +114,19 @@ export const glitchMaterial = new THREE.ShaderMaterial({
     fragmentShader: glitchFragmentShader,
     transparent: true,
     wireframe: false
+});
+
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+export const metalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555566,
+    roughness: 0.5,
+    metalness: 0.8,
+    flatShading: true
 });
 
 // Helper function to update shader uniforms
