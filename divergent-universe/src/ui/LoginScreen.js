@@ -62,6 +62,9 @@ export class LoginScreen {
 
         // Flash effect
         if (isAdmin) {
+            // Force reflow in case it's already running
+            this.flashEl.classList.remove('flash-active');
+            void this.flashEl.offsetWidth;
             this.flashEl.classList.add('flash-active');
         }
 
