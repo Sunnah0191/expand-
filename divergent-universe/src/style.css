@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); border-color: var(--neon-cyan); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
+  animation: neonPulse 1.5s infinite;
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
 .login-form button {
@@ -111,10 +117,21 @@ body, html {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.8s ease-out;
+  /* Golden particles effect background */
+  background-image: radial-gradient(circle, rgba(255, 215, 0, 0.8) 10%, transparent 10%),
+                    radial-gradient(circle, rgba(255, 255, 255, 0.8) 10%, transparent 10%);
+  background-size: 20px 20px, 30px 30px;
+  background-position: 0 0, 15px 15px;
 }
 
 .flash-active {
   opacity: 0.8 !important;
+  animation: particleFly 0.8s ease-out forwards;
+}
+
+@keyframes particleFly {
+  0% { background-position: 0 0, 15px 15px; }
+  100% { background-position: 100px 100px, -50px -50px; }
 }
 
 /* ================= UI LAYER ================= */
@@ -150,6 +167,14 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  display: flex; /* We will toggle visibility with js */
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #build-catalog h3 {
@@ -159,11 +184,18 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+  width: 100%;
 }
 
 .catalog-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 15px;
+}
+.catalog-category:last-child .catalog-grid {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .catalog-item {
@@ -198,6 +230,13 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
+.rock-icon { background: #666; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.glass-crystal-icon { background: rgba(170, 255, 255, 0.6); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border: 1px solid white; }
+.neon-tree-icon { background: transparent; border-bottom: 10px solid var(--neon-cyan); border-left: 5px solid transparent; border-right: 5px solid transparent; width: 0; height: 0; }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.dark-tower-icon { background: #111; width: 10px; height: 30px; border: 1px solid #333; }
+.matte-bridge-icon { background: #333; width: 30px; height: 10px; border-radius: 50% 50% 0 0; }
+.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.chrome-block-icon { background: linear-gradient(135deg, #fff 0%, #aaa 50%, #555 100%); }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.matte-metal-icon { background: #777; border: 1px solid #444; }

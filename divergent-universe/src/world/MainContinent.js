@@ -75,5 +75,29 @@ export function createMainContinent() {
     core.name = "CentralCore";
     group.add(core);
 
+    // Glowing particles floating around the central continent
+    const particleGeo = new THREE.BufferGeometry();
+    const particleCount = 500;
+    const posArray = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 400; // Spread over 400 units
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    // We can use a basic PointsMaterial for a glow effect
+    const particleMat = new THREE.PointsMaterial({
+        size: 1.5,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particlesMesh = new THREE.Points(particleGeo, particleMat);
+    particlesMesh.name = "CentralParticles";
+    // Adjust y position so they float around the buildings and core
+    particlesMesh.position.y = 50;
+    group.add(particlesMesh);
+
     return group;
 }
