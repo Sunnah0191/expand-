@@ -122,3 +122,15 @@ export const oceanMaterial = new THREE.MeshStandardMaterial({
     transparent: true,
     opacity: 0.9
 });
+
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.05,
+    metalness: 1.0
+});
+
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555566,
+    roughness: 0.6,
+    metalness: 0.7
+});
