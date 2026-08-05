@@ -3,7 +3,10 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import {
+    glassMaterial, neonCyanMaterial, monolithMaterial,
+    chromeMaterial, metalMaterial, crystalMaterial, leafMaterial
+} from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -79,10 +82,61 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        spawnGoldenParticles();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
+}
+
+function spawnGoldenParticles() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 20;
+        positions[i+1] = (Math.random() - 0.5) * 20;
+        positions[i+2] = (Math.random() - 0.5) * 20;
+
+        velocities.push((Math.random() - 0.5) * 2);
+        velocities.push((Math.random() - 0.5) * 2);
+        velocities.push((Math.random() - 0.5) * 2);
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700,
+        size: 1.5,
+        transparent: true,
+        opacity: 1
+    });
+    const particles = new THREE.Points(geometry, material);
+
+    // Position near camera
+    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+    particles.position.copy(camera.position).add(dir.multiplyScalar(30));
+    scene.add(particles);
+
+    let frame = 0;
+    function animateParticles() {
+        if (frame > 60) {
+            scene.remove(particles);
+            geometry.dispose();
+            material.dispose();
+            return;
+        }
+        const pos = particles.geometry.attributes.position.array;
+        for (let i = 0; i < particleCount; i++) {
+            pos[i*3] += velocities[i*3];
+            pos[i*3+1] += velocities[i*3+1];
+            pos[i*3+2] += velocities[i*3+2];
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+        particles.material.opacity *= 0.9;
+        frame++;
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
 }
 
 function onPlaceBlock(event) {
@@ -92,14 +146,48 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
+    if (type === 'landscape-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(5, 1), monolithMaterial);
+        pos.y += 5;
+    } else if (type === 'landscape-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(4, 0), crystalMaterial);
+        mesh.scale.set(1, 2.5, 1);
+        pos.y += 10;
+    } else if (type === 'landscape-neon-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), metalMaterial);
+        trunk.position.y = 5;
+        const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(4, 1), leafMaterial);
+        leaves.position.y = 12;
+        mesh.add(trunk);
+        mesh.add(leaves);
+        // We handle offset internally for group
+    } else if (type === 'wuwa-monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'wuwa-levitating-tower') {
+        mesh = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.BoxGeometry(10, 40, 10), monolithMaterial);
+        base.position.y = 25; // Floating
+        const core = new THREE.Mesh(new THREE.BoxGeometry(5, 30, 5), neonCyanMaterial);
+        core.position.y = 25;
+        mesh.add(base);
+        mesh.add(core);
+    } else if (type === 'wuwa-matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), monolithMaterial);
+        pos.y += 1;
+    } else if (type === 'block-glass') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-metal') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), metalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {

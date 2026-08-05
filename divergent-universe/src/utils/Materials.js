@@ -13,6 +13,41 @@ export const glassMaterial = new THREE.MeshPhysicalMaterial({
     side: THREE.DoubleSide
 });
 
+// Helper for new materials
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 1.0,
+    roughness: 0.1,
+    envMapIntensity: 1.0
+});
+
+export const metalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    metalness: 0.8,
+    roughness: 0.5
+});
+
+export const crystalMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xaaffff,
+    metalness: 0.1,
+    roughness: 0.1,
+    transmission: 0.9,
+    ior: 1.5,
+    thickness: 5.0,
+    transparent: true,
+    opacity: 1,
+    side: THREE.DoubleSide
+});
+
+export const leafMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00ff88,
+    emissive: 0x00ff88,
+    emissiveIntensity: 0.5,
+    roughness: 0.8,
+    transparent: true,
+    opacity: 0.8
+});
+
 // 2. Monolith/Dark Stone Material
 export const monolithMaterial = new THREE.MeshStandardMaterial({
     color: 0x1a1a24,
