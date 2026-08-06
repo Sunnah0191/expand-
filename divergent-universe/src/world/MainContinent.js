@@ -1,79 +1,99 @@
 import * as THREE from 'three';
-import { glassMaterial, neonCyanMaterial } from '../utils/Materials.js';
 
-export function createMainContinent() {
-    const group = new THREE.Group();
-    group.name = "MainContinent";
+export class MainContinent {
+    constructor() {
+        this.mesh = new THREE.Group();
 
-    // Base island
-    const baseGeo = new THREE.CylinderGeometry(200, 250, 20, 16);
-    const baseMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.2 });
-    const base = new THREE.Mesh(baseGeo, baseMat);
-    base.position.y = -10;
-    base.receiveShadow = true;
-    group.add(base);
+        // Base foundation
+        const baseGeometry = new THREE.CylinderGeometry(80, 100, 20, 6);
+        const baseMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.2,
+            metalness: 0.1,
+            flatShading: true
+        });
+        const baseMesh = new THREE.Mesh(baseGeometry, baseMaterial);
+        baseMesh.receiveShadow = true;
+        baseMesh.castShadow = true;
+        this.mesh.add(baseMesh);
 
-    // City Buildings (InstancedMesh for optimization)
-    const buildingGeo = new THREE.BoxGeometry(10, 1, 10);
-    // Move geometry center to bottom so scaling scales upwards
-    buildingGeo.translate(0, 0.5, 0);
+        // Core Monolith
+        const coreGeometry = new THREE.BoxGeometry(20, 100, 20);
+        const coreMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x00f3ff,
+            metalness: 0.9,
+            roughness: 0.1,
+            transmission: 0.9,
+            thickness: 2,
+            emissive: 0x004455,
+            emissiveIntensity: 0.5
+        });
+        const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
+        coreMesh.position.y = 50;
+        coreMesh.castShadow = true;
+        this.mesh.add(coreMesh);
 
-    // We'll create some glass buildings and some solid white buildings
-    const buildingCount = 100;
-    const glassBuildings = new THREE.InstancedMesh(buildingGeo, glassMaterial, Math.floor(buildingCount * 0.6));
-    const solidBuildings = new THREE.InstancedMesh(buildingGeo, baseMat, Math.floor(buildingCount * 0.4));
+        // White mid-poly buildings
+        const buildingMaterial = new THREE.MeshStandardMaterial({
+            color: 0xf0f0f0,
+            roughness: 0.3,
+            metalness: 0.2,
+            flatShading: true
+        });
 
-    glassBuildings.castShadow = true;
-    glassBuildings.receiveShadow = true;
-    solidBuildings.castShadow = true;
-    solidBuildings.receiveShadow = true;
+        for (let i = 0; i < 20; i++) {
+            const width = Math.random() * 10 + 5;
+            const height = Math.random() * 60 + 20;
+            const depth = Math.random() * 10 + 5;
 
-    let glassIndex = 0;
-    let solidIndex = 0;
+            const bGeo = new THREE.BoxGeometry(width, height, depth);
+            const bMesh = new THREE.Mesh(bGeo, buildingMaterial);
 
-    const dummy = new THREE.Object3D();
+            const radius = Math.random() * 50 + 25;
+            const theta = Math.random() * Math.PI * 2;
 
-    for (let i = 0; i < buildingCount; i++) {
-        // Random position within radius
-        const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 150;
+            bMesh.position.x = Math.cos(theta) * radius;
+            bMesh.position.z = Math.sin(theta) * radius;
+            bMesh.position.y = height / 2 + 10; // above base
 
-        dummy.position.set(
-            Math.cos(angle) * radius,
-            0,
-            Math.sin(angle) * radius
-        );
+            // Look slightly towards center
+            bMesh.lookAt(0, bMesh.position.y, 0);
 
-        // Random height
-        const height = 10 + Math.random() * 80;
-        // Make center buildings taller
-        const distFactor = 1.0 - (radius / 150);
-        const finalHeight = height + distFactor * 100;
+            bMesh.castShadow = true;
+            bMesh.receiveShadow = true;
+            this.mesh.add(bMesh);
+        }
 
-        dummy.scale.set(
-            1 + Math.random() * 3,
-            finalHeight,
-            1 + Math.random() * 3
-        );
+        // Floating glass platforms
+        const platformMat = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            transmission: 0.8,
+            opacity: 1,
+            transparent: true,
+            roughness: 0.1,
+            thickness: 0.5
+        });
 
-        dummy.updateMatrix();
+        for (let i = 0; i < 10; i++) {
+            const pGeo = new THREE.BoxGeometry(15, 1, 15);
+            const pMesh = new THREE.Mesh(pGeo, platformMat);
 
-        if (Math.random() > 0.4 && glassIndex < glassBuildings.count) {
-            glassBuildings.setMatrixAt(glassIndex++, dummy.matrix);
-        } else if (solidIndex < solidBuildings.count) {
-            solidBuildings.setMatrixAt(solidIndex++, dummy.matrix);
+            pMesh.position.set(
+                (Math.random() - 0.5) * 100,
+                Math.random() * 80 + 30,
+                (Math.random() - 0.5) * 100
+            );
+
+            this.mesh.add(pMesh);
         }
     }
 
-    group.add(glassBuildings);
-    group.add(solidBuildings);
-
-    // Central core (God mode monolith)
-    const coreGeo = new THREE.OctahedronGeometry(20, 0);
-    const core = new THREE.Mesh(coreGeo, neonCyanMaterial);
-    core.position.y = 120;
-    core.name = "CentralCore";
-    group.add(core);
-
-    return group;
+    update(delta, time) {
+        // Monolith pulsing or subtle floating platform movement can be added here
+        this.mesh.children.forEach(child => {
+            if (child.geometry.type === 'BoxGeometry' && child.scale.y === 1) { // Hacky check for platforms
+                child.position.y += Math.sin(time * 2 + child.position.x) * 0.02;
+            }
+        });
+    }
 }
