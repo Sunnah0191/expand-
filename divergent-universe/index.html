@@ -1,54 +1,75 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Divergent Universe</title>
-    <link rel="stylesheet" href="/src/style.css">
-  </head>
-  <body>
-    <!-- 3D Canvas Container -->
-    <div id="app"></div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расходящаяся вселенная</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Canvas wrapper -->
+        <div id="canvas-container"></div>
 
-    <!-- Login Screen (Wuthering Waves UI style) -->
-    <div id="login-screen">
-      <div class="login-form">
-        <h2>System Login</h2>
-        <input type="text" id="username" placeholder="Nickname" autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" autocomplete="off" />
-        <button id="login-btn">Initialize</button>
-        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Invalid credentials</p>
-      </div>
-    </div>
-
-    <!-- God Mode Flash Effect -->
-    <div id="god-mode-flash"></div>
-
-    <!-- Build UI Layer -->
-    <div id="ui-layer" style="display: none;">
-      <!-- Catalog Overlay -->
-      <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
-          </div>
+        <!-- Login UI -->
+        <div id="login-screen" class="ui-overlay active">
+            <div class="glass-panel login-panel">
+                <h1 class="title">Авторизация</h1>
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Ник">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Пароль">
+                </div>
+                <button id="login-btn" class="neon-button">ВОЙТИ</button>
+            </div>
         </div>
-      </div>
 
-      <div id="crosshair">+</div>
+        <!-- Building Catalog UI -->
+        <div id="catalog-screen" class="ui-overlay hidden">
+            <div class="glass-panel catalog-panel">
+                <h2 class="title">Каталог строительства</h2>
+                <div class="catalog-categories">
+                    <div class="category">
+                        <h3>Ландшафт</h3>
+                        <div class="items">
+                            <button class="build-item" data-type="landscape-rock">Скала (Mid-poly)</button>
+                            <button class="build-item" data-type="landscape-crystal">Стеклянный кристалл</button>
+                            <button class="build-item" data-type="landscape-tree">Неоновое дерево</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        <h3>Архитектура WuWa</h3>
+                        <div class="items">
+                            <button class="build-item" data-type="wuwa-monolith">Монолит</button>
+                            <button class="build-item" data-type="wuwa-tower">Левитирующая башня</button>
+                            <button class="build-item" data-type="wuwa-bridge">Матовый мост</button>
+                        </div>
+                    </div>
+                    <div class="category">
+                        <h3>Конструктор (Блоки)</h3>
+                        <div class="items">
+                            <button class="build-item" data-type="block-glass">Стекло</button>
+                            <button class="build-item" data-type="block-chrome">Хром</button>
+                            <button class="build-item" data-type="block-neon">Неон</button>
+                            <button class="build-item" data-type="block-matte">Матовый металл</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD for God Mode / Info -->
+        <div id="hud-screen" class="ui-overlay hidden">
+            <div class="hud-info glass-panel">
+                <p>Режим Бога Активирован</p>
+                <p>WASD - Полет | Space - Вверх | Shift - Вниз</p>
+                <p>1 / ~ - Каталог блоков</p>
+                <p>Клик - Построить блок</p>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>
-  </body>
+</body>
 </html>
