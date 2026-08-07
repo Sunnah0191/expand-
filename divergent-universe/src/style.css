@@ -150,6 +150,8 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  max-width: 90vw;
+  overflow-x: auto;
 }
 
 #build-catalog h3 {
@@ -159,11 +161,24 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
+}
+
+.catalog-category-title {
+  font-size: 12px;
+  color: var(--neon-cyan);
+  margin-top: 15px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  margin-bottom: 15px;
 }
 
 .catalog-item {
@@ -190,6 +205,7 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {
@@ -198,6 +214,15 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.mid-poly-rock-icon { background: #4a5a5a; border-radius: 4px; }
+.glass-crystal-icon { background: rgba(0, 240, 255, 0.5); border: 1px solid #fff; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; }
+
+.futuristic-monolith-icon { background: #fff; border: 1px solid var(--neon-cyan); }
+.dark-levitating-tower-icon { background: #1a1a24; border: 1px solid #000; }
+.matte-bridge-icon { background: #333; height: 10px; margin-top: 10px; width: 40px; }
+
+.glass-block-icon { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.8); }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #aaa); }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.matte-metal-block-icon { background: #3a3a40; }

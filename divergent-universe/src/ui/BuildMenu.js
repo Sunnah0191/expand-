@@ -2,7 +2,7 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.selectedType = 'glass-block'; // default
         this.isVisible = false;
 
         this.initEventListeners();
@@ -30,9 +30,19 @@ export class BuildMenu {
             });
         });
 
-        // Select first item by default
-        if (this.items.length > 0) {
+        // Select glass-block by default, or first item if not found
+        let foundDefault = false;
+        this.items.forEach(item => {
+            if (item.dataset.type === 'glass-block') {
+                item.classList.add('selected');
+                this.selectedType = 'glass-block';
+                foundDefault = true;
+            }
+        });
+
+        if (!foundDefault && this.items.length > 0) {
             this.items[0].classList.add('selected');
+            this.selectedType = this.items[0].dataset.type;
         }
     }
 

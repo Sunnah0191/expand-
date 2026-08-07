@@ -92,14 +92,52 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+
+    // Ландшафт
+    if (type === 'mid-poly-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 1), monolithMaterial);
+        pos.y += 5;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-tree') {
+        const trunkGeo = new THREE.CylinderGeometry(1, 1, 10);
+        const trunk = new THREE.Mesh(trunkGeo, monolithMaterial);
+        const leavesGeo = new THREE.SphereGeometry(5, 8, 8);
+        const leaves = new THREE.Mesh(leavesGeo, neonCyanMaterial);
+        leaves.position.y = 5;
+        trunk.add(leaves);
+        mesh = trunk;
+        pos.y += 5;
+    }
+    // Архитектура WuWa
+    else if (type === 'futuristic-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 40, 10), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 }));
+        // add some neon stripes
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(10.2, 2, 10.2), neonCyanMaterial);
+        stripe.position.y = 10;
+        mesh.add(stripe);
+        pos.y += 20;
+    } else if (type === 'dark-levitating-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 5, 30, 8), monolithMaterial);
+        pos.y += 25; // slightly floating
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 10), new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9, metalness: 0.2 }));
+        pos.y += 1;
+    }
+    // Конструктор (Блоки)
+    else if (type === 'glass-block') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+        pos.y += 5;
+    } else if (type === 'chrome-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.1, metalness: 1.0 }));
+        pos.y += 5;
+    } else if (type === 'neon-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshStandardMaterial({ color: 0x3a3a40, roughness: 0.7, metalness: 0.5 }));
+        pos.y += 5;
     }
 
     if (mesh) {
