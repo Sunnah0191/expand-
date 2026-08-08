@@ -150,6 +150,7 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  gap: 20px;
 }
 
 #build-catalog h3 {
