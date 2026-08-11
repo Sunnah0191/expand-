@@ -161,6 +161,19 @@ body, html {
   color: #ccc;
 }
 
+.catalog-category {
+  margin-bottom: 20px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+}
+
 .catalog-grid {
   display: flex;
   gap: 15px;

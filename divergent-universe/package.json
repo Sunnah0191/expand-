@@ -9,9 +9,15 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^8.0.15"
+    "playwright": "^1.62.1",
+    "vite": "^8.2.1"
   },
   "dependencies": {
     "three": "^0.184.0"
-  }
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
