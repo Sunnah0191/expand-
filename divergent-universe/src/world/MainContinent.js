@@ -75,5 +75,35 @@ export function createMainContinent() {
     core.name = "CentralCore";
     group.add(core);
 
+    // Ambient glowing particles (светящиеся частицы)
+    const particleCount = 200;
+    const particlesGeo = new THREE.BufferGeometry();
+    const posArray = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i++) {
+        // Spread particles around the continent
+        posArray[i] = (Math.random() - 0.5) * 400;
+
+        // Ensure y is mostly positive
+        if (i % 3 === 1) {
+             posArray[i] = Math.random() * 200;
+        }
+    }
+
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    // Create a circular texture for particles programmatically or use basic material
+    const particleMat = new THREE.PointsMaterial({
+        size: 2,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particleMesh = new THREE.Points(particlesGeo, particleMat);
+    particleMesh.name = "AmbientParticles";
+    group.add(particleMesh);
+
     return group;
 }
