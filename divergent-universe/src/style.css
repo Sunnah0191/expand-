@@ -36,9 +36,9 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(15px); /* Background blur */
-  -webkit-backdrop-filter: blur(15px);
-  background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+  backdrop-filter: blur(25px); /* Strong Background blur */
+  -webkit-backdrop-filter: blur(25px);
+  background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
   transition: opacity 1s ease-out;
 }
 
@@ -51,8 +51,8 @@ body, html {
   display: flex;
   flex-direction: column;
   width: 300px;
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
 }
 
 .login-form h2 {
@@ -75,9 +75,14 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); border-color: rgba(0, 240, 255, 1); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -156,14 +161,25 @@ body, html {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.category-title {
+  margin: 10px 0 10px 0;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #aaa;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  margin-bottom: 15px;
 }
 
 .catalog-item {
@@ -198,6 +214,15 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.landscape-rock-icon { background: #5a646c; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.landscape-crystal-icon { background: rgba(0, 255, 200, 0.4); border: 1px solid #0ff; transform: rotate(45deg) scale(0.7); }
+.landscape-tree-icon { background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%); }
+
+.wuwa-monolith-icon { background: #2a2a30; border-left: 2px solid var(--neon-cyan); }
+.wuwa-tower-icon { background: #1a1a24; border: 1px solid #333; clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); }
+.wuwa-bridge-icon { background: rgba(255, 255, 255, 0.1); border-bottom: 2px solid #ccc; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+
+.block-glass-icon { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); }
+.block-chrome-icon { background: linear-gradient(135deg, #fff 0%, #aaa 50%, #555 100%); border-radius: 4px; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-matte-icon { background: #3a3a40; border-radius: 2px; }
