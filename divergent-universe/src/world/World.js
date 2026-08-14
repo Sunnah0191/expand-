@@ -43,6 +43,29 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        // Add glowing particles passing through central continent for background
+        const particleCount = 1000;
+        const particleGeometry = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            particlePositions[i * 3] = (Math.random() - 0.5) * 400; // x
+            particlePositions[i * 3 + 1] = Math.random() * 200; // y
+            particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 400; // z
+        }
+
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particleMaterial = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.particles = new THREE.Points(particleGeometry, particleMaterial);
+        this.group.add(this.particles);
+
         this.scene.add(this.group);
     }
 
@@ -58,6 +81,19 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update particles
+        if (this.particles) {
+            this.particles.rotation.y += 0.05 * delta;
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 1; i < positions.length; i += 3) {
+                positions[i] += 10 * delta; // move up
+                if (positions[i] > 200) {
+                    positions[i] = 0; // reset to bottom
+                }
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second

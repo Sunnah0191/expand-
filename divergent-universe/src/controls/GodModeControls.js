@@ -8,7 +8,7 @@ export class GodModeControls {
         this.getSelectedBlockType = getSelectedBlockType; // Callback to get selected block from UI
 
         // Settings
-        this.movementSpeed = 100.0;
+        this.movementSpeed = 300.0;
         this.lookSpeed = 0.005;
         this.enabled = false;
 
@@ -34,11 +34,30 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        // Custom Raycasting Laser Grid
+        const gridGroup = new THREE.Group();
+        this.gridHelper = new THREE.GridHelper(15, 15, 0x00f0ff, 0x00f0ff);
         this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
-        this.gridHelper.position.y = -1000; // Hide initially
-        this.scene.add(this.gridHelper);
+        this.gridHelper.material.opacity = 0.8;
+        this.gridHelper.material.linewidth = 2;
+
+        // Add a soft glow plate underneath the grid to look more like a laser projection
+        const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+        const glowPlane = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), glowMaterial);
+        glowPlane.rotation.x = Math.PI / 2;
+
+        gridGroup.add(this.gridHelper);
+        gridGroup.add(glowPlane);
+
+        this.gridVisualizer = gridGroup;
+        this.gridVisualizer.position.y = -1000; // Hide initially
+        this.scene.add(this.gridVisualizer);
 
         this.intersectionPoint = null;
 
@@ -74,7 +93,7 @@ export class GodModeControls {
         document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
         if(document.exitPointerLock) document.exitPointerLock();
 
-        this.gridHelper.position.y = -1000;
+        this.gridVisualizer.position.y = -1000;
     }
 
     onMouseMove(event) {
@@ -140,7 +159,7 @@ export class GodModeControls {
         const event = new CustomEvent('placeBlock', {
             detail: {
                 position: this.intersectionPoint.clone(),
-                normal: this.gridHelper.position.clone() // Need to snap properly
+                normal: this.gridVisualizer.position.clone() // Need to snap properly
             }
         });
         window.dispatchEvent(event);
@@ -165,8 +184,8 @@ export class GodModeControls {
         // Update Raycasting
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
-        // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        // Don't intersect with the grid visualizer or other UI elements
+        const intersectableObjects = this.scene.children.filter(child => child !== this.gridVisualizer && !this.gridVisualizer.children.includes(child));
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
@@ -175,19 +194,24 @@ export class GodModeControls {
             this.intersectionPoint = intersect.point;
 
             // Snap grid to the surface
-            this.gridHelper.position.copy(intersect.point);
+            this.gridVisualizer.position.copy(intersect.point);
 
-            // Align grid to normal (simplified)
-            // A full implementation would align the gridHelper to intersect.face.normal
+            // Align grid to normal
             if (intersect.face) {
-                const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
-                this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
-                this.gridHelper.rotateX(Math.PI / 2);
+                // Get the normal vector of the face in world space
+                const normalMatrix = new THREE.Matrix3().getNormalMatrix(intersect.object.matrixWorld);
+                const worldNormal = intersect.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+
+                // Align visualizer to the normal
+                const lookAtTarget = new THREE.Vector3().copy(this.gridVisualizer.position).add(worldNormal);
+                this.gridVisualizer.lookAt(lookAtTarget);
+
+                // The lookAt aligns the Z axis to the normal, but we want the Y axis (up) of the grid to align with the normal.
+                this.gridVisualizer.rotateX(Math.PI / 2);
             }
         } else {
             this.intersectionPoint = null;
-            this.gridHelper.position.y = -1000;
+            this.gridVisualizer.position.y = -1000;
         }
     }
 }
