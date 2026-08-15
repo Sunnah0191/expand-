@@ -75,9 +75,23 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    border-color: rgba(0, 240, 255, 1);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -150,20 +164,28 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  max-width: 90vw;
+  overflow-x: auto;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 15px 0 10px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
+}
+#build-catalog h3:first-child {
+  margin-top: 0;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
 .catalog-item {
@@ -199,5 +221,12 @@ body, html {
 }
 
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #555; border-radius: 5px; }
+.glass-crystal-icon { background: rgba(200, 255, 255, 0.8); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: transparent; border: 2px solid var(--neon-cyan); border-radius: 50%; }
+.floating-tower-icon { background: #eee; border: 1px solid #ccc; height: 40px; }
+.dark-tower-icon { background: #1a1a24; border: 1px solid #333; height: 40px; }
+.matte-bridge-icon { background: #777; width: 40px; height: 10px; }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee 0%, #999 100%); border: 1px solid #ccc; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.matte-cube-icon { background: #888; }
