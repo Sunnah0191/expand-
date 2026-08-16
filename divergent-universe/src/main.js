@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,8 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let godModeParticles = null;
+let particleTime = 0;
 
 init();
 animate();
@@ -79,6 +81,46 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // Trigger 3D golden particle explosion
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        // Start slightly in front of camera
+        const startPos = new THREE.Vector3(0, 0, -20);
+        startPos.applyMatrix4(camera.matrixWorld);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = startPos.x;
+            positions[i * 3 + 1] = startPos.y;
+            positions[i * 3 + 2] = startPos.z;
+
+            // Random outward velocity
+            const v = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2
+            ).normalize().multiplyScalar(Math.random() * 50 + 20);
+            velocities.push(v);
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 2,
+            transparent: true,
+            opacity: 1,
+            blending: THREE.AdditiveBlending
+        });
+
+        godModeParticles = new THREE.Points(geometry, material);
+        godModeParticles.userData = { velocities: velocities };
+        scene.add(godModeParticles);
+        particleTime = 0;
+
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -92,14 +134,52 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
+
+    // Ландшафт (Landscape)
+    if (type === 'landscape-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 0), monolithMaterial);
+        pos.y += 8;
+    } else if (type === 'landscape-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), glassMaterial);
+        pos.y += 6;
+    } else if (type === 'landscape-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 2, 10), monolithMaterial);
+        trunk.position.y = 5;
+        const top = new THREE.Mesh(new THREE.DodecahedronGeometry(6, 1), neonCyanMaterial);
+        top.position.y = 12;
+        mesh.add(trunk);
+        mesh.add(top);
+    }
+    // Архитектура WuWa
+    else if (type === 'wuwa-monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'wuwa-tower') {
+        mesh = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.BoxGeometry(20, 50, 20), monolithMaterial);
+        base.position.y = 25;
+        const glow = new THREE.Mesh(new THREE.BoxGeometry(22, 2, 22), neonCyanMaterial);
+        glow.position.y = 40;
+        mesh.add(base);
+        mesh.add(glow);
+    } else if (type === 'wuwa-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 10), matteMetalMaterial);
+        pos.y += 1;
+    }
+    // Конструктор (Блоки)
+    else if (type === 'block-glass') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-metal') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
@@ -125,6 +205,27 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (godModeParticles) {
+        particleTime += delta;
+        if (particleTime > 2.0) {
+            scene.remove(godModeParticles);
+            godModeParticles.geometry.dispose();
+            godModeParticles.material.dispose();
+            godModeParticles = null;
+        } else {
+            const positions = godModeParticles.geometry.attributes.position.array;
+            const velocities = godModeParticles.userData.velocities;
+
+            for (let i = 0; i < velocities.length; i++) {
+                positions[i * 3] += velocities[i].x * delta;
+                positions[i * 3 + 1] += velocities[i].y * delta;
+                positions[i * 3 + 2] += velocities[i].z * delta;
+            }
+            godModeParticles.geometry.attributes.position.needsUpdate = true;
+            godModeParticles.material.opacity = 1.0 - (particleTime / 2.0);
+        }
     }
 
     renderer.render(scene, camera);
