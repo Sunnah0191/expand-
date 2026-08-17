@@ -201,3 +201,22 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+
+/* Custom categories added via updates */
+.catalog-category {
+  margin-bottom: 20px;
+}
+
+.catalog-category h4 {
+  color: #aaa;
+  margin: 0 0 10px 0;
+  font-weight: normal;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.catalog-content {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
