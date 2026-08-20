@@ -9,9 +9,9 @@ export class BuildMenu {
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1', '`', '~', 'Ё' or 'ё'
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key === 'Ё' || e.key === 'ё') {
                 this.toggleVisibility();
             }
         });
@@ -33,6 +33,7 @@ export class BuildMenu {
         // Select first item by default
         if (this.items.length > 0) {
             this.items[0].classList.add('selected');
+            this.selectedType = this.items[0].dataset.type;
         }
     }
 
