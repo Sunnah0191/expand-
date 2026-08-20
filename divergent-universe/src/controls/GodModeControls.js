@@ -8,7 +8,7 @@ export class GodModeControls {
         this.getSelectedBlockType = getSelectedBlockType; // Callback to get selected block from UI
 
         // Settings
-        this.movementSpeed = 100.0;
+        this.movementSpeed = 300.0;
         this.lookSpeed = 0.005;
         this.enabled = false;
 
