@@ -56,6 +56,18 @@ export class World {
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
         }
 
+        // Animate cyan particles
+        const particles = this.mainContinent.getObjectByName("CyanParticles");
+        if (particles) {
+            particles.rotation.y += 0.05 * delta;
+            const positions = particles.geometry.attributes.position.array;
+            for(let i=0; i<positions.length; i+=3) {
+                positions[i+1] += 10 * delta; // move up
+                if (positions[i+1] > 200) positions[i+1] = -200; // reset
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+        }
+
         // Update custom shaders
         updateMaterials(delta, this.time);
 

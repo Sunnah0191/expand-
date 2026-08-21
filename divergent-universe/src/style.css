@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    border-color: var(--neon-cyan);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
 }
 
 .login-form button {
@@ -147,18 +162,32 @@ body, html {
   border: 1px solid var(--glass-border);
   padding: 20px;
   border-radius: 12px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  display: flex;
+  gap: 30px;
+  max-width: 90vw;
+  overflow-x: auto;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
 }
 
 .catalog-grid {
@@ -167,37 +196,65 @@ body, html {
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  width: 90px;
+  height: 90px;
+  background: rgba(10, 15, 25, 0.6);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.catalog-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  z-index: 0;
 }
 
 .catalog-item:hover, .catalog-item.selected {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2);
+  background: rgba(0, 240, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 .catalog-item span {
   font-size: 10px;
-  margin-top: 8px;
+  margin-top: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  z-index: 1;
+  color: #e0f7fa;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
-  background-color: #555;
+  width: 32px;
+  height: 32px;
+  z-index: 1;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Ландшафт Icons */
+.landscape-rock-icon { background: linear-gradient(45deg, #444, #666); border: 1px solid #777; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.landscape-crystal-icon { background: rgba(0, 240, 255, 0.5); border: 1px solid var(--neon-cyan); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.landscape-neon-tree-icon { background: var(--neon-cyan); border-radius: 50% 50% 10% 10%; box-shadow: 0 0 10px var(--neon-cyan); }
+
+/* Архитектура WuWa Icons */
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid var(--neon-cyan); }
+.wuwa-tower-icon { background: #222; border-left: 2px solid var(--neon-cyan); border-right: 2px solid var(--neon-cyan); }
+.wuwa-bridge-icon { background: rgba(255,255,255,0.2); border-bottom: 2px solid var(--neon-cyan); border-top: 1px solid rgba(255,255,255,0.5); }
+
+/* Конструктор (Блоки) Icons */
+.block-glass-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.8); }
+.block-chrome-icon { background: linear-gradient(135deg, #ccc, #fff, #999); border: 1px solid #fff; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.block-matte-icon { background: #555; border: 1px solid #333; }
