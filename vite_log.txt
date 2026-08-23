@@ -1,0 +1,11 @@
+
+> divergent-universe@0.0.0 dev
+> vite
+
+
+  VITE v8.0.15  ready in 441 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+9:39:45 AM [vite] (client) [optimizer] bundling dependencies...
+9:43:07 AM [vite] (client) page reload src/main.js

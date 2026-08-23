@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-border 1.5s infinite;
 }
 
 .login-form button {
@@ -150,20 +162,40 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
+  gap: 15px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.catalog-category h4 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -198,6 +230,13 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
+.rock-icon { background: #555; border-radius: 5px; }
+.crystal-icon { background: rgba(255, 255, 255, 0.8); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: var(--neon-cyan); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.dark-tower-icon { background: #111; border: 1px solid #333; }
+.matte-bridge-icon { background: rgba(255, 255, 255, 0.5); width: 40px; height: 10px; }
+.glass-block-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.chrome-block-icon { background: #fff; box-shadow: inset 0 0 10px #aaa; }
+.neon-block-icon { background: #0055ff; box-shadow: 0 0 10px #0055ff; }
+.metal-block-icon { background: #444; border: 2px solid #666; }

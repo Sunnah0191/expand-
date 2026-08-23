@@ -56,6 +56,11 @@ export class World {
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
         }
 
+        const particles = this.mainContinent.getObjectByName("GlowingParticles");
+        if (particles) {
+            particles.rotation.y += 0.05 * delta;
+        }
+
         // Update custom shaders
         updateMaterials(delta, this.time);
 
