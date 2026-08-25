@@ -75,9 +75,23 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    border-color: var(--neon-cyan);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -161,14 +175,29 @@ body, html {
   color: #ccc;
 }
 
+.catalog-categories {
+  display: flex;
+  gap: 20px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 300;
+  color: #a0c0ff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 5px;
+}
+
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 250px;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
+  width: 75px;
+  height: 75px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 8px;
@@ -187,17 +216,27 @@ body, html {
 }
 
 .catalog-item span {
-  font-size: 10px;
-  margin-top: 8px;
+  font-size: 9px;
+  margin-top: 5px;
   text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.midpoly-rock-icon { background: #888; border: 1px solid #aaa; }
+.glass-crystal-icon { background: rgba(100, 200, 255, 0.5); border: 1px solid #64c8ff; }
+.neon-tree-icon { background: #00ff88; box-shadow: 0 0 5px #00ff88; }
+.futuristic-monolith-icon { background: #ddd; border: 1px solid #fff; }
+.dark-tower-icon { background: #111; border: 1px solid #333; }
+.matte-bridge-icon { background: #445; border: 1px solid #667; }
+.glass-block-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid #fff; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #ccc; }
+.neon-block-icon { background: var(--neon-cyan); }
+.matte-metal-block-icon { background: #555; border: 1px solid #777; }
