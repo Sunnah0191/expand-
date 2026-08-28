@@ -150,20 +150,41 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  display: flex; /* Changed from none to block will be handled in js, but here we can set flex for layout and use inline display none initially */
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 300;
+  font-size: 12px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #aaa;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -196,8 +217,21 @@ body, html {
   width: 30px;
   height: 30px;
   background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Landscape */
+.landscape-rock-icon { background: #5a5a5a; border-radius: 50%; }
+.glass-crystal-icon { background: rgba(150, 200, 255, 0.7); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: #00ff88; border-radius: 50% 50% 10% 10%; }
+
+/* Architecture WuWa */
+.monolith-icon { background: #1a1a24; border: 1px solid #555; height: 40px; width: 20px; }
+.dark-tower-icon { background: #111; border-top: 2px solid var(--neon-cyan); height: 40px; }
+.matte-bridge-icon { background: rgba(100, 100, 100, 0.5); width: 40px; height: 10px; border-radius: 10px; }
+
+/* Blocks */
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid white; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #888); border: 1px solid #ccc; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.metal-block-icon { background: #333; border: 2px solid #666; }

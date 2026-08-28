@@ -8,7 +8,7 @@ export class GodModeControls {
         this.getSelectedBlockType = getSelectedBlockType; // Callback to get selected block from UI
 
         // Settings
-        this.movementSpeed = 100.0;
+        this.movementSpeed = 300.0;
         this.lookSpeed = 0.005;
         this.enabled = false;
 
@@ -34,9 +34,24 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
-        this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
+        this.gridHelper = new THREE.Group();
+
+        const innerGrid = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        innerGrid.material.transparent = true;
+        innerGrid.material.opacity = 0.5;
+        this.gridHelper.add(innerGrid);
+
+        const planeGeo = new THREE.PlaneGeometry(10, 10);
+        const planeMat = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide
+        });
+        const laserPlane = new THREE.Mesh(planeGeo, planeMat);
+        laserPlane.rotation.x = -Math.PI / 2; // align with grid
+        this.gridHelper.add(laserPlane);
+
         this.gridHelper.position.y = -1000; // Hide initially
         this.scene.add(this.gridHelper);
 
@@ -166,7 +181,7 @@ export class GodModeControls {
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
         // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        const intersectableObjects = this.scene.children.filter(child => child !== this.gridHelper && !this.gridHelper.children.includes(child));
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
