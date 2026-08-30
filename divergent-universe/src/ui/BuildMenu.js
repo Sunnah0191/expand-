@@ -2,7 +2,7 @@ export class BuildMenu {
     constructor() {
         this.container = document.getElementById('build-catalog');
         this.items = document.querySelectorAll('.catalog-item');
-        this.selectedType = 'glass-cube'; // default
+        this.selectedType = this.items.length > 0 ? this.items[0].dataset.type : null;
         this.isVisible = false;
 
         this.initEventListeners();

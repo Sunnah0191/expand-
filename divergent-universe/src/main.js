@@ -12,6 +12,8 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let particlesMesh = null;
+let particlesData = [];
 
 init();
 animate();
@@ -79,11 +81,73 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // 3D Golden Particle Explosion
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = camera.position.x;
+            positions[i * 3 + 1] = camera.position.y;
+            positions[i * 3 + 2] = camera.position.z - 10;
+
+            particlesData.push({
+                velocity: new THREE.Vector3(
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 100
+                ),
+                life: 1.0
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 1.5,
+            transparent: true,
+            opacity: 1,
+            blending: THREE.AdditiveBlending
+        });
+
+        particlesMesh = new THREE.Points(geometry, material);
+        scene.add(particlesMesh);
+
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
 }
+
+// Cache geometries and materials for performance
+const geometries = {
+    rock: new THREE.DodecahedronGeometry(8, 1),
+    crystal: new THREE.ConeGeometry(5, 20, 6),
+    neonTree: new THREE.CylinderGeometry(1, 1, 15),
+    neonLeaves: new THREE.SphereGeometry(6, 8, 8),
+    archPillar: new THREE.BoxGeometry(5, 30, 5),
+    archTop: new THREE.BoxGeometry(25, 5, 5),
+    darkTower: new THREE.CylinderGeometry(8, 12, 40, 6),
+    bridge: new THREE.BoxGeometry(40, 2, 10),
+    cube: new THREE.BoxGeometry(10, 10, 10)
+};
+
+const extraMaterials = {
+    chrome: new THREE.MeshStandardMaterial({
+        color: 0xdddddd,
+        metalness: 1.0,
+        roughness: 0.1
+    }),
+    matteMetal: new THREE.MeshStandardMaterial({
+        color: 0x555555,
+        metalness: 0.6,
+        roughness: 0.8
+    }),
+    crystalMat: glassMaterial.clone()
+};
+extraMaterials.crystalMat.color.setHex(0x00ffff); // Tinted glass
 
 function onPlaceBlock(event) {
     if (!isGodMode) return;
@@ -92,14 +156,78 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        // Landscape
+        case 'rock':
+            mesh = new THREE.Mesh(geometries.rock, monolithMaterial);
+            pos.y += 4;
+            // Random rotation for natural look
+            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(geometries.crystal, extraMaterials.crystalMat);
+            pos.y += 10;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Group();
+            const trunk = new THREE.Mesh(geometries.neonTree, monolithMaterial);
+            trunk.position.y = 7.5;
+            const leaves = new THREE.Mesh(geometries.neonLeaves, neonCyanMaterial);
+            leaves.position.y = 15;
+            mesh.add(trunk);
+            mesh.add(leaves);
+            break;
+
+        // WuWa Architecture
+        case 'monolith-arch':
+            mesh = new THREE.Group();
+            const p1 = new THREE.Mesh(geometries.archPillar, monolithMaterial);
+            p1.position.set(-10, 15, 0);
+            const p2 = new THREE.Mesh(geometries.archPillar, monolithMaterial);
+            p2.position.set(10, 15, 0);
+            const top = new THREE.Mesh(geometries.archTop, monolithMaterial);
+            top.position.set(0, 32.5, 0);
+            mesh.add(p1);
+            mesh.add(p2);
+            mesh.add(top);
+            break;
+        case 'dark-tower':
+            mesh = new THREE.Mesh(geometries.darkTower, monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(geometries.bridge, extraMaterials.matteMetal);
+            pos.y += 1;
+            break;
+
+        // Blocks
+        case 'glass-cube':
+            mesh = new THREE.Mesh(geometries.cube, glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-cube':
+            mesh = new THREE.Mesh(geometries.cube, extraMaterials.chrome);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(geometries.cube, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'matte-metal':
+            mesh = new THREE.Mesh(geometries.cube, extraMaterials.matteMetal);
+            pos.y += 5;
+            break;
+
+        // Legacy fallback
+        case 'neon-pillar':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
+            pos.y += 10;
+            break;
+        case 'monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+            pos.y += 15;
+            break;
     }
 
     if (mesh) {
@@ -125,6 +253,37 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (particlesMesh) {
+        const positions = particlesMesh.geometry.attributes.position.array;
+        let activeParticles = 0;
+
+        for (let i = 0; i < particlesData.length; i++) {
+            const data = particlesData[i];
+            if (data.life > 0) {
+                positions[i * 3] += data.velocity.x * delta;
+                positions[i * 3 + 1] += data.velocity.y * delta;
+                positions[i * 3 + 2] += data.velocity.z * delta;
+
+                data.life -= delta * 0.5; // Fade out over 2 seconds
+                activeParticles++;
+            }
+        }
+
+        particlesMesh.geometry.attributes.position.needsUpdate = true;
+
+        if (particlesMesh.material.opacity > 0) {
+            particlesMesh.material.opacity -= delta * 0.5;
+        }
+
+        if (activeParticles === 0 || particlesMesh.material.opacity <= 0) {
+            scene.remove(particlesMesh);
+            particlesMesh.geometry.dispose();
+            particlesMesh.material.dispose();
+            particlesMesh = null;
+            particlesData = [];
+        }
     }
 
     renderer.render(scene, camera);
