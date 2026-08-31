@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -74,16 +74,69 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+let explosionParticles;
+let explosionTime = 0;
+const EXPLOSION_DURATION = 1.0;
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // Trigger 3D golden particle explosion
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 1000;
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for(let i=0; i<particleCount; i++) {
+            positions[i*3] = camera.position.x;
+            positions[i*3+1] = camera.position.y;
+            positions[i*3+2] = camera.position.z - 10; // Slightly in front of camera
+
+            // Random spherical velocities
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            const speed = Math.random() * 50 + 20;
+
+            velocities.push(
+                speed * Math.sin(phi) * Math.cos(theta),
+                speed * Math.sin(phi) * Math.sin(theta),
+                speed * Math.cos(phi)
+            );
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 1.5,
+            transparent: true,
+            opacity: 1.0,
+            blending: THREE.AdditiveBlending
+        });
+
+        explosionParticles = new THREE.Points(particleGeo, particleMat);
+        explosionParticles.userData.velocities = velocities;
+        scene.add(explosionParticles);
+        explosionTime = EXPLOSION_DURATION;
+
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
 }
+
+// Cached Geometries for performance
+const geometries = {
+    box10: new THREE.BoxGeometry(10, 10, 10),
+    box15: new THREE.BoxGeometry(15, 30, 15),
+    box20_10_20: new THREE.BoxGeometry(20, 10, 20),
+    cylinder2_20: new THREE.CylinderGeometry(2, 2, 20, 8),
+    cylinder5_30: new THREE.CylinderGeometry(5, 5, 30, 6),
+    dodecahedron: new THREE.DodecahedronGeometry(8),
+    octahedron: new THREE.OctahedronGeometry(6)
+};
 
 function onPlaceBlock(event) {
     if (!isGodMode) return;
@@ -92,13 +145,52 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+
+    // Landscape
+    if (type === 'midpoly-rock') {
+        mesh = new THREE.Mesh(geometries.dodecahedron, monolithMaterial);
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+        pos.y += 8;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(geometries.octahedron, glassMaterial);
+        pos.y += 6;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(geometries.cylinder2_20, neonCyanMaterial);
+        pos.y += 10;
+
+    // WuWa Architecture
+    } else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(geometries.box15, monolithMaterial);
+        pos.y += 15;
+    } else if (type === 'wuwa-tower') {
+        mesh = new THREE.Mesh(geometries.cylinder5_30, chromeMaterial);
+        pos.y += 15;
+    } else if (type === 'wuwa-bridge') {
+        mesh = new THREE.Mesh(geometries.box20_10_20, matteMetalMaterial);
+        pos.y += 5;
+
+    // Constructor (Blocks)
+    } else if (type === 'block-glass') {
+        mesh = new THREE.Mesh(geometries.box10, glassMaterial);
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(geometries.box10, chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(geometries.box10, neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-matte') {
+        mesh = new THREE.Mesh(geometries.box10, matteMetalMaterial);
+        pos.y += 5;
+    // Fallbacks for previous types if needed
+    } else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(geometries.box10, glassMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+        mesh = new THREE.Mesh(geometries.cylinder2_20, neonCyanMaterial);
+        pos.y += 10;
     } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+        mesh = new THREE.Mesh(geometries.box15, monolithMaterial);
         pos.y += 15;
     }
 
@@ -125,6 +217,29 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    // Update explosion particles
+    if (explosionParticles && explosionTime > 0) {
+        explosionTime -= delta;
+        const positions = explosionParticles.geometry.attributes.position.array;
+        const velocities = explosionParticles.userData.velocities;
+
+        for (let i = 0; i < positions.length / 3; i++) {
+            positions[i*3] += velocities[i*3] * delta;
+            positions[i*3+1] += velocities[i*3+1] * delta;
+            positions[i*3+2] += velocities[i*3+2] * delta;
+        }
+        explosionParticles.geometry.attributes.position.needsUpdate = true;
+
+        explosionParticles.material.opacity = explosionTime / EXPLOSION_DURATION;
+
+        if (explosionTime <= 0) {
+            scene.remove(explosionParticles);
+            explosionParticles.geometry.dispose();
+            explosionParticles.material.dispose();
+            explosionParticles = null;
+        }
     }
 
     renderer.render(scene, camera);

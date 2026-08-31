@@ -150,20 +150,39 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
+  gap: 20px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 5px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: #ccc;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.catalog-category h4 {
+  margin: 0;
+  color: #a0c0d0;
+  font-weight: 300;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -201,3 +220,8 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid #00f0ff; }
+.wuwa-tower-icon { background: #111; border-top: 2px solid var(--neon-cyan); }
+.wuwa-bridge-icon { background: #333; border-bottom: 2px solid rgba(255, 255, 255, 0.3); }
+.block-chrome-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.block-matte-icon { background: #444; border: 1px solid #222; }
