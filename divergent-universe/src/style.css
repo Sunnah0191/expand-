@@ -150,15 +150,15 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+.catalog-category-title {
+  margin: 10px 0 5px 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #e0f7fa;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
