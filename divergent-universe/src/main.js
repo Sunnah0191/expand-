@@ -12,6 +12,10 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let particlesMesh;
+let particleVelocities = [];
+let particlesActive = false;
+let particleAge = 0;
 
 init();
 animate();
@@ -79,10 +83,51 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        triggerGoldenExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
+}
+
+function triggerGoldenExplosion() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+
+    particleVelocities = [];
+
+    // Position slightly in front of camera
+    const startPos = new THREE.Vector3(0, 0, -20);
+    startPos.applyMatrix4(camera.matrixWorld);
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = startPos.x;
+        positions[i * 3 + 1] = startPos.y;
+        positions[i * 3 + 2] = startPos.z;
+
+        // Random velocity for explosion
+        particleVelocities.push(new THREE.Vector3(
+            (Math.random() - 0.5) * 100,
+            (Math.random() - 0.5) * 100,
+            (Math.random() - 0.5) * 100
+        ));
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700,
+        size: 2,
+        transparent: true,
+        opacity: 1,
+        blending: THREE.AdditiveBlending
+    });
+
+    particlesMesh = new THREE.Points(geometry, material);
+    scene.add(particlesMesh);
+    particlesActive = true;
+    particleAge = 0;
 }
 
 function onPlaceBlock(event) {
@@ -94,12 +139,26 @@ function onPlaceBlock(event) {
     let mesh;
     if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
         pos.y += 10; // offset so it sits on ground
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'neon-tree') {
+        // A simple tree representation
+        const trunkGeo = new THREE.CylinderGeometry(1, 1, 10);
+        const leavesGeo = new THREE.SphereGeometry(5, 16, 16);
+        const group = new THREE.Group();
+        const trunk = new THREE.Mesh(trunkGeo, monolithMaterial);
+        trunk.position.y = 5;
+        const leaves = new THREE.Mesh(leavesGeo, neonCyanMaterial);
+        leaves.position.y = 12;
+        group.add(trunk);
+        group.add(leaves);
+
+        mesh = group; // We handle group positioning slightly differently, but copying pos works
     }
 
     if (mesh) {
@@ -125,6 +184,34 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (particlesActive && particlesMesh) {
+        particleAge += delta;
+        const positions = particlesMesh.geometry.attributes.position.array;
+
+        for (let i = 0; i < particleVelocities.length; i++) {
+            positions[i * 3] += particleVelocities[i].x * delta;
+            positions[i * 3 + 1] += particleVelocities[i].y * delta;
+            positions[i * 3 + 2] += particleVelocities[i].z * delta;
+
+            // Add some drag/gravity
+            particleVelocities[i].y -= 20 * delta;
+        }
+
+        particlesMesh.geometry.attributes.position.needsUpdate = true;
+
+        // Fade out
+        if (particleAge > 0.5) {
+            particlesMesh.material.opacity = Math.max(0, 1.0 - (particleAge - 0.5) * 2);
+        }
+
+        if (particleAge > 2.0) {
+            scene.remove(particlesMesh);
+            particlesMesh.geometry.dispose();
+            particlesMesh.material.dispose();
+            particlesActive = false;
+        }
     }
 
     renderer.render(scene, camera);
