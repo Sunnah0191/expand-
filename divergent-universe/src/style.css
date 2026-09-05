@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -150,6 +156,8 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 20px;
 }
 
 #build-catalog h3 {
@@ -159,6 +167,21 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
