@@ -149,21 +149,45 @@ body, html {
   border-radius: 12px;
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  display: flex; /* Hidden by default but use flex when shown */
+  flex-direction: row;
+  gap: 20px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 1px;
   color: #ccc;
+  width: max-content;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #aaa;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -199,5 +223,12 @@ body, html {
 }
 
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #777; border-radius: 5px; }
+.glass-crystal-icon { background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(170,255,255,0.5)); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; width: 20px; height: 20px; }
+.monolith-icon { background: #1a1a24; border: 1px solid #444; }
+.dark-tower-icon { background: #111; border: 1px solid var(--neon-cyan); height: 40px; width: 15px; }
+.matte-bridge-icon { background: #333; height: 10px; width: 40px; border-radius: 2px; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.matte-metal-icon { background: #555; border: 1px solid #333; }
