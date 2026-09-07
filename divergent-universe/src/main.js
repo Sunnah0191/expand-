@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,14 +92,47 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+    switch (type) {
+        case 'mid-poly-rock':
+            mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 0), monolithMaterial);
+            pos.y += 8;
+            break;
+        case 'glass-crystal':
+            mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), glassMaterial);
+            pos.y += 6;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 2, 15, 6), neonCyanMaterial);
+            pos.y += 7.5;
+            break;
+        case 'monolith':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'levitating-tower':
+            mesh = new THREE.Mesh(new THREE.CylinderGeometry(8, 5, 50, 8), matteMetalMaterial);
+            pos.y += 35; // Floats slightly
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteMetalMaterial);
+            pos.y += 1;
+            break;
+        case 'glass-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'matte-metal-block':
+            mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {
