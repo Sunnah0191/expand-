@@ -44,6 +44,42 @@ export class World {
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
         this.scene.add(this.group);
+
+        this.createAmbientParticles();
+    }
+
+    createAmbientParticles() {
+        const particleCount = 1500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Spread particles across a wide area around the center
+            positions[i * 3] = (Math.random() - 0.5) * 1000;
+            positions[i * 3 + 1] = Math.random() * 200;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+
+            velocities.push({
+                x: (Math.random() - 0.5) * 5,
+                y: Math.random() * 5 + 2, // gently rising
+                z: (Math.random() - 0.5) * 5
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2.0,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.ambientParticles = new THREE.Points(geometry, material);
+        this.ambientParticles.userData = { velocities };
+        this.scene.add(this.ambientParticles);
     }
 
     update(delta) {
@@ -82,6 +118,28 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Update ambient particles
+        if (this.ambientParticles) {
+            const positions = this.ambientParticles.geometry.attributes.position.array;
+            const velocities = this.ambientParticles.userData.velocities;
+
+            for (let i = 0; i < velocities.length; i++) {
+                positions[i * 3] += velocities[i].x * delta;
+                positions[i * 3 + 1] += velocities[i].y * delta;
+                positions[i * 3 + 2] += velocities[i].z * delta;
+
+                // Reset particle if it goes too high
+                if (positions[i * 3 + 1] > 200) {
+                    positions[i * 3 + 1] = 0;
+                    positions[i * 3] = (Math.random() - 0.5) * 1000;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 1000;
+                }
+            }
+            this.ambientParticles.geometry.attributes.position.needsUpdate = true;
+            // slowly rotate the whole particle system
+            this.ambientParticles.rotation.y += 0.05 * delta;
         }
     }
 }
