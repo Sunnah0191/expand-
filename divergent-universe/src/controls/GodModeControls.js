@@ -8,7 +8,7 @@ export class GodModeControls {
         this.getSelectedBlockType = getSelectedBlockType; // Callback to get selected block from UI
 
         // Settings
-        this.movementSpeed = 100.0;
+        this.movementSpeed = 300.0;
         this.lookSpeed = 0.005;
         this.enabled = false;
 
@@ -34,9 +34,25 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
-        this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
+        this.gridHelper = new THREE.Group();
+        this.gridHelper.name = "GridHelperGroup";
+
+        const gridLines = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        gridLines.material.transparent = true;
+        gridLines.material.opacity = 0.5;
+        this.gridHelper.add(gridLines);
+
+        const planeGeo = new THREE.PlaneGeometry(10, 10);
+        const planeMat = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide
+        });
+        const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+        planeMesh.rotation.x = Math.PI / 2;
+        this.gridHelper.add(planeMesh);
+
         this.gridHelper.position.y = -1000; // Hide initially
         this.scene.add(this.gridHelper);
 
@@ -166,7 +182,7 @@ export class GodModeControls {
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
         // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelperGroup' && child !== this.gridHelper);
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
@@ -177,13 +193,14 @@ export class GodModeControls {
             // Snap grid to the surface
             this.gridHelper.position.copy(intersect.point);
 
-            // Align grid to normal (simplified)
-            // A full implementation would align the gridHelper to intersect.face.normal
+            // Reset rotation before lookAt to avoid compounding rotations
+            this.gridHelper.rotation.set(0,0,0);
+
+            // Align grid to normal
             if (intersect.face) {
                 const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
-                this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
-                this.gridHelper.rotateX(Math.PI / 2);
+                // We only align the Group's up vector to the normal
+                this.gridHelper.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
             }
         } else {
             this.intersectionPoint = null;
