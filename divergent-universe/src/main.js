@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,8 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let goldenParticles = null;
+let goldenParticlesTime = 0;
 
 init();
 animate();
@@ -74,10 +76,46 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+function createGoldenBurst() {
+    const particleCount = 500;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        // Start near center
+        positions[i * 3] = (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 10 + 50; // Camera is at y=50 initially
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 10 + 130; // Camera is at z=150
+
+        // Explosion velocity
+        const vx = (Math.random() - 0.5) * 200;
+        const vy = (Math.random() - 0.5) * 200;
+        const vz = (Math.random() - 0.5) * 200;
+        velocities.push(new THREE.Vector3(vx, vy, vz));
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700, // Gold
+        size: 3,
+        transparent: true,
+        opacity: 1.0,
+        blending: THREE.AdditiveBlending
+    });
+
+    goldenParticles = new THREE.Points(geometry, material);
+    goldenParticles.userData.velocities = velocities;
+    scene.add(goldenParticles);
+    goldenParticlesTime = 2.0; // Life time of burst
+}
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
+        createGoldenBurst();
         controls.enable();
     } else {
         // Simple spectator mode logic could go here
@@ -94,12 +132,36 @@ function onPlaceBlock(event) {
     let mesh;
     if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+        pos.y += 5;
+    } else if (type === 'chrome-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
+    } else if (type === 'rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 1), monolithMaterial);
+        pos.y += 10;
+    } else if (type === 'crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), glassMaterial);
+        mesh.scale.set(1, 2, 1);
+        pos.y += 16;
+    } else if (type === 'neon-tree') {
+        const treeGeo = new THREE.ConeGeometry(5, 20, 5);
+        mesh = new THREE.Mesh(treeGeo, neonCyanMaterial);
+        pos.y += 10;
     } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 10, 50, 8), monolithMaterial);
+        pos.y += 25;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteMetalMaterial);
+        pos.y += 1;
     }
 
     if (mesh) {
@@ -125,6 +187,32 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (goldenParticles && goldenParticlesTime > 0) {
+        goldenParticlesTime -= delta;
+        const positions = goldenParticles.geometry.attributes.position.array;
+        const velocities = goldenParticles.userData.velocities;
+
+        for (let i = 0; i < velocities.length; i++) {
+            positions[i * 3] += velocities[i].x * delta;
+            positions[i * 3 + 1] += velocities[i].y * delta;
+            positions[i * 3 + 2] += velocities[i].z * delta;
+
+            // Add gravity and drag
+            velocities[i].y -= 50 * delta;
+            velocities[i].multiplyScalar(0.95);
+        }
+
+        goldenParticles.geometry.attributes.position.needsUpdate = true;
+        goldenParticles.material.opacity = Math.max(0, goldenParticlesTime / 2.0);
+
+        if (goldenParticlesTime <= 0) {
+            scene.remove(goldenParticles);
+            goldenParticles.geometry.dispose();
+            goldenParticles.material.dispose();
+            goldenParticles = null;
+        }
     }
 
     renderer.render(scene, camera);
