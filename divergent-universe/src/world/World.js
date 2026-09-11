@@ -17,6 +17,9 @@ export class World {
         this.ocean = createOcean();
         this.group.add(this.ocean);
 
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         this.mainContinent = createMainContinent();
         this.group.add(this.mainContinent);
 
@@ -46,6 +49,30 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createAmbientParticles() {
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 500;
+            positions[i * 3 + 1] = Math.random() * 200;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 500;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        return new THREE.Points(geometry, material);
+    }
+
     update(delta) {
         this.time += delta;
 
@@ -58,6 +85,22 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update particles
+        if (this.ambientParticles) {
+            const positions = this.ambientParticles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length / 3; i++) {
+                positions[i * 3 + 1] += 10 * delta; // move up
+                positions[i * 3] += Math.sin(this.time + i) * 2 * delta; // swirl
+                positions[i * 3 + 2] += Math.cos(this.time + i) * 2 * delta; // swirl
+
+                // Reset height
+                if (positions[i * 3 + 1] > 200) {
+                    positions[i * 3 + 1] = 0;
+                }
+            }
+            this.ambientParticles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
