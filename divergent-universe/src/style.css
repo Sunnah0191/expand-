@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.3), inset 0 0 2px rgba(0, 240, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6), inset 0 0 5px rgba(0, 240, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.3), inset 0 0 2px rgba(0, 240, 255, 0.3);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -150,6 +162,13 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -159,11 +178,14 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .catalog-item {
