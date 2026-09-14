@@ -34,9 +34,25 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
-        this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
+        this.gridHelper = new THREE.Group();
+        this.gridHelper.name = 'GridHelper';
+
+        const gridLines = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        gridLines.material.transparent = true;
+        gridLines.material.opacity = 0.5;
+        this.gridHelper.add(gridLines);
+
+        const planeGeo = new THREE.PlaneGeometry(10, 10);
+        const planeMat = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.DoubleSide
+        });
+        const glowPlane = new THREE.Mesh(planeGeo, planeMat);
+        glowPlane.rotation.x = -Math.PI / 2; // Match grid helper orientation
+        this.gridHelper.add(glowPlane);
+
         this.gridHelper.position.y = -1000; // Hide initially
         this.scene.add(this.gridHelper);
 

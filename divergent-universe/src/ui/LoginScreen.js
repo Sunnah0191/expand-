@@ -86,24 +86,33 @@ export class LoginScreen {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const ctx = new AudioContext();
 
-            // Simple synth sound
+            // Futuristic activation sound
             const osc = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
             const gainNode = ctx.createGain();
 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
-            osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.5);
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(110, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+            osc.frequency.exponentialRampToValueAtTime(55, ctx.currentTime + 0.8);
+
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(220, ctx.currentTime);
+            osc2.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.2);
+            osc2.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.8);
 
             gainNode.gain.setValueAtTime(0, ctx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
 
             osc.connect(gainNode);
+            osc2.connect(gainNode);
             gainNode.connect(ctx.destination);
 
             osc.start();
-            osc.stop(ctx.currentTime + 0.5);
+            osc2.start();
+            osc.stop(ctx.currentTime + 0.8);
+            osc2.stop(ctx.currentTime + 0.8);
         } catch (e) {
             console.warn("AudioContext not supported or blocked");
         }

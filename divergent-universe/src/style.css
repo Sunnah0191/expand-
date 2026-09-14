@@ -75,9 +75,16 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -150,6 +157,12 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -159,6 +172,7 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -201,3 +215,12 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.matte-cube-icon { background: #444; border: 1px solid #666; }
+.glass-crystal-icon { background: rgba(100, 200, 255, 0.5); border: 1px solid var(--neon-cyan); }
+.neon-tree-icon { background: #0f0; box-shadow: 0 0 10px #0f0; }
+.rock-icon { background: #333; border: 1px solid #222; }
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid var(--neon-cyan); }
+.levitating-tower-icon { background: #2a2a34; border-top: 2px solid var(--neon-cyan); }
+.matte-bridge-icon { background: #555; height: 10px; width: 30px; margin-top: 10px; }
