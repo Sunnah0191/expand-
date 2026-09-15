@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
 }
 
 .login-form button {
@@ -150,6 +156,13 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 20px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -159,6 +172,7 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -190,6 +204,7 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {
@@ -199,5 +214,14 @@ body, html {
 }
 
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #ddd; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.matte-metal-cube-icon { background: #444; border: 1px solid #333; }
+
+.midpoly-rock-icon { background: #5a5a5a; border-radius: 5px; }
+.glass-crystal-icon { background: rgba(170, 255, 255, 0.5); border: 1px solid #aaffff; transform: rotate(45deg); width: 20px; height: 20px; margin-bottom: 5px; }
+.neon-tree-icon { border-bottom: 20px solid var(--neon-cyan); border-left: 10px solid transparent; border-right: 10px solid transparent; width: 0; height: 0; background: transparent; }
+
+.futuristic-monolith-icon { background: #1a1a24; border: 1px solid #555; height: 40px; width: 20px; margin-top: -10px; }
+.dark-tower-icon { background: #222; border-top: 2px solid var(--neon-cyan); height: 40px; width: 15px; margin-top: -10px; }
+.matte-bridge-icon { background: #333; width: 40px; height: 10px; border-bottom: 2px solid var(--neon-cyan); }
