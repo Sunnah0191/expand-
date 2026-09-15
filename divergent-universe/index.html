@@ -15,10 +15,10 @@
     <div id="login-screen">
       <div class="login-form">
         <h2>System Login</h2>
-        <input type="text" id="username" placeholder="Nickname" autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" autocomplete="off" />
-        <button id="login-btn">Initialize</button>
-        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Invalid credentials</p>
+        <input type="text" id="username" placeholder="Ник" autocomplete="off" />
+        <input type="password" id="password" placeholder="Пароль" autocomplete="off" />
+        <button id="login-btn">Авторизация</button>
+        <p id="login-error" style="display: none; color: #ff4a4a; margin-top: 10px; font-size: 14px;">Неверные данные</p>
       </div>
     </div>
 
@@ -29,21 +29,65 @@
     <div id="ui-layer" style="display: none;">
       <!-- Catalog Overlay -->
       <div id="build-catalog">
-        <h3>Construction Modules</h3>
-        <div class="catalog-grid">
-          <div class="catalog-item" data-type="glass-cube">
-            <div class="icon glass-cube-icon"></div>
-            <span>Glass Cube</span>
-          </div>
-          <div class="catalog-item" data-type="neon-pillar">
-            <div class="icon neon-pillar-icon"></div>
-            <span>Neon Pillar</span>
-          </div>
-          <div class="catalog-item" data-type="monolith">
-            <div class="icon monolith-icon"></div>
-            <span>Monolith</span>
+
+        <div class="catalog-category">
+          <h3>Ландшафт</h3>
+          <div class="catalog-grid">
+            <div class="catalog-item" data-type="midpoly-rock">
+              <div class="icon midpoly-rock-icon"></div>
+              <span>Mid-poly скала</span>
+            </div>
+            <div class="catalog-item" data-type="glass-crystal">
+              <div class="icon glass-crystal-icon"></div>
+              <span>Стеклянный кристалл</span>
+            </div>
+            <div class="catalog-item" data-type="neon-tree">
+              <div class="icon neon-tree-icon"></div>
+              <span>Неоновое дерево</span>
+            </div>
           </div>
         </div>
+
+        <div class="catalog-category">
+          <h3>Архитектура WuWa</h3>
+          <div class="catalog-grid">
+            <div class="catalog-item" data-type="futuristic-monolith">
+              <div class="icon futuristic-monolith-icon"></div>
+              <span>Монолит</span>
+            </div>
+            <div class="catalog-item" data-type="dark-tower">
+              <div class="icon dark-tower-icon"></div>
+              <span>Левитирующая башня</span>
+            </div>
+            <div class="catalog-item" data-type="matte-bridge">
+              <div class="icon matte-bridge-icon"></div>
+              <span>Матовый мост</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="catalog-category">
+          <h3>Конструктор (Блоки)</h3>
+          <div class="catalog-grid">
+            <div class="catalog-item" data-type="glass-cube">
+              <div class="icon glass-cube-icon"></div>
+              <span>Стекло</span>
+            </div>
+            <div class="catalog-item" data-type="chrome-cube">
+              <div class="icon chrome-cube-icon"></div>
+              <span>Хром</span>
+            </div>
+            <div class="catalog-item" data-type="neon-cube">
+              <div class="icon neon-cube-icon"></div>
+              <span>Неон</span>
+            </div>
+            <div class="catalog-item" data-type="matte-metal-cube">
+              <div class="icon matte-metal-cube-icon"></div>
+              <span>Матовый металл</span>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div id="crosshair">+</div>
