@@ -9,9 +9,9 @@ export class BuildMenu {
     }
 
     initEventListeners() {
-        // Toggle on '1' or '`'
+        // Toggle on '1' or '`' (and Russian 'ё', 'Ё')
         window.addEventListener('keydown', (e) => {
-            if (e.key === '1' || e.key === '`' || e.key === '~') {
+            if (e.key === '1' || e.key === '`' || e.key === '~' || e.key === 'ё' || e.key === 'Ё' || e.code === 'Backquote') {
                 this.toggleVisibility();
             }
         });
