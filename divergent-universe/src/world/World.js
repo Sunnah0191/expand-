@@ -13,6 +13,10 @@ export class World {
         this.group = new THREE.Group();
         this.time = 0;
 
+        // Ambient Particles
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         // Add elements
         this.ocean = createOcean();
         this.group.add(this.ocean);
@@ -46,6 +50,30 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 3000;     // x
+            positions[i + 1] = Math.random() * 500;          // y
+            positions[i + 2] = (Math.random() - 0.5) * 3000; // z
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2.0,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        return new THREE.Points(geometry, material);
+    }
+
     update(delta) {
         this.time += delta;
 
@@ -58,6 +86,19 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update ambient particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.05 * delta;
+            const positions = this.ambientParticles.geometry.attributes.position.array;
+            for (let i = 1; i < positions.length; i += 3) {
+                positions[i] -= 10 * delta; // move down
+                if (positions[i] < -10) {
+                    positions[i] = 500; // reset to top
+                }
+            }
+            this.ambientParticles.geometry.attributes.position.needsUpdate = true;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
