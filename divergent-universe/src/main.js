@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,8 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let goldenParticles = null;
+let particleTime = 0;
 
 init();
 animate();
@@ -79,6 +81,44 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // 3D golden particle explosion
+        const particleCount = 500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = camera.position.x;
+            positions[i * 3 + 1] = camera.position.y;
+            positions[i * 3 + 2] = camera.position.z - 20;
+
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+            const speed = Math.random() * 50 + 20;
+
+            velocities.push({
+                x: Math.sin(phi) * Math.cos(theta) * speed,
+                y: Math.sin(phi) * Math.sin(theta) * speed,
+                z: Math.cos(phi) * speed
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 1.5,
+            transparent: true,
+            opacity: 1,
+            blending: THREE.AdditiveBlending
+        });
+
+        goldenParticles = new THREE.Points(geometry, material);
+        goldenParticles.userData = { velocities: velocities };
+        scene.add(goldenParticles);
+        particleTime = 0;
+
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -94,12 +134,35 @@ function onPlaceBlock(event) {
     let mesh;
     if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+    } else if (type === 'chrome-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
     } else if (type === 'neon-pillar') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+        pos.y += 10;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 50, 10), monolithMaterial);
+        pos.y += 25;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteMetalMaterial);
+    } else if (type === 'rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8), monolithMaterial);
+        pos.y += 4;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6), glassMaterial);
+        pos.y += 6;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), monolithMaterial);
+        trunk.position.y = 5;
+        const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(6), neonCyanMaterial);
+        leaves.position.y = 12;
+        mesh.add(trunk);
+        mesh.add(leaves);
     }
 
     if (mesh) {
@@ -125,6 +188,28 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (goldenParticles) {
+        particleTime += delta;
+        const positions = goldenParticles.geometry.attributes.position.array;
+        const velocities = goldenParticles.userData.velocities;
+
+        for (let i = 0; i < velocities.length; i++) {
+            positions[i * 3] += velocities[i].x * delta;
+            positions[i * 3 + 1] += velocities[i].y * delta;
+            positions[i * 3 + 2] += velocities[i].z * delta;
+        }
+        goldenParticles.geometry.attributes.position.needsUpdate = true;
+
+        goldenParticles.material.opacity = Math.max(0, 1 - particleTime / 2);
+
+        if (particleTime > 2) {
+            scene.remove(goldenParticles);
+            goldenParticles.geometry.dispose();
+            goldenParticles.material.dispose();
+            goldenParticles = null;
+        }
     }
 
     renderer.render(scene, camera);
