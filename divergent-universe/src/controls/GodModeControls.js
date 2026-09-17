@@ -34,9 +34,26 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
-        this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
+        this.gridHelper = new THREE.Group();
+
+        const gridLines = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        gridLines.material.transparent = true;
+        gridLines.material.opacity = 0.5;
+
+        const laserPlaneGeo = new THREE.PlaneGeometry(10, 10);
+        const laserPlaneMat = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.DoubleSide,
+            depthWrite: false
+        });
+        const laserPlane = new THREE.Mesh(laserPlaneGeo, laserPlaneMat);
+        laserPlane.rotation.x = Math.PI / 2;
+
+        this.gridHelper.add(gridLines);
+        this.gridHelper.add(laserPlane);
+
         this.gridHelper.position.y = -1000; // Hide initially
         this.scene.add(this.gridHelper);
 
@@ -166,7 +183,7 @@ export class GodModeControls {
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
         // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        const intersectableObjects = this.scene.children.filter(child => child !== this.gridHelper);
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
