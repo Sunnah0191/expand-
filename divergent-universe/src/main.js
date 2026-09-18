@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,14 +92,52 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+    // Cache geometries if necessary to avoid memory leaks
+    if (!onPlaceBlock.geometries) {
+        onPlaceBlock.geometries = {
+            'rock': new THREE.DodecahedronGeometry(10, 0),
+            'crystal': new THREE.OctahedronGeometry(5, 0),
+            'neon-tree': new THREE.ConeGeometry(5, 20),
+            'monolith': new THREE.BoxGeometry(15, 30, 15),
+            'dark-tower': new THREE.BoxGeometry(10, 50, 10),
+            'matte-bridge': new THREE.BoxGeometry(40, 2, 10),
+            'glass-cube': new THREE.BoxGeometry(10, 10, 10),
+            'chrome-block': new THREE.BoxGeometry(10, 10, 10),
+            'neon-block': new THREE.BoxGeometry(10, 10, 10),
+            'matte-metal-block': new THREE.BoxGeometry(10, 10, 10)
+        };
+    }
+
+    if (type === 'rock') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['rock'], monolithMaterial);
+        pos.y += 10;
+    } else if (type === 'crystal') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['crystal'], glassMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['neon-tree'], neonCyanMaterial);
+        pos.y += 10;
     } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['monolith'], monolithMaterial);
         pos.y += 15;
+    } else if (type === 'dark-tower') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['dark-tower'], monolithMaterial);
+        pos.y += 25;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['matte-bridge'], monolithMaterial);
+        pos.y += 1;
+    } else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['glass-cube'], glassMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-block') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['chrome-block'], chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-block') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['neon-block'], neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal-block') {
+        mesh = new THREE.Mesh(onPlaceBlock.geometries['matte-metal-block'], matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {

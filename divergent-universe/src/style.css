@@ -161,9 +161,23 @@ body, html {
   color: #ccc;
 }
 
+.catalog-category {
+  margin-bottom: 15px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
@@ -201,3 +215,11 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #333; border-radius: 5px; }
+.crystal-icon { background: rgba(100, 200, 255, 0.6); border: 1px solid #fff; transform: rotate(45deg); width: 20px; height: 20px; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50% 50% 0 0; }
+.dark-tower-icon { background: #111; border: 1px solid #444; width: 15px; }
+.matte-bridge-icon { background: #444; height: 10px; width: 40px; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee, #888); border: 1px solid #fff; }
+.neon-block-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.matte-metal-block-icon { background: #666; border: 1px solid #999; }
