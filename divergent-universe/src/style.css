@@ -198,6 +198,18 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Landscape Icons */
+.glass-rock-icon { background: rgba(200, 220, 255, 0.4); border: 1px solid rgba(255,255,255,0.8); border-radius: 4px; }
+.glass-crystal-icon { background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(100,200,255,0.6) 100%); border: 1px solid #00f0ff; transform: rotate(45deg); width: 20px; height: 20px; margin: 5px; }
+.neon-tree-icon { background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%); border-radius: 50%; }
+
+/* WuWa Architecture Icons */
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid #444; border-radius: 2px; }
+.wuwa-tower-icon { background: #111; border-left: 2px solid var(--neon-cyan); border-right: 2px solid var(--neon-cyan); height: 35px; width: 15px; }
+.wuwa-bridge-icon { background: #222; border-top: 3px solid rgba(255,255,255,0.5); width: 40px; height: 10px; border-radius: 10px; }
+
+/* Block Icons */
+.block-glass-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid white; backdrop-filter: blur(2px); }
+.block-chrome-icon { background: linear-gradient(135deg, #eee 0%, #888 50%, #ccc 100%); border: 1px solid #aaa; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-matte-icon { background: #444; border: 1px solid #333; }
