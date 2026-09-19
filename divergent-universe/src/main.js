@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, neonBlueMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -92,14 +92,56 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+
+    // Ландшафт
+    if (type === 'glass-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 0), glassMaterial);
+        pos.y += 4;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(6, 0), glassMaterial);
+        mesh.scale.set(1, 2, 1);
+        pos.y += 6;
+    } else if (type === 'neon-tree') {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10), monolithMaterial);
+        const top = new THREE.Mesh(new THREE.SphereGeometry(6, 8, 8), neonCyanMaterial);
+        top.position.y = 8;
+        mesh = new THREE.Group();
+        mesh.add(trunk);
+        mesh.add(top);
+        pos.y += 5;
+    }
+    // Архитектура WuWa
+    else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'wuwa-tower') {
+        const base = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 10), monolithMaterial);
+        const accent = new THREE.Mesh(new THREE.BoxGeometry(10.5, 2, 10.5), neonBlueMaterial);
+        accent.position.y = 15;
+        const accent2 = new THREE.Mesh(new THREE.BoxGeometry(10.5, 2, 10.5), neonCyanMaterial);
+        accent2.position.y = 25;
+        mesh = new THREE.Group();
+        mesh.add(base);
+        mesh.add(accent);
+        mesh.add(accent2);
+        pos.y += 30;
+    } else if (type === 'wuwa-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 15), monolithMaterial);
+        pos.y += 1;
+    }
+    // Конструктор
+    else if (type === 'block-glass') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-matte') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
