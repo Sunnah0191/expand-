@@ -150,20 +150,30 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -195,9 +205,19 @@ body, html {
 .icon {
   width: 30px;
   height: 30px;
-  background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Icons */
+.glass-cube-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid white; }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #aaa); border: 1px solid #ddd; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.metal-cube-icon { background: #444; border: 1px solid #666; }
+
+.rock-icon { background: #5a5a5a; border-radius: 50% 50% 10% 10%; }
+.glass-crystal-icon { background: rgba(150, 255, 255, 0.6); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border: 1px solid white; }
+.neon-tree-icon { background: #00ffaa; border-radius: 50% 50% 50% 50%; box-shadow: 0 0 8px #00ffaa; }
+
+.monolith-icon { background: #1a1a24; border: 1px solid #333; }
+.dark-tower-icon { background: #111; border: 1px solid #555; clip-path: polygon(20% 100%, 80% 100%, 60% 0%, 40% 0%); }
+.matte-bridge-icon { background: #333; border-top: 2px solid var(--neon-cyan); height: 15px; margin-top: 15px; }
