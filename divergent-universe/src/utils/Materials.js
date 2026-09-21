@@ -46,6 +46,19 @@ export const neonWhiteMaterial = new THREE.MeshStandardMaterial({
     metalness: 0.5
 });
 
+// 3.5 New Building Materials
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xdddddd,
+    roughness: 0.05,
+    metalness: 1.0
+});
+
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555555,
+    roughness: 0.6,
+    metalness: 0.8
+});
+
 // 4. Glitch Material (Custom Shader)
 const glitchVertexShader = `
     varying vec2 vUv;
