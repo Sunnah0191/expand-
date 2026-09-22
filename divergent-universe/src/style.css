@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -140,30 +146,84 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  max-width: 1000px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.1);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
+}
+
+.catalog-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
 #build-catalog h3 {
   margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: 300;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #e0f7fa;
+  text-transform: uppercase;
+}
+
+.catalog-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.catalog-tab {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 20px;
+  text-transform: uppercase;
   letter-spacing: 1px;
-  color: #ccc;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.catalog-tab:hover {
+  color: #fff;
+}
+
+.catalog-tab.active {
+  color: var(--neon-cyan);
+  border-bottom: 2px solid var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.catalog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 200px;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.catalog-grid.hidden {
+  display: none;
 }
 
 .catalog-item {
@@ -190,14 +250,28 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {
   width: 30px;
   height: 30px;
   background-color: #555;
+  border-radius: 4px;
 }
 
+/* Landscape */
+.rock-icon { background: #6b6b6b; border: 1px solid #444; }
+.crystal-icon { background: rgba(0, 240, 255, 0.3); border: 1px solid var(--neon-cyan); }
+.tree-icon { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+
+/* WuWa Architecture */
+.monolith-icon { background: #1a1a24; border: 1px solid #333; }
+.tower-icon { background: #0a0a0f; border: 1px solid var(--neon-cyan); }
+.bridge-icon { background: rgba(255, 255, 255, 0.1); border-bottom: 2px solid #ccc; }
+
+/* Blocks */
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-cube-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.metal-cube-icon { background: #333; border: 1px solid #111; }

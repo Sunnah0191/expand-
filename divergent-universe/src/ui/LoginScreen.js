@@ -60,9 +60,12 @@ export class LoginScreen {
         // Play activation sound
         this.playActivationSound();
 
-        // Flash effect
+        // Flash effect and immediate callback
         if (isAdmin) {
             this.flashEl.classList.add('flash-active');
+            if (this.onStart) {
+                this.onStart();
+            }
         }
 
         // Fade out login screen
