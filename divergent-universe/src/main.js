@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,9 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let explosionParticles;
+let explosionActive = false;
+let explosionStartTime = 0;
 
 init();
 animate();
@@ -79,10 +82,48 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        triggerGoldenExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
+}
+
+function triggerGoldenExplosion() {
+    const particleCount = 5000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        // Start near camera
+        positions[i * 3] = camera.position.x + (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] = camera.position.y + (Math.random() - 0.5) * 10;
+        positions[i * 3 + 2] = camera.position.z - 20 + (Math.random() - 0.5) * 10;
+
+        velocities.push({
+            x: (Math.random() - 0.5) * 150,
+            y: (Math.random() - 0.5) * 150,
+            z: (Math.random() - 0.5) * 150
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700,
+        size: 3,
+        transparent: true,
+        opacity: 1.0,
+        blending: THREE.AdditiveBlending
+    });
+
+    explosionParticles = new THREE.Points(geometry, material);
+    explosionParticles.userData.velocities = velocities;
+    scene.add(explosionParticles);
+
+    explosionActive = true;
+    explosionStartTime = performance.now();
 }
 
 function onPlaceBlock(event) {
@@ -91,19 +132,75 @@ function onPlaceBlock(event) {
     const pos = event.detail.position;
     const type = buildMenu.getSelectedType();
 
+    // Cache geometries on the function object to prevent memory leaks
+    if (!onPlaceBlock.geometries) {
+        onPlaceBlock.geometries = {
+            rock: new THREE.DodecahedronGeometry(8, 1),
+            crystal: new THREE.OctahedronGeometry(5, 0),
+            tree: new THREE.ConeGeometry(3, 20, 5),
+            monolith: new THREE.BoxGeometry(15, 40, 15),
+            tower: new THREE.CylinderGeometry(8, 10, 50, 6),
+            bridge: new THREE.BoxGeometry(40, 2, 10),
+            block: new THREE.BoxGeometry(10, 10, 10)
+        };
+        // Fix tree origin
+        onPlaceBlock.geometries.tree.translate(0, 10, 0);
+    }
+
+    const geos = onPlaceBlock.geometries;
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        case 'rock':
+            mesh = new THREE.Mesh(geos.rock, monolithMaterial);
+            pos.y += 8;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(geos.crystal, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'tree':
+            mesh = new THREE.Mesh(geos.tree, neonCyanMaterial);
+            break;
+        case 'monolith':
+            mesh = new THREE.Mesh(geos.monolith, monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'tower':
+            mesh = new THREE.Mesh(geos.tower, monolithMaterial);
+            pos.y += 25;
+            break;
+        case 'bridge':
+            mesh = new THREE.Mesh(geos.bridge, monolithMaterial);
+            break;
+        case 'block-glass':
+            mesh = new THREE.Mesh(geos.block, glassMaterial);
+            pos.y += 5;
+            break;
+        case 'block-chrome':
+            mesh = new THREE.Mesh(geos.block, chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'block-neon':
+            mesh = new THREE.Mesh(geos.block, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'block-metal':
+            mesh = new THREE.Mesh(geos.block, matteMetalMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+
+        // Random rotation for natural objects
+        if (['rock', 'crystal', 'tree'].includes(type)) {
+            mesh.rotation.y = Math.random() * Math.PI * 2;
+        }
+
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         scene.add(mesh);
     }
 }
@@ -125,6 +222,31 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (explosionActive && explosionParticles) {
+        const currentTime = performance.now();
+        const elapsed = (currentTime - explosionStartTime) / 1000;
+
+        if (elapsed > 2) {
+            scene.remove(explosionParticles);
+            explosionParticles.geometry.dispose();
+            explosionParticles.material.dispose();
+            explosionParticles = null;
+            explosionActive = false;
+        } else {
+            // Delta from frame loop is fine here as it matches rendering,
+            // but we track life with performance.now()
+            const positions = explosionParticles.geometry.attributes.position.array;
+            const velocities = explosionParticles.userData.velocities;
+            for (let i = 0; i < velocities.length; i++) {
+                positions[i * 3] += velocities[i].x * delta;
+                positions[i * 3 + 1] += velocities[i].y * delta;
+                positions[i * 3 + 2] += velocities[i].z * delta;
+            }
+            explosionParticles.geometry.attributes.position.needsUpdate = true;
+            explosionParticles.material.opacity = 1 - (elapsed / 2);
+        }
     }
 
     renderer.render(scene, camera);
