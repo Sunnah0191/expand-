@@ -43,7 +43,47 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.createAmbientParticles();
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Distribute particles across a wide area around the center
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 500 + 200;
+            const z = (Math.random() - 0.5) * 2000;
+
+            positions[i * 3] = x;
+            positions[i * 3 + 1] = y;
+            positions[i * 3 + 2] = z;
+
+            velocities.push({
+                x: (Math.random() - 0.5) * 10,
+                y: (Math.random() - 0.5) * 5,
+                z: (Math.random() - 0.5) * 10
+            });
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.ambientParticles = new THREE.Points(geometry, material);
+        this.particleVelocities = velocities;
+        this.group.add(this.ambientParticles);
     }
 
     update(delta) {
@@ -82,6 +122,26 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Animate particles
+        if (this.ambientParticles) {
+            const positions = this.ambientParticles.geometry.attributes.position.array;
+            for (let i = 0; i < this.particleVelocities.length; i++) {
+                positions[i * 3] += this.particleVelocities[i].x * delta;
+                positions[i * 3 + 1] += this.particleVelocities[i].y * delta;
+                positions[i * 3 + 2] += this.particleVelocities[i].z * delta;
+
+                // Loop particles slightly for continuous effect
+                if (positions[i * 3 + 1] < -100) positions[i * 3 + 1] = 600;
+                if (positions[i * 3 + 1] > 600) positions[i * 3 + 1] = -100;
+                if (positions[i * 3] > 1000) positions[i * 3] = -1000;
+                if (positions[i * 3] < -1000) positions[i * 3] = 1000;
+                if (positions[i * 3 + 2] > 1000) positions[i * 3 + 2] = -1000;
+                if (positions[i * 3 + 2] < -1000) positions[i * 3 + 2] = 1000;
+            }
+            this.ambientParticles.geometry.attributes.position.needsUpdate = true;
+            this.ambientParticles.rotation.y += 0.05 * delta; // slight rotation around center
         }
     }
 }
