@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -79,10 +79,75 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        triggerGoldenExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
+}
+
+function triggerGoldenExplosion() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        // Start near camera
+        positions[i * 3] = camera.position.x + (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] = camera.position.y + (Math.random() - 0.5) * 10;
+        positions[i * 3 + 2] = camera.position.z - 20;
+
+        velocities.push({
+            x: (Math.random() - 0.5) * 100,
+            y: (Math.random() - 0.5) * 100,
+            z: (Math.random() - 0.5) * 100
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700,
+        size: 2,
+        transparent: true,
+        opacity: 1,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    let lastTime = performance.now();
+    let life = 1.0;
+
+    function animateExplosion() {
+        if (life <= 0) {
+            scene.remove(particles);
+            geometry.dispose();
+            material.dispose();
+            return;
+        }
+
+        const now = performance.now();
+        const delta = (now - lastTime) / 1000;
+        lastTime = now;
+
+        const posAttr = geometry.attributes.position;
+        for (let i = 0; i < particleCount; i++) {
+            posAttr.array[i * 3] += velocities[i].x * delta;
+            posAttr.array[i * 3 + 1] += velocities[i].y * delta;
+            posAttr.array[i * 3 + 2] += velocities[i].z * delta;
+        }
+        posAttr.needsUpdate = true;
+
+        material.opacity = life;
+        life -= delta * 0.5; // lasts about 2 seconds
+
+        requestAnimationFrame(animateExplosion);
+    }
+
+    animateExplosion();
 }
 
 function onPlaceBlock(event) {
@@ -92,14 +157,40 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+    if (type === 'rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(10, 1), monolithMaterial);
+        pos.y += 10;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.OctahedronGeometry(8, 0), glassMaterial);
+        pos.y += 8;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 15), monolithMaterial);
+        trunk.position.y = 7.5;
+        const leaves = new THREE.Mesh(new THREE.SphereGeometry(6, 8, 8), neonCyanMaterial);
+        leaves.position.y = 15;
+        mesh.add(trunk, leaves);
+    } else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'wuwa-tower') {
+        mesh = new THREE.Mesh(new THREE.CylinderGeometry(5, 10, 50, 8), monolithMaterial);
+        pos.y += 30; // Float a bit
+    } else if (type === 'wuwa-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), glassMaterial);
+        pos.y += 1;
+    } else if (type === 'glass-cube') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+        pos.y += 5;
+    } else if (type === 'chrome-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'metal-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
     }
 
     if (mesh) {
