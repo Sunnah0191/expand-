@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -150,6 +162,7 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -159,6 +172,7 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -198,6 +212,13 @@ body, html {
   background-color: #555;
 }
 
+.rock-icon { background: #666; border: 1px solid #999; }
+.crystal-icon { background: rgba(170, 255, 255, 0.6); border: 1px solid #aaffff; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; }
+.dark-tower-icon { background: #1a1a24; border: 1px solid #333; }
+.matte-bridge-icon { background: #333; border-top: 2px solid var(--neon-cyan); }
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-block-icon { background: linear-gradient(135deg, #eee 0%, #999 100%); border: 1px solid #fff; }
+.matte-metal-icon { background: #555; border: 1px solid #777; }
