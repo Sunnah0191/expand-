@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,25 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let explosionParticles = null;
+let explosionStartTime = 0;
+
+// Cached Geometries
+const geoCache = {
+    rock: new THREE.DodecahedronGeometry(5, 1),
+    crystal: new THREE.OctahedronGeometry(4, 0),
+    tree: new THREE.ConeGeometry(2, 15, 5),
+    wuwaMonolith: new THREE.BoxGeometry(10, 30, 10),
+    wuwaTower: new THREE.CylinderGeometry(5, 8, 40, 8),
+    wuwaBridge: new THREE.BoxGeometry(30, 2, 8),
+    blockCube: new THREE.BoxGeometry(10, 10, 10)
+};
+// Adjust centers
+geoCache.tree.translate(0, 7.5, 0);
+geoCache.wuwaMonolith.translate(0, 15, 0);
+geoCache.wuwaTower.translate(0, 20, 0);
+geoCache.blockCube.translate(0, 5, 0);
+
 
 init();
 animate();
@@ -74,11 +93,50 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+function createExplosion() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = 0;
+        positions[i * 3 + 1] = 50; // starting near camera center roughly
+        positions[i * 3 + 2] = 100;
+
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        const speed = 50 + Math.random() * 200;
+
+        velocities.push({
+            x: Math.sin(phi) * Math.cos(theta) * speed,
+            y: Math.sin(phi) * Math.sin(theta) * speed,
+            z: Math.cos(phi) * speed
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700, // neon gold
+        size: 2,
+        transparent: true,
+        opacity: 1,
+        blending: THREE.AdditiveBlending
+    });
+
+    explosionParticles = new THREE.Points(geometry, material);
+    explosionParticles.userData.velocities = velocities;
+    scene.add(explosionParticles);
+    explosionStartTime = performance.now();
+}
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
-        document.getElementById('ui-layer').style.display = 'block';
+        document.getElementById('ui-layer').style.display = 'flex';
         controls.enable();
+        createExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -92,18 +150,59 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        // Ландшафт
+        case 'rock':
+            mesh = new THREE.Mesh(geoCache.rock, monolithMaterial);
+            break;
+        case 'glass-crystal':
+            mesh = new THREE.Mesh(geoCache.crystal, glassMaterial);
+            mesh.position.y += 4;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Mesh(geoCache.tree, neonCyanMaterial);
+            break;
+
+        // Архитектура WuWa
+        case 'wuwa-monolith':
+            mesh = new THREE.Mesh(geoCache.wuwaMonolith, monolithMaterial);
+            break;
+        case 'wuwa-tower':
+            mesh = new THREE.Mesh(geoCache.wuwaTower, monolithMaterial);
+            break;
+        case 'wuwa-bridge':
+            mesh = new THREE.Mesh(geoCache.wuwaBridge, monolithMaterial);
+            mesh.position.y += 1;
+            break;
+
+        // Конструктор (Блоки)
+        case 'block-glass':
+            mesh = new THREE.Mesh(geoCache.blockCube, glassMaterial);
+            break;
+        case 'block-chrome':
+            mesh = new THREE.Mesh(geoCache.blockCube, chromeMaterial);
+            break;
+        case 'block-neon':
+            mesh = new THREE.Mesh(geoCache.blockCube, neonCyanMaterial);
+            break;
+        case 'block-metal':
+            mesh = new THREE.Mesh(geoCache.blockCube, matteMetalMaterial);
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+
+        // Randomize rotation a bit for natural things like rocks and crystals
+        if(type === 'rock' || type === 'glass-crystal') {
+            mesh.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+        }
+
         scene.add(mesh);
     }
 }
@@ -125,6 +224,27 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (explosionParticles) {
+        const elapsedTime = (performance.now() - explosionStartTime) / 1000;
+        if (elapsedTime > 2) { // 2 seconds duration
+            scene.remove(explosionParticles);
+            explosionParticles.geometry.dispose();
+            explosionParticles.material.dispose();
+            explosionParticles = null;
+        } else {
+            const positions = explosionParticles.geometry.attributes.position.array;
+            const velocities = explosionParticles.userData.velocities;
+
+            for (let i = 0; i < velocities.length; i++) {
+                positions[i * 3] += velocities[i].x * delta;
+                positions[i * 3 + 1] += velocities[i].y * delta;
+                positions[i * 3 + 2] += velocities[i].z * delta;
+            }
+            explosionParticles.geometry.attributes.position.needsUpdate = true;
+            explosionParticles.material.opacity = 1 - (elapsedTime / 2);
+        }
     }
 
     renderer.render(scene, camera);
