@@ -201,3 +201,35 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+
+/* Additional Styles for UI Updates */
+.blur-active {
+    filter: blur(8px);
+    transition: filter 1s ease-out;
+}
+
+/* Wuthering Waves pulsing for inputs */
+@keyframes neonPulse {
+    0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
+}
+
+.login-form input:hover, .login-form input:focus {
+    animation: neonPulse 1.5s infinite alternate;
+}
+
+/* Restructured Catalog */
+.catalog-sections {
+    display: flex;
+    gap: 30px;
+}
+
+.catalog-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.catalog-section h3 {
+    text-transform: uppercase;
+}
