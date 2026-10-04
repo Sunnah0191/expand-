@@ -177,11 +177,13 @@ export class GodModeControls {
             // Snap grid to the surface
             this.gridHelper.position.copy(intersect.point);
 
-            // Align grid to normal (simplified)
-            // A full implementation would align the gridHelper to intersect.face.normal
+            // Align grid to normal
             if (intersect.face) {
                 const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
+                // transformDirection ignores translation, so it gives correct world normal vector
+                n.transformDirection(intersect.object.matrixWorld).normalize();
+
+                // Add the normal to the position to look at a point along the normal
                 this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
                 this.gridHelper.rotateX(Math.PI / 2);
             }
