@@ -13,6 +13,10 @@ export class World {
         this.group = new THREE.Group();
         this.time = 0;
 
+        // Ambient particles
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         // Add elements
         this.ocean = createOcean();
         this.group.add(this.ocean);
@@ -46,8 +50,42 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createAmbientParticles() {
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 500;
+            positions[i * 3 + 1] = Math.random() * 200;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 500;
+            sizes[i] = Math.random();
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        return particles;
+    }
+
     update(delta) {
         this.time += delta;
+
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y = this.time * 0.02;
+            this.ambientParticles.position.y = Math.sin(this.time * 0.5) * 2;
+        }
 
         // Rotate the central core slightly
         const core = this.mainContinent.getObjectByName("CentralCore");
