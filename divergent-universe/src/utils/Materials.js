@@ -1,5 +1,18 @@
 import * as THREE from 'three';
 
+// 0. Base Materials
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    roughness: 0.6,
+    metalness: 0.8,
+});
+
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 1.0,
+});
+
 // 1. Glassmorphism Material (High transmission, some roughness, thickness)
 export const glassMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
