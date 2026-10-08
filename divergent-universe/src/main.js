@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -74,11 +74,83 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+function createGoldenExplosion() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = camera.position.x;
+        positions[i * 3 + 1] = camera.position.y;
+        positions[i * 3 + 2] = camera.position.z - 20;
+
+        const theta = Math.random() * 2 * Math.PI;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const speed = Math.random() * 50 + 20;
+
+        velocities.push({
+            x: Math.sin(phi) * Math.cos(theta) * speed,
+            y: Math.sin(phi) * Math.sin(theta) * speed,
+            z: Math.cos(phi) * speed
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700, // Gold
+        size: 3,
+        transparent: true,
+        opacity: 1.0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    let lastTime = performance.now();
+    let opacity = 1.0;
+
+    function animateExplosion() {
+        if (opacity <= 0) {
+            scene.remove(particles);
+            geometry.dispose();
+            material.dispose();
+            return;
+        }
+
+        requestAnimationFrame(animateExplosion);
+        const currentTime = performance.now();
+        const delta = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+
+        const posAttr = particles.geometry.attributes.position;
+        const posArray = posAttr.array;
+
+        for (let i = 0; i < particleCount; i++) {
+            const vel = velocities[i];
+            posArray[i * 3] += vel.x * delta;
+            posArray[i * 3 + 1] += vel.y * delta;
+            posArray[i * 3 + 2] += vel.z * delta;
+        }
+
+        posAttr.needsUpdate = true;
+
+        opacity -= delta * 0.5; // Fade out over 2 seconds
+        material.opacity = Math.max(0, opacity);
+    }
+
+    animateExplosion();
+}
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        createGoldenExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -93,13 +165,54 @@ function onPlaceBlock(event) {
 
     let mesh;
     if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        if (!onPlaceBlock.glassGeo) onPlaceBlock.glassGeo = new THREE.BoxGeometry(10, 10, 10);
+        mesh = new THREE.Mesh(onPlaceBlock.glassGeo, glassMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-cube') {
+        if (!onPlaceBlock.chromeGeo) onPlaceBlock.chromeGeo = new THREE.BoxGeometry(10, 10, 10);
+        mesh = new THREE.Mesh(onPlaceBlock.chromeGeo, chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-metal') {
+        if (!onPlaceBlock.matteGeo) onPlaceBlock.matteGeo = new THREE.BoxGeometry(10, 10, 10);
+        mesh = new THREE.Mesh(onPlaceBlock.matteGeo, matteMetalMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
+        if (!onPlaceBlock.neonPillarGeo) onPlaceBlock.neonPillarGeo = new THREE.CylinderGeometry(2, 2, 20);
+        mesh = new THREE.Mesh(onPlaceBlock.neonPillarGeo, neonCyanMaterial);
         pos.y += 10; // offset so it sits on ground
     } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+        if (!onPlaceBlock.monolithGeo) onPlaceBlock.monolithGeo = new THREE.BoxGeometry(15, 30, 15);
+        mesh = new THREE.Mesh(onPlaceBlock.monolithGeo, monolithMaterial);
         pos.y += 15;
+    } else if (type === 'rock') {
+        if (!onPlaceBlock.rockGeo) onPlaceBlock.rockGeo = new THREE.DodecahedronGeometry(8, 0);
+        mesh = new THREE.Mesh(onPlaceBlock.rockGeo, monolithMaterial);
+        pos.y += 8;
+        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    } else if (type === 'crystal') {
+        if (!onPlaceBlock.crystalGeo) onPlaceBlock.crystalGeo = new THREE.OctahedronGeometry(6, 0);
+        mesh = new THREE.Mesh(onPlaceBlock.crystalGeo, glassMaterial);
+        pos.y += 6;
+        mesh.rotation.y = Math.random() * Math.PI;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Group();
+        if (!onPlaceBlock.treeTrunkGeo) onPlaceBlock.treeTrunkGeo = new THREE.CylinderGeometry(1, 1.5, 10);
+        const trunk = new THREE.Mesh(onPlaceBlock.treeTrunkGeo, monolithMaterial);
+        trunk.position.y = 5;
+        mesh.add(trunk);
+
+        if (!onPlaceBlock.treeLeavesGeo) onPlaceBlock.treeLeavesGeo = new THREE.IcosahedronGeometry(4, 0);
+        const leaves = new THREE.Mesh(onPlaceBlock.treeLeavesGeo, neonCyanMaterial);
+        leaves.position.y = 10;
+        mesh.add(leaves);
+    } else if (type === 'dark-tower') {
+        if (!onPlaceBlock.towerGeo) onPlaceBlock.towerGeo = new THREE.BoxGeometry(10, 50, 10);
+        mesh = new THREE.Mesh(onPlaceBlock.towerGeo, monolithMaterial);
+        pos.y += 25;
+    } else if (type === 'matte-bridge') {
+        if (!onPlaceBlock.bridgeGeo) onPlaceBlock.bridgeGeo = new THREE.BoxGeometry(30, 2, 10);
+        mesh = new THREE.Mesh(onPlaceBlock.bridgeGeo, matteMetalMaterial);
+        pos.y += 1;
     }
 
     if (mesh) {
