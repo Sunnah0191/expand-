@@ -43,7 +43,38 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.createAmbientParticles();
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 4000; // x
+            positions[i * 3 + 1] = Math.random() * 500;      // y
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 4000; // z
+            sizes[i] = Math.random() * 2;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.group.add(this.particles);
     }
 
     update(delta) {
@@ -82,6 +113,16 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        if (this.particles) {
+            this.particles.rotation.y += 0.05 * delta;
+            const positions = this.particles.geometry.attributes.position.array;
+            for (let i = 1; i < positions.length; i += 3) {
+                positions[i] += Math.sin(this.time + i) * 0.1;
+                if (positions[i] > 500) positions[i] = 0; // wrap around
+            }
+            this.particles.geometry.attributes.position.needsUpdate = true;
         }
     }
 }
