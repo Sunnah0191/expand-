@@ -150,6 +150,7 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
 }
 
 #build-catalog h3 {
@@ -159,6 +160,19 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+}
+
+.catalog-category {
+  margin-bottom: 15px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #aaa;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -190,6 +204,7 @@ body, html {
   font-size: 10px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {
@@ -201,3 +216,11 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.rock-icon { background: #555; border: 1px solid #777; }
+.glass-crystal-icon { background: rgba(0, 255, 255, 0.5); border: 1px solid var(--neon-cyan); }
+.neon-tree-icon { background: #00ff88; border: 1px solid #ffffff; }
+.dark-tower-icon { background: #1a1a24; border: 1px solid var(--neon-cyan); }
+.matte-bridge-icon { background: #444; border: 1px solid #888; }
+.chrome-cube-icon { background: #fff; border: 1px solid #aaa; }
+.neon-cube-icon { background: var(--neon-cyan); border: 1px solid #fff; }
+.matte-metal-cube-icon { background: #888; border: 1px solid #aaa; }
