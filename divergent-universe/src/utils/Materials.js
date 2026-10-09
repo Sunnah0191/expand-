@@ -21,6 +21,36 @@ export const monolithMaterial = new THREE.MeshStandardMaterial({
     flatShading: true
 });
 
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 1.0,
+});
+
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    roughness: 0.6,
+    metalness: 0.7,
+});
+
+export const rockMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555555,
+    roughness: 0.9,
+    metalness: 0.1,
+    flatShading: true
+});
+
+export const leafMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x00ff88,
+    roughness: 0.3,
+    metalness: 0.1,
+    transmission: 0.6,
+    ior: 1.2,
+    transparent: true,
+    opacity: 0.9,
+    side: THREE.DoubleSide
+});
+
 // 3. Neon/Emissive Materials
 export const neonCyanMaterial = new THREE.MeshStandardMaterial({
     color: 0x00f0ff,
