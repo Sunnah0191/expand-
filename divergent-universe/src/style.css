@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 2s infinite;
 }
 
 .login-form button {
@@ -140,35 +152,56 @@ body, html {
 /* ================= BUILD CATALOG ================= */
 #build-catalog {
   position: absolute;
-  bottom: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  padding: 20px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 0 50px rgba(0, 240, 255, 0.1);
+  max-width: 80vw;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-#build-catalog h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 14px;
-  letter-spacing: 1px;
-  color: #ccc;
+/* Make sure flex display is used when visible */
+#build-catalog.visible {
+  display: flex !important;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.catalog-category h3 {
+  margin: 0;
+  text-align: left;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  padding-bottom: 5px;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 8px;
@@ -182,22 +215,33 @@ body, html {
 
 .catalog-item:hover, .catalog-item.selected {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+  background: rgba(0, 240, 255, 0.15);
 }
 
 .catalog-item span {
-  font-size: 10px;
+  font-size: 11px;
   margin-top: 8px;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .icon {
-  width: 30px;
-  height: 30px;
-  background-color: #555;
+  width: 35px;
+  height: 35px;
+  border-radius: 4px;
 }
 
+/* Icons styling placeholders */
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-cube-icon { background: linear-gradient(135deg, #ccc, #fff, #999); border: 1px solid #aaa; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.metal-cube-icon { background: #555; border: 1px solid #333; }
+
+.rock-icon { background: #444; border-radius: 50%; }
+.crystal-icon { background: rgba(0, 255, 255, 0.4); border: 1px solid cyan; transform: rotate(45deg); }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50% 50% 0 0; }
+
+.monolith-icon { background: #222; border: 1px solid #555; height: 45px; width: 20px; }
+.tower-icon { background: linear-gradient(to top, #111, #444); width: 20px; height: 40px; border-radius: 2px 2px 0 0; }
+.bridge-icon { background: #333; width: 45px; height: 10px; border-radius: 5px; }
