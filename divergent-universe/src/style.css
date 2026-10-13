@@ -150,6 +150,14 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #build-catalog h3 {
@@ -159,6 +167,10 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+  width: 100%;
 }
 
 .catalog-grid {
@@ -201,3 +213,16 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+
+.rock-icon { background: #555; border-radius: 50%; }
+.glass-crystal-icon { background: rgba(0, 240, 255, 0.3); border: 1px solid #00f0ff; transform: rotate(45deg); width: 20px; height: 20px; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50% 50% 0 0; }
+
+.wuwa-monolith-icon { background: #111; border: 1px solid #333; }
+.wuwa-tower-icon { background: #222; width: 15px; height: 35px; }
+.wuwa-bridge-icon { background: rgba(255,255,255,0.2); width: 35px; height: 10px; }
+
+.block-glass-icon { background: rgba(255,255,255,0.4); border: 1px solid white; }
+.block-chrome-icon { background: linear-gradient(135deg, #eee, #aaa); }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.block-metal-icon { background: #444; border: 2px solid #666; }
