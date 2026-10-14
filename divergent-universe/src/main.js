@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial, neonWhiteMaterial, neonBlueMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,8 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+let goldenParticles = null;
+let goldenParticlesAnimationStart = 0;
 
 init();
 animate();
@@ -74,11 +76,54 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+function createGoldenExplosion() {
+    const particleCount = 5000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = camera.position.x;
+        positions[i + 1] = camera.position.y;
+        positions[i + 2] = camera.position.z - 20;
+
+        // Random velocities in sphere
+        const phi = Math.acos(-1 + (2 * i / (particleCount * 3)));
+        const theta = Math.sqrt(particleCount * 3 * Math.PI) * phi;
+
+        const speed = Math.random() * 200 + 50;
+
+        velocities.push(
+            speed * Math.cos(theta) * Math.sin(phi),
+            speed * Math.sin(theta) * Math.sin(phi),
+            speed * Math.cos(phi)
+        );
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700, // Gold
+        size: 2,
+        transparent: true,
+        opacity: 1.0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+
+    goldenParticles = new THREE.Points(geometry, material);
+    goldenParticles.userData.velocities = velocities;
+    scene.add(goldenParticles);
+
+    goldenParticlesAnimationStart = performance.now();
+}
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        createGoldenExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -92,11 +137,61 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
+
+    // Landscape
+    if (type === 'landscape-rock') {
+        mesh = new THREE.Mesh(new THREE.DodecahedronGeometry(15, 1), monolithMaterial);
+        pos.y += 10;
+    } else if (type === 'glass-crystal') {
+        mesh = new THREE.Mesh(new THREE.ConeGeometry(5, 20, 5), glassMaterial);
+        pos.y += 10;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Group();
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 15), monolithMaterial);
+        trunk.position.y = 7.5;
+        const leaves = new THREE.Mesh(new THREE.IcosahedronGeometry(10, 1), neonCyanMaterial);
+        leaves.position.y = 20;
+        mesh.add(trunk);
+        mesh.add(leaves);
+    }
+    // WuWa Architecture
+    else if (type === 'wuwa-monolith') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 40, 15), monolithMaterial);
+        pos.y += 20;
+    } else if (type === 'wuwa-tower') {
+        mesh = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(10, 15, 30, 8), monolithMaterial);
+        base.position.y = 15;
+        const core = new THREE.Mesh(new THREE.OctahedronGeometry(5, 0), neonBlueMaterial);
+        core.position.y = 35;
+        mesh.add(base);
+        mesh.add(core);
+    } else if (type === 'wuwa-bridge') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(30, 2, 10), matteMetalMaterial);
+        pos.y += 1;
+    }
+    // Constructor Blocks
+    else if (type === 'block-glass') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
+    } else if (type === 'block-chrome') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'block-neon') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'block-matte') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), matteMetalMaterial);
+        pos.y += 5;
+    }
+
+    // Fallback for old items (if they still exist in some branch of logic)
+    else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
+        pos.y += 5;
     } else if (type === 'neon-pillar') {
         mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+        pos.y += 10;
     } else if (type === 'monolith') {
         mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
         pos.y += 15;
@@ -125,6 +220,44 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    // Update golden particles
+    if (goldenParticles) {
+        const timeNow = performance.now();
+        const dt = (timeNow - goldenParticlesAnimationStart) / 1000.0;
+        goldenParticlesAnimationStart = timeNow;
+
+        const positions = goldenParticles.geometry.attributes.position.array;
+        const velocities = goldenParticles.userData.velocities;
+
+        let allDead = true;
+        for (let i = 0; i < positions.length; i += 3) {
+            // Apply velocity
+            positions[i] += velocities[i] * dt;
+            positions[i + 1] += velocities[i + 1] * dt;
+            positions[i + 2] += velocities[i + 2] * dt;
+
+            // Gravity and drag
+            velocities[i + 1] -= 98 * dt; // gravity
+            velocities[i] *= 0.95; // drag
+            velocities[i + 1] *= 0.95;
+            velocities[i + 2] *= 0.95;
+
+            if (goldenParticles.material.opacity > 0) {
+                allDead = false;
+            }
+        }
+
+        goldenParticles.geometry.attributes.position.needsUpdate = true;
+        goldenParticles.material.opacity -= dt * 0.5;
+
+        if (goldenParticles.material.opacity <= 0) {
+            scene.remove(goldenParticles);
+            goldenParticles.geometry.dispose();
+            goldenParticles.material.dispose();
+            goldenParticles = null;
+        }
     }
 
     renderer.render(scene, camera);
