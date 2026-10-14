@@ -150,15 +150,22 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  gap: 30px; /* Space between categories */
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
