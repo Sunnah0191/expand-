@@ -46,6 +46,7 @@ export class LoginScreen {
     }
 
     showError() {
+        this.errorMsg.innerText = 'Неверные данные';
         this.errorMsg.style.display = 'block';
         this.loginBtn.style.borderColor = '#ff4a4a';
         this.loginBtn.style.color = '#ff4a4a';

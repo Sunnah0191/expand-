@@ -43,7 +43,43 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+        const opacities = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Spread particles over a large area
+            positions[i * 3] = (Math.random() - 0.5) * 4000;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 4000;
+
+            sizes[i] = Math.random() * 2.0;
+            opacities[i] = Math.random();
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        geometry.setAttribute('opacity', new THREE.BufferAttribute(opacities, 1));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 3.0,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        return new THREE.Points(geometry, material);
     }
 
     update(delta) {
@@ -54,6 +90,12 @@ export class World {
         if (core) {
             core.rotation.y += 0.5 * delta;
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
+        }
+
+        // Update ambient particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.02 * delta;
+            this.ambientParticles.position.y = Math.sin(this.time * 0.5) * 20;
         }
 
         // Update custom shaders
