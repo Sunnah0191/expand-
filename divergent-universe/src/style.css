@@ -75,9 +75,15 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan) inset; border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 15px var(--neon-cyan), 0 0 20px var(--neon-cyan) inset; border-color: var(--neon-cyan); }
+  100% { box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan) inset; border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulse-neon 2s infinite ease-in-out;
 }
 
 .login-form button {
@@ -149,21 +155,32 @@ body, html {
   border-radius: 12px;
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  display: none; /* Hidden by default, will be flex */
+  flex-direction: row;
+  gap: 30px;
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .catalog-item {
@@ -198,6 +215,10 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+.glass-cube-icon, .glass-crystal-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.neon-pillar-icon, .neon-tree-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.monolith-icon, .dark-tower-icon { background: #1a1a24; border: 1px solid #555; }
+.rock-icon { background: #666; border: 1px solid #888; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.matte-bridge-icon { background: #333; border-top: 2px solid #666; border-bottom: 2px solid #666; }
+.chrome-icon { background: linear-gradient(135deg, #eee, #999); border: 1px solid #fff; }
+.matte-metal-icon { background: #7f8c8d; border: 1px solid #bdc3c7; }

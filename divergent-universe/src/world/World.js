@@ -7,6 +7,58 @@ import { createIslandTwo } from './IslandTwo.js';
 import { createIslandThree } from './IslandThree.js';
 import { createIslandFour } from './IslandFour.js';
 
+function createAmbientParticles() {
+    const particleCount = 2000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const opacities = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i++) {
+        // Spread particles across the world
+        positions[i * 3] = (Math.random() - 0.5) * 4000;     // x
+        positions[i * 3 + 1] = Math.random() * 500;          // y
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 4000; // z
+
+        opacities[i] = Math.random();
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('opacity', new THREE.BufferAttribute(opacities, 1));
+
+    // Custom shader for blinking ambient particles
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            time: { value: 0 },
+            color: { value: new THREE.Color(0x88ffff) }
+        },
+        vertexShader: `
+            attribute float opacity;
+            varying float vOpacity;
+            void main() {
+                vOpacity = opacity;
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                gl_PointSize = 4.0 * (300.0 / -mvPosition.z);
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `,
+        fragmentShader: `
+            uniform float time;
+            uniform vec3 color;
+            varying float vOpacity;
+            void main() {
+                float blink = (sin(time * 2.0 + vOpacity * 10.0) + 1.0) * 0.5;
+                gl_FragColor = vec4(color, blink * 0.5);
+            }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    return particles;
+}
+
 export class World {
     constructor(scene) {
         this.scene = scene;
@@ -16,6 +68,10 @@ export class World {
         // Add elements
         this.ocean = createOcean();
         this.group.add(this.ocean);
+
+        // Add ambient particles
+        this.ambientParticles = createAmbientParticles();
+        this.group.add(this.ambientParticles);
 
         this.mainContinent = createMainContinent();
         this.group.add(this.mainContinent);
@@ -58,6 +114,12 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        // Update ambient particles
+        if (this.ambientParticles && this.ambientParticles.material.uniforms) {
+            this.ambientParticles.material.uniforms.time.value = this.time;
+            this.ambientParticles.rotation.y += 0.05 * delta;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
