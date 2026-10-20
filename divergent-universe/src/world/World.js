@@ -43,7 +43,44 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Distribute particles across a wide area
+            const r = 2000 * Math.sqrt(Math.random());
+            const theta = Math.random() * 2 * Math.PI;
+
+            positions[i * 3] = r * Math.cos(theta); // x
+            positions[i * 3 + 1] = Math.random() * 200 - 50; // y
+            positions[i * 3 + 2] = r * Math.sin(theta); // z
+
+            sizes[i] = Math.random() * 2.0;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        return particles;
     }
 
     update(delta) {
@@ -82,6 +119,24 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Animate particles
+        if (this.ambientParticles) {
+            const positions = this.ambientParticles.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                // Slowly drift particles
+                positions[i] += Math.sin(this.time + i) * 0.1;
+                positions[i + 1] += Math.cos(this.time + i) * 0.05 + 0.1; // slowly rise
+                positions[i + 2] += Math.sin(this.time * 0.5 + i) * 0.1;
+
+                // Reset height if too high
+                if (positions[i + 1] > 300) {
+                    positions[i + 1] = -50;
+                }
+            }
+            this.ambientParticles.geometry.attributes.position.needsUpdate = true;
+            this.ambientParticles.rotation.y += delta * 0.02; // slowly rotate entire system
         }
     }
 }
