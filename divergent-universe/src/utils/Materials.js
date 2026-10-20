@@ -122,3 +122,17 @@ export const oceanMaterial = new THREE.MeshStandardMaterial({
     transparent: true,
     opacity: 0.9
 });
+
+// 6. Chrome Material
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xaaaaaa,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+// 7. Matte Metal Material
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x444444,
+    roughness: 0.6,
+    metalness: 0.7
+});
