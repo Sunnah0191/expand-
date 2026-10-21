@@ -13,6 +13,10 @@ export class World {
         this.group = new THREE.Group();
         this.time = 0;
 
+        // Add ambient particles
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         // Add elements
         this.ocean = createOcean();
         this.group.add(this.ocean);
@@ -46,6 +50,35 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Random positions within a large sphere around the center
+            const r = 200 + Math.random() * 800;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI;
+
+            positions[i * 3] = r * Math.sin(phi) * Math.cos(theta); // x
+            positions[i * 3 + 1] = r * Math.cos(phi); // y
+            positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta); // z
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 1.5,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        return new THREE.Points(geometry, material);
+    }
+
     update(delta) {
         this.time += delta;
 
@@ -54,6 +87,11 @@ export class World {
         if (core) {
             core.rotation.y += 0.5 * delta;
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
+        }
+
+        // Slowly rotate ambient particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.05 * delta;
         }
 
         // Update custom shaders
