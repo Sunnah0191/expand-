@@ -13,6 +13,19 @@ export const glassMaterial = new THREE.MeshPhysicalMaterial({
     side: THREE.DoubleSide
 });
 
+// 1.5 Chrome and Matte Metal
+export const chromeMaterial = new THREE.MeshStandardMaterial({
+    color: 0xeeeeee,
+    roughness: 0.1,
+    metalness: 1.0
+});
+
+export const matteMetalMaterial = new THREE.MeshStandardMaterial({
+    color: 0x555555,
+    roughness: 0.6,
+    metalness: 0.7
+});
+
 // 2. Monolith/Dark Stone Material
 export const monolithMaterial = new THREE.MeshStandardMaterial({
     color: 0x1a1a24,
