@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -74,11 +74,89 @@ function init() {
     window.addEventListener('placeBlock', onPlaceBlock);
 }
 
+// Geometry Cache
+const geoCache = {
+    rockGeo: new THREE.DodecahedronGeometry(10, 1),
+    crystalGeo: new THREE.OctahedronGeometry(8, 0),
+    treeConeGeo: new THREE.ConeGeometry(5, 20, 5),
+    monolithGeo: new THREE.BoxGeometry(15, 30, 15),
+    towerGeo: new THREE.CylinderGeometry(10, 8, 40, 6),
+    bridgeGeo: new THREE.BoxGeometry(30, 2, 10),
+    cubeGeo: new THREE.BoxGeometry(10, 10, 10),
+    pillarGeo: new THREE.CylinderGeometry(2, 2, 20)
+};
+geoCache.treeConeGeo.translate(0, 10, 0);
+
 function onLoginSuccess(isAdmin) {
     isGodMode = isAdmin;
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // God Mode Golden Particle Explosion
+        const particleCount = 1000;
+        const particleGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = 0;
+            positions[i * 3 + 1] = 120; // Starting near central core height
+            positions[i * 3 + 2] = 0;
+
+            velocities.push(new THREE.Vector3(
+                (Math.random() - 0.5) * 200,
+                (Math.random() - 0.5) * 200,
+                (Math.random() - 0.5) * 200
+            ));
+        }
+
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 1.5,
+            transparent: true,
+            opacity: 1.0,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        const startTime = performance.now();
+        const duration = 2000; // 2 seconds
+
+        function animateParticles() {
+            const now = performance.now();
+            const elapsed = now - startTime;
+
+            if (elapsed > duration) {
+                scene.remove(particleSystem);
+                particleGeo.dispose();
+                particleMat.dispose();
+                return; // Stop animation
+            }
+
+            const delta = 0.016; // Approx 60fps
+            const posAttr = particleSystem.geometry.attributes.position;
+
+            for (let i = 0; i < particleCount; i++) {
+                const vel = velocities[i];
+                posAttr.array[i * 3] += vel.x * delta;
+                posAttr.array[i * 3 + 1] += vel.y * delta;
+                posAttr.array[i * 3 + 2] += vel.z * delta;
+
+                // Add some gravity
+                vel.y -= 100 * delta;
+            }
+
+            posAttr.needsUpdate = true;
+            particleMat.opacity = 1.0 - (elapsed / duration);
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
@@ -91,19 +169,79 @@ function onPlaceBlock(event) {
     const pos = event.detail.position;
     const type = buildMenu.getSelectedType();
 
+    // We get orientation if available from event
+    const normal = event.detail.normal;
+
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    let offset = 0;
+
+    switch (type) {
+        case 'landscape-rock':
+            mesh = new THREE.Mesh(geoCache.rockGeo, monolithMaterial);
+            mesh.scale.set(1 + Math.random(), 0.5 + Math.random(), 1 + Math.random());
+            mesh.rotation.y = Math.random() * Math.PI;
+            break;
+        case 'landscape-crystal':
+            const crystalMat = glassMaterial.clone();
+            crystalMat.color = new THREE.Color(0xaaffff);
+            mesh = new THREE.Mesh(geoCache.crystalGeo, crystalMat);
+            mesh.scale.set(0.5, 2.0, 0.5);
+            offset = 8;
+            break;
+        case 'landscape-tree':
+            const treeMat = glassMaterial.clone();
+            treeMat.color = new THREE.Color(0x00aa00);
+            mesh = new THREE.Mesh(geoCache.treeConeGeo, treeMat);
+            break;
+        case 'wuwa-monolith':
+            mesh = new THREE.Mesh(geoCache.monolithGeo, monolithMaterial);
+            offset = 15;
+            break;
+        case 'wuwa-tower':
+            mesh = new THREE.Mesh(geoCache.towerGeo, monolithMaterial);
+            offset = 20;
+            break;
+        case 'wuwa-bridge':
+            mesh = new THREE.Mesh(geoCache.bridgeGeo, matteMetalMaterial);
+            break;
+        case 'block-glass':
+            mesh = new THREE.Mesh(geoCache.cubeGeo, glassMaterial);
+            offset = 5;
+            break;
+        case 'block-chrome':
+            mesh = new THREE.Mesh(geoCache.cubeGeo, chromeMaterial);
+            offset = 5;
+            break;
+        case 'block-neon':
+            mesh = new THREE.Mesh(geoCache.pillarGeo, neonCyanMaterial);
+            offset = 10;
+            break;
+        case 'block-metal':
+            mesh = new THREE.Mesh(geoCache.cubeGeo, matteMetalMaterial);
+            offset = 5;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+
+        // Basic alignment to normal if applicable (e.g. for blocks)
+        if (normal && (type.startsWith('block-') || type === 'landscape-rock')) {
+             const quaternion = new THREE.Quaternion();
+             quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+             mesh.quaternion.copy(quaternion);
+        }
+
+        // Apply normal offset instead of fixed Y offset
+        if (offset > 0) {
+            if (normal && (type.startsWith('block-') || type === 'landscape-rock')) {
+                mesh.position.add(normal.clone().multiplyScalar(offset));
+            } else {
+                mesh.position.y += offset;
+            }
+        }
+
         scene.add(mesh);
     }
 }
