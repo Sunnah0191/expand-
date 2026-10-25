@@ -181,9 +181,10 @@ export class GodModeControls {
             // A full implementation would align the gridHelper to intersect.face.normal
             if (intersect.face) {
                 const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
-                this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
-                this.gridHelper.rotateX(Math.PI / 2);
+                n.transformDirection(intersect.object.matrixWorld).normalize();
+
+                const up = new THREE.Vector3(0, 1, 0);
+                this.gridHelper.quaternion.setFromUnitVectors(up, n);
             }
         } else {
             this.intersectionPoint = null;

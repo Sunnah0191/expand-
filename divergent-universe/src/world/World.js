@@ -43,7 +43,40 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 1000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Distribute particles randomly in a large sphere/cylinder
+            const r = Math.random() * 800;
+            const theta = Math.random() * Math.PI * 2;
+            const y = (Math.random() - 0.5) * 600;
+
+            positions[i * 3] = r * Math.cos(theta);
+            positions[i * 3 + 1] = y;
+            positions[i * 3 + 2] = r * Math.sin(theta);
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        const points = new THREE.Points(geometry, material);
+        return points;
     }
 
     update(delta) {
@@ -58,6 +91,10 @@ export class World {
 
         // Update custom shaders
         updateMaterials(delta, this.time);
+
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += delta * 0.05;
+        }
 
         // Divergence logic: slowly move islands away from center
         const divergenceSpeed = 0.5; // units per second
