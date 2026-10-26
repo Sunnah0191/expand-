@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -79,11 +79,92 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+        triggerGodModeExplosion();
     } else {
         // Simple spectator mode logic could go here
         console.log("Logged in as spectator");
     }
 }
+
+function triggerGodModeExplosion() {
+    const particleCount = 1000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = 0;
+        positions[i * 3 + 1] = 120; // Start at core height
+        positions[i * 3 + 2] = 0;
+
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        const speed = 50 + Math.random() * 150;
+
+        velocities.push({
+            x: Math.sin(phi) * Math.cos(theta) * speed,
+            y: Math.sin(phi) * Math.sin(theta) * speed,
+            z: Math.cos(phi) * speed
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({
+        color: 0xffd700,
+        size: 3,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        opacity: 1
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    let startTime = performance.now();
+
+    function animateExplosion() {
+        const currentTime = performance.now();
+        const elapsed = (currentTime - startTime) / 1000;
+        const delta = 1/60; // Approximate delta for this isolated loop
+
+        if (elapsed > 2.0) { // 2 second duration
+            scene.remove(particles);
+            geometry.dispose();
+            material.dispose();
+            return;
+        }
+
+        const positions = particles.geometry.attributes.position.array;
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] += velocities[i].x * delta;
+            positions[i * 3 + 1] += velocities[i].y * delta;
+            positions[i * 3 + 2] += velocities[i].z * delta;
+
+            // Add gravity effect
+            velocities[i].y -= 98 * delta;
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+
+        // Fade out
+        material.opacity = 1.0 - (elapsed / 2.0);
+
+        requestAnimationFrame(animateExplosion);
+    }
+
+    animateExplosion();
+}
+
+// Cache geometries for block placement
+const blockGeometries = {
+    box: new THREE.BoxGeometry(10, 10, 10),
+    pillar: new THREE.CylinderGeometry(2, 2, 20),
+    monolith: new THREE.BoxGeometry(15, 30, 15),
+    rock: new THREE.DodecahedronGeometry(8, 1),
+    crystal: new THREE.ConeGeometry(4, 15, 6),
+    tree: new THREE.ConeGeometry(3, 20, 5),
+    tower: new THREE.CylinderGeometry(8, 12, 40, 8),
+    bridge: new THREE.BoxGeometry(30, 2, 8)
+};
 
 function onPlaceBlock(event) {
     if (!isGodMode) return;
@@ -92,18 +173,64 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+    switch (type) {
+        case 'glass-cube': // legacy fallback
+        case 'glass-block':
+            mesh = new THREE.Mesh(blockGeometries.box, glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-block':
+            mesh = new THREE.Mesh(blockGeometries.box, chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(blockGeometries.box, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'metal-block':
+            mesh = new THREE.Mesh(blockGeometries.box, matteMetalMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-pillar': // legacy fallback
+            mesh = new THREE.Mesh(blockGeometries.pillar, neonCyanMaterial);
+            pos.y += 10;
+            break;
+        case 'monolith':
+            mesh = new THREE.Mesh(blockGeometries.monolith, monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'rock':
+            mesh = new THREE.Mesh(blockGeometries.rock, monolithMaterial);
+            pos.y += 8;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(blockGeometries.crystal, glassMaterial);
+            pos.y += 7.5;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Mesh(blockGeometries.tree, neonCyanMaterial);
+            pos.y += 10;
+            break;
+        case 'tower':
+            mesh = new THREE.Mesh(blockGeometries.tower, monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'bridge':
+            mesh = new THREE.Mesh(blockGeometries.bridge, matteMetalMaterial);
+            pos.y += 1;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+        // Align to normal if passed
+        if (event.detail.normal) {
+            const normal = event.detail.normal.clone();
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+            mesh.quaternion.copy(quaternion);
+            // Re-adjust position based on rotation and offset
+            mesh.position.copy(event.detail.position).add(normal.multiplyScalar(mesh.geometry.boundingBox ? mesh.geometry.boundingBox.max.y : 5));
+        }
         scene.add(mesh);
     }
 }

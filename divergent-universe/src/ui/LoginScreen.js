@@ -32,16 +32,9 @@ export class LoginScreen {
         const password = this.passwordInput.value.trim();
 
         if (username === 'snk' && password === 'snk001') {
-            this.triggerSuccess();
+            this.triggerSuccess(true);
         } else {
-            // Normal viewer mode can be implemented here,
-            // but for now we'll just show an error if it's not the admin
-            // Or we could let them in as a viewer:
-            if (username === '' && password === '') {
-                 this.triggerSuccess(false); // viewer mode
-            } else {
-                 this.showError();
-            }
+            this.triggerSuccess(false); // viewer mode for everyone else
         }
     }
 
