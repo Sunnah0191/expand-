@@ -34,11 +34,20 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
+        this.gridVisualizer = new THREE.Group();
         this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
         this.gridHelper.material.transparent = true;
         this.gridHelper.material.opacity = 0.5;
-        this.gridHelper.position.y = -1000; // Hide initially
-        this.scene.add(this.gridHelper);
+        this.gridVisualizer.add(this.gridHelper);
+
+        const planeGeo = new THREE.PlaneGeometry(10, 10);
+        const planeMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
+        const plane = new THREE.Mesh(planeGeo, planeMat);
+        plane.rotation.x = Math.PI / 2;
+        this.gridVisualizer.add(plane);
+
+        this.gridVisualizer.position.y = -1000; // Hide initially
+        this.scene.add(this.gridVisualizer);
 
         this.intersectionPoint = null;
 
@@ -74,7 +83,7 @@ export class GodModeControls {
         document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
         if(document.exitPointerLock) document.exitPointerLock();
 
-        this.gridHelper.position.y = -1000;
+        this.gridVisualizer.position.y = -1000;
     }
 
     onMouseMove(event) {
@@ -134,13 +143,13 @@ export class GodModeControls {
     placeBlock() {
         if (!this.intersectionPoint) return;
 
-        // We will implement block placement logic in main.js,
-        // passing an event up or calling a callback.
-        // For simplicity, we can dispatch a custom event.
+        // Get normal from intersection
+        const normal = this.intersectionNormal || new THREE.Vector3(0, 1, 0);
+
         const event = new CustomEvent('placeBlock', {
             detail: {
                 position: this.intersectionPoint.clone(),
-                normal: this.gridHelper.position.clone() // Need to snap properly
+                normal: normal
             }
         });
         window.dispatchEvent(event);
@@ -165,8 +174,8 @@ export class GodModeControls {
         // Update Raycasting
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
-        // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        // Don't intersect with the grid visualizer or other UI elements
+        const intersectableObjects = this.scene.children.filter(child => child !== this.gridVisualizer);
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
@@ -175,19 +184,21 @@ export class GodModeControls {
             this.intersectionPoint = intersect.point;
 
             // Snap grid to the surface
-            this.gridHelper.position.copy(intersect.point);
+            this.gridVisualizer.position.copy(intersect.point);
 
-            // Align grid to normal (simplified)
-            // A full implementation would align the gridHelper to intersect.face.normal
+            // Align grid to normal using correct math
             if (intersect.face) {
                 const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
-                this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
-                this.gridHelper.rotateX(Math.PI / 2);
+                n.transformDirection(intersect.object.matrixWorld).normalize();
+                this.intersectionNormal = n.clone();
+
+                const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
+                this.gridVisualizer.quaternion.copy(quaternion);
             }
         } else {
             this.intersectionPoint = null;
-            this.gridHelper.position.y = -1000;
+            this.intersectionNormal = null;
+            this.gridVisualizer.position.y = -1000;
         }
     }
 }
