@@ -13,6 +13,10 @@ export class World {
         this.group = new THREE.Group();
         this.time = 0;
 
+        // Add ambient particles
+        this.ambientParticles = this.createAmbientParticles();
+        this.scene.add(this.ambientParticles);
+
         // Add elements
         this.ocean = createOcean();
         this.group.add(this.ocean);
@@ -46,8 +50,37 @@ export class World {
         this.scene.add(this.group);
     }
 
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 2000;     // x
+            positions[i * 3 + 1] = Math.random() * 500 - 100;    // y
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 2000; // z
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        return new THREE.Points(geometry, material);
+    }
+
     update(delta) {
         this.time += delta;
+
+        // Rotate particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.05 * delta;
+        }
 
         // Rotate the central core slightly
         const core = this.mainContinent.getObjectByName("CentralCore");

@@ -75,9 +75,24 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    border-color: var(--neon-cyan);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.5);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neonPulse 1.5s infinite;
+  outline: none;
 }
 
 .login-form button {
@@ -149,21 +164,32 @@ body, html {
   border-radius: 12px;
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  display: none; /* Hidden by default. Will be set to flex in JS */
+  flex-direction: column;
+  gap: 20px;
 }
 
 #build-catalog h3 {
-  margin: 0 0 15px 0;
+  margin: 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 18px;
   letter-spacing: 1px;
-  color: #ccc;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
 .catalog-item {
@@ -198,6 +224,16 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Icons for categories */
+.landscape-rock-icon { background: #5a5a5a; border: 1px solid #888; border-radius: 4px; }
+.landscape-crystal-icon { background: rgba(170, 255, 255, 0.6); border: 1px solid #fff; transform: rotate(45deg); width: 20px; height: 20px; margin-bottom: 5px; }
+.landscape-tree-icon { background: var(--neon-cyan); border-radius: 50%; width: 15px; height: 15px; box-shadow: 0 0 10px var(--neon-cyan); }
+
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid #444; width: 15px; height: 25px; }
+.wuwa-tower-icon { background: #1a1a24; border: 1px solid #888; width: 10px; height: 25px; }
+.wuwa-bridge-icon { background: rgba(255,255,255,0.2); border-bottom: 2px solid #fff; width: 25px; height: 10px; }
+
+.block-glass-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.block-chrome-icon { background: linear-gradient(135deg, #eee 0%, #aaa 100%); border: 1px solid #fff; }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-metal-icon { background: #444; border: 1px solid #222; }

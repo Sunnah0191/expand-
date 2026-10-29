@@ -32,16 +32,12 @@ export class LoginScreen {
         const password = this.passwordInput.value.trim();
 
         if (username === 'snk' && password === 'snk001') {
-            this.triggerSuccess();
+            this.triggerSuccess(true);
+        } else if (username === '' || password === '') {
+            this.showError();
         } else {
-            // Normal viewer mode can be implemented here,
-            // but for now we'll just show an error if it's not the admin
-            // Or we could let them in as a viewer:
-            if (username === '' && password === '') {
-                 this.triggerSuccess(false); // viewer mode
-            } else {
-                 this.showError();
-            }
+            // Spectator mode for any other non-blank credentials
+            this.triggerSuccess(false);
         }
     }
 
@@ -57,11 +53,11 @@ export class LoginScreen {
     }
 
     triggerSuccess(isAdmin = true) {
-        // Play activation sound
-        this.playActivationSound();
-
-        // Flash effect
         if (isAdmin) {
+            // Play activation sound only for God Mode
+            this.playActivationSound();
+
+            // Flash effect
             this.flashEl.classList.add('flash-active');
         }
 
