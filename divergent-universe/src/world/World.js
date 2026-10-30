@@ -7,6 +7,30 @@ import { createIslandTwo } from './IslandTwo.js';
 import { createIslandThree } from './IslandThree.js';
 import { createIslandFour } from './IslandFour.js';
 
+function createAmbientParticles() {
+    const particleGeo = new THREE.BufferGeometry();
+    const particleCount = 1000;
+    const posArray = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount * 3; i+=3) {
+        posArray[i] = (Math.random() - 0.5) * 1000;
+        posArray[i+1] = Math.random() * 200; // only above ocean
+        posArray[i+2] = (Math.random() - 0.5) * 1000;
+    }
+
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particleMat = new THREE.PointsMaterial({
+        size: 2.0,
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending
+    });
+
+    return new THREE.Points(particleGeo, particleMat);
+}
+
 export class World {
     constructor(scene) {
         this.scene = scene;
@@ -42,6 +66,10 @@ export class World {
         i4.position.set(0, 50, -1600); // Edge of universe
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
+
+        // Add ambient particles
+        this.ambientParticles = createAmbientParticles();
+        this.group.add(this.ambientParticles);
 
         this.scene.add(this.group);
     }
@@ -82,6 +110,11 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Slowly rotate ambient particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.05 * delta;
         }
     }
 }
