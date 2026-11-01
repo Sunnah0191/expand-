@@ -34,11 +34,27 @@ export class GodModeControls {
         this.raycaster = new THREE.Raycaster();
         this.centerCoords = new THREE.Vector2(0, 0); // Always center of screen
 
-        this.gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
-        this.gridHelper.material.transparent = true;
-        this.gridHelper.material.opacity = 0.5;
-        this.gridHelper.position.y = -1000; // Hide initially
-        this.scene.add(this.gridHelper);
+        this.gridGroup = new THREE.Group();
+        this.gridGroup.name = 'GridHelper';
+
+        const gridHelper = new THREE.GridHelper(10, 10, 0x00f0ff, 0x00f0ff);
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.5;
+        this.gridGroup.add(gridHelper);
+
+        const planeGeometry = new THREE.PlaneGeometry(10, 10);
+        const planeMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.2,
+            side: THREE.DoubleSide
+        });
+        const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+        planeMesh.rotation.x = Math.PI / 2; // align with grid
+        this.gridGroup.add(planeMesh);
+
+        this.gridGroup.position.y = -1000; // Hide initially
+        this.scene.add(this.gridGroup);
 
         this.intersectionPoint = null;
 
@@ -74,7 +90,7 @@ export class GodModeControls {
         document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
         if(document.exitPointerLock) document.exitPointerLock();
 
-        this.gridHelper.position.y = -1000;
+        this.gridGroup.position.y = -1000;
     }
 
     onMouseMove(event) {
@@ -140,7 +156,7 @@ export class GodModeControls {
         const event = new CustomEvent('placeBlock', {
             detail: {
                 position: this.intersectionPoint.clone(),
-                normal: this.gridHelper.position.clone() // Need to snap properly
+                normal: this.gridGroup.position.clone() // Need to snap properly
             }
         });
         window.dispatchEvent(event);
@@ -166,7 +182,7 @@ export class GodModeControls {
         this.raycaster.setFromCamera(this.centerCoords, this.camera);
 
         // Don't intersect with the grid helper or other UI elements
-        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridHelper);
+        const intersectableObjects = this.scene.children.filter(child => child.name !== 'GridHelper' && child !== this.gridGroup);
 
         const intersects = this.raycaster.intersectObjects(intersectableObjects, true);
 
@@ -175,19 +191,19 @@ export class GodModeControls {
             this.intersectionPoint = intersect.point;
 
             // Snap grid to the surface
-            this.gridHelper.position.copy(intersect.point);
+            this.gridGroup.position.copy(intersect.point);
 
             // Align grid to normal (simplified)
             // A full implementation would align the gridHelper to intersect.face.normal
             if (intersect.face) {
                 const n = intersect.face.normal.clone();
-                n.transformDirection(intersect.object.matrixWorld);
-                this.gridHelper.lookAt(this.gridHelper.position.clone().add(n));
-                this.gridHelper.rotateX(Math.PI / 2);
+                n.transformDirection(intersect.object.matrixWorld).normalize();
+                const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
+                this.gridGroup.quaternion.copy(quaternion);
             }
         } else {
             this.intersectionPoint = null;
-            this.gridHelper.position.y = -1000;
+            this.gridGroup.position.y = -1000;
         }
     }
 }

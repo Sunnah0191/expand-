@@ -75,9 +75,21 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes pulseNeon {
+  0% {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  100% {
+    border-color: rgba(0, 240, 255, 0.8);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+  }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: pulseNeon 1.5s infinite alternate;
 }
 
 .login-form button {
@@ -161,9 +173,21 @@ body, html {
   color: #ccc;
 }
 
+.catalog-category {
+  margin-bottom: 15px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+}
+
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .catalog-item {
