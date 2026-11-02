@@ -150,15 +150,24 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -198,6 +207,18 @@ body, html {
   background-color: #555;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
-.monolith-icon { background: #222; border: 1px solid #555; }
+/* Category 1: Ландшафт */
+.rock-icon { background: #666; border-radius: 5px; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.crystal-icon { background: rgba(0, 255, 255, 0.5); border: 1px solid #0ff; transform: rotate(45deg); width: 22px; height: 22px; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 50%; box-shadow: 0 0 10px var(--neon-cyan); }
+
+/* Category 2: Архитектура WuWa */
+.wuwa-monolith-icon { background: #1a1a24; border: 1px solid var(--neon-cyan); }
+.dark-tower-icon { background: #111; border: 1px solid #444; width: 15px; height: 30px; }
+.matte-bridge-icon { background: #333; height: 10px; margin-top: 10px; width: 30px; }
+
+/* Category 3: Конструктор (Блоки) */
+.block-glass-icon { background: rgba(255, 255, 255, 0.3); border: 1px solid #fff; }
+.block-chrome-icon { background: linear-gradient(135deg, #ccc, #fff, #888); }
+.block-neon-icon { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+.block-metal-icon { background: #444; border: 2px solid #222; }

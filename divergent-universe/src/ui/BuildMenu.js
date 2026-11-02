@@ -33,12 +33,13 @@ export class BuildMenu {
         // Select first item by default
         if (this.items.length > 0) {
             this.items[0].classList.add('selected');
+            this.selectedType = this.items[0].dataset.type;
         }
     }
 
     toggleVisibility() {
         this.isVisible = !this.isVisible;
-        this.container.style.display = this.isVisible ? 'block' : 'none';
+        this.container.style.display = this.isVisible ? 'flex' : 'none';
 
         // When menu is open, release pointer lock so user can click
         if (this.isVisible) {
