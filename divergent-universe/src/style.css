@@ -150,6 +150,15 @@ body, html {
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
   display: none; /* Hidden by default */
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #build-catalog h3 {
@@ -159,11 +168,15 @@ body, html {
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 350px;
 }
 
 .catalog-item {
@@ -201,3 +214,5 @@ body, html {
 .glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
 .neon-pillar-icon { background: var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.chrome-icon { background: #fff; border: 1px solid #ccc; box-shadow: inset 0 0 5px #555; }
+.matte-icon { background: #4a4a52; border: 1px solid #222; }
