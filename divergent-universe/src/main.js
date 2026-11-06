@@ -3,7 +3,27 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import {
+    glassMaterial,
+    neonCyanMaterial,
+    monolithMaterial,
+    rockMaterial,
+    crystalMaterial,
+    matteMetalMaterial,
+    chromeMaterial
+} from './utils/Materials.js';
+
+// Geometry Cache to prevent memory leaks during block placement
+const geoCache = {
+    box: new THREE.BoxGeometry(10, 10, 10),
+    pillar: new THREE.CylinderGeometry(2, 2, 20),
+    monolith: new THREE.BoxGeometry(15, 30, 15),
+    rock: new THREE.DodecahedronGeometry(8, 1),
+    crystal: new THREE.ConeGeometry(4, 15, 6),
+    tree: new THREE.ConeGeometry(3, 20, 5),
+    tower: new THREE.BoxGeometry(10, 40, 10),
+    bridge: new THREE.BoxGeometry(30, 2, 8)
+};
 
 // Global variables
 let camera, scene, renderer;
@@ -92,18 +112,63 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch(type) {
+        // Ландшафт
+        case 'rock':
+            mesh = new THREE.Mesh(geoCache.rock, rockMaterial);
+            pos.y += 8;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(geoCache.crystal, crystalMaterial);
+            pos.y += 7.5;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Mesh(geoCache.tree, neonCyanMaterial);
+            pos.y += 10;
+            break;
+
+        // Архитектура WuWa
+        case 'monolith':
+            mesh = new THREE.Mesh(geoCache.monolith, monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'dark-tower':
+            mesh = new THREE.Mesh(geoCache.tower, monolithMaterial);
+            pos.y += 20;
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(geoCache.bridge, matteMetalMaterial);
+            pos.y += 1;
+            break;
+
+        // Конструктор (Блоки)
+        case 'glass-block':
+            mesh = new THREE.Mesh(geoCache.box, glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-block':
+            mesh = new THREE.Mesh(geoCache.box, chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(geoCache.box, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'metal-block':
+            mesh = new THREE.Mesh(geoCache.box, matteMetalMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {
         mesh.position.copy(pos);
+
+        // Randomize rotation a bit for natural elements
+        if (['rock', 'crystal', 'neon-tree'].includes(type)) {
+            mesh.rotation.y = Math.random() * Math.PI * 2;
+        }
+
         scene.add(mesh);
     }
 }
