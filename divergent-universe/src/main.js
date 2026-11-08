@@ -3,7 +3,15 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import {
+    glassMaterial,
+    neonCyanMaterial,
+    monolithMaterial,
+    chromeMaterial,
+    matteMetalMaterial,
+    rockMaterial,
+    crystalMaterial
+} from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +20,19 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+
+// Geometry cache to prevent memory leaks
+const geoCache = {
+    rock: new THREE.IcosahedronGeometry(10, 0),
+    crystal: new THREE.ConeGeometry(4, 20, 4),
+    neonTreeTrunk: new THREE.CylinderGeometry(1, 1, 10),
+    neonTreeLeaves: new THREE.IcosahedronGeometry(6, 1),
+    monolith: new THREE.BoxGeometry(15, 30, 15),
+    darkTowerBase: new THREE.CylinderGeometry(8, 6, 20, 6),
+    darkTowerTop: new THREE.CylinderGeometry(6, 0, 15, 6),
+    matteBridge: new THREE.BoxGeometry(40, 2, 15),
+    block: new THREE.BoxGeometry(10, 10, 10)
+};
 
 init();
 animate();
@@ -88,18 +109,67 @@ function onLoginSuccess(isAdmin) {
 function onPlaceBlock(event) {
     if (!isGodMode) return;
 
-    const pos = event.detail.position;
+    const pos = event.detail.position.clone();
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
-    } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
-        pos.y += 15;
+
+    switch (type) {
+        case 'rock':
+            mesh = new THREE.Mesh(geoCache.rock, rockMaterial);
+            pos.y += 5;
+            break;
+        case 'crystal':
+            mesh = new THREE.Mesh(geoCache.crystal, crystalMaterial);
+            pos.y += 10;
+            break;
+        case 'neon-tree':
+            mesh = new THREE.Group();
+            const trunk = new THREE.Mesh(geoCache.neonTreeTrunk, monolithMaterial);
+            trunk.position.y = 5;
+            const leaves = new THREE.Mesh(geoCache.neonTreeLeaves, neonCyanMaterial);
+            leaves.position.y = 12;
+            mesh.add(trunk);
+            mesh.add(leaves);
+            break;
+        case 'monolith':
+            mesh = new THREE.Mesh(geoCache.monolith, monolithMaterial);
+            pos.y += 15;
+            break;
+        case 'dark-tower':
+            mesh = new THREE.Group();
+            const base = new THREE.Mesh(geoCache.darkTowerBase, monolithMaterial);
+            base.position.y = 10;
+            const top = new THREE.Mesh(geoCache.darkTowerTop, monolithMaterial);
+            top.position.y = 30; // Float slightly above
+            mesh.add(base);
+            mesh.add(top);
+            break;
+        case 'matte-bridge':
+            mesh = new THREE.Mesh(geoCache.matteBridge, matteMetalMaterial);
+            pos.y += 1;
+            break;
+        case 'glass-block':
+            mesh = new THREE.Mesh(geoCache.block, glassMaterial);
+            pos.y += 5;
+            break;
+        case 'chrome-block':
+            mesh = new THREE.Mesh(geoCache.block, chromeMaterial);
+            pos.y += 5;
+            break;
+        case 'neon-block':
+            mesh = new THREE.Mesh(geoCache.block, neonCyanMaterial);
+            pos.y += 5;
+            break;
+        case 'matte-metal-block':
+            mesh = new THREE.Mesh(geoCache.block, matteMetalMaterial);
+            pos.y += 5;
+            break;
+        default:
+            // Fallback for old types if any
+            mesh = new THREE.Mesh(geoCache.block, glassMaterial);
+            pos.y += 5;
+            break;
     }
 
     if (mesh) {

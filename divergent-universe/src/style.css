@@ -156,9 +156,22 @@ body, html {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+}
+
+.catalog-category {
+  margin-bottom: 20px;
+}
+
+.catalog-category h4 {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: #aaa;
   letter-spacing: 1px;
-  color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -188,8 +201,10 @@ body, html {
 
 .catalog-item span {
   font-size: 10px;
+  text-align: center;
   margin-top: 8px;
   text-transform: uppercase;
+  padding: 0 4px;
 }
 
 .icon {
