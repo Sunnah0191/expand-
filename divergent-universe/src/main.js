@@ -3,7 +3,7 @@ import { World } from './world/World.js';
 import { LoginScreen } from './ui/LoginScreen.js';
 import { GodModeControls } from './controls/GodModeControls.js';
 import { BuildMenu } from './ui/BuildMenu.js';
-import { glassMaterial, neonCyanMaterial, monolithMaterial } from './utils/Materials.js';
+import { glassMaterial, neonCyanMaterial, monolithMaterial, rockMaterial, crystalMaterial, chromeMaterial, matteMetalMaterial } from './utils/Materials.js';
 
 // Global variables
 let camera, scene, renderer;
@@ -12,6 +12,21 @@ let world;
 let controls;
 let buildMenu;
 let isGodMode = false;
+
+// Geometry cache
+const geoCache = {
+    box10: new THREE.BoxGeometry(10, 10, 10),
+    box15_30: new THREE.BoxGeometry(15, 30, 15),
+    cyl2_20: new THREE.CylinderGeometry(2, 2, 20),
+    rock: new THREE.DodecahedronGeometry(8, 1),
+    crystal: new THREE.OctahedronGeometry(6, 0),
+    bridge: new THREE.BoxGeometry(30, 2, 10),
+    tower: new THREE.BoxGeometry(8, 40, 8)
+};
+
+// Particles
+let particleSystem = null;
+let particleStartTime = 0;
 
 init();
 animate();
@@ -79,9 +94,47 @@ function onLoginSuccess(isAdmin) {
     if (isAdmin) {
         document.getElementById('ui-layer').style.display = 'block';
         controls.enable();
+
+        // Create golden particles
+        const particleCount = 1000;
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(particleCount * 3);
+        const pVel = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            pPos[i * 3] = camera.position.x;
+            pPos[i * 3 + 1] = camera.position.y;
+            pPos[i * 3 + 2] = camera.position.z - 20;
+
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            const speed = Math.random() * 50 + 20;
+
+            pVel.push(
+                Math.sin(phi) * Math.cos(theta) * speed,
+                Math.sin(phi) * Math.sin(theta) * speed,
+                Math.cos(phi) * speed
+            );
+        }
+
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        const pMat = new THREE.PointsMaterial({
+            color: 0xffd700,
+            size: 1.5,
+            transparent: true,
+            opacity: 1
+        });
+
+        particleSystem = new THREE.Points(pGeo, pMat);
+        particleSystem.userData = { velocities: pVel };
+        scene.add(particleSystem);
+        particleStartTime = performance.now();
     } else {
-        // Simple spectator mode logic could go here
+        // Spectator mode
         console.log("Logged in as spectator");
+        document.getElementById('ui-layer').style.display = 'none';
+        controls.gridGroup.visible = false;
+        controls.enable();
     }
 }
 
@@ -92,14 +145,44 @@ function onPlaceBlock(event) {
     const type = buildMenu.getSelectedType();
 
     let mesh;
-    if (type === 'glass-cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), glassMaterial);
-    } else if (type === 'neon-pillar') {
-        mesh = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 20), neonCyanMaterial);
-        pos.y += 10; // offset so it sits on ground
+    // Ландшафт
+    if (type === 'rock') {
+        mesh = new THREE.Mesh(geoCache.rock, rockMaterial);
+        pos.y += 8;
+        mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+    } else if (type === 'crystal') {
+        mesh = new THREE.Mesh(geoCache.crystal, crystalMaterial);
+        pos.y += 6;
+        mesh.rotation.y = Math.random()*Math.PI;
+    } else if (type === 'neon-tree') {
+        mesh = new THREE.Mesh(geoCache.cyl2_20, neonCyanMaterial);
+        pos.y += 10;
+    // Архитектура WuWa
+    } else if (type === 'hover-tower') {
+        mesh = new THREE.Mesh(geoCache.tower, monolithMaterial);
+        pos.y += 25; // hover
     } else if (type === 'monolith') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(15, 30, 15), monolithMaterial);
+        mesh = new THREE.Mesh(geoCache.box15_30, monolithMaterial);
         pos.y += 15;
+    } else if (type === 'matte-bridge') {
+        mesh = new THREE.Mesh(geoCache.bridge, matteMetalMaterial);
+        pos.y += 1;
+    // Конструктор
+    } else if (type === 'glass-cube') {
+        mesh = new THREE.Mesh(geoCache.box10, glassMaterial);
+        pos.y += 5;
+    } else if (type === 'chrome-cube') {
+        mesh = new THREE.Mesh(geoCache.box10, chromeMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-cube') {
+        mesh = new THREE.Mesh(geoCache.box10, neonCyanMaterial);
+        pos.y += 5;
+    } else if (type === 'matte-cube') {
+        mesh = new THREE.Mesh(geoCache.box10, matteMetalMaterial);
+        pos.y += 5;
+    } else if (type === 'neon-pillar') {
+        mesh = new THREE.Mesh(geoCache.cyl2_20, neonCyanMaterial);
+        pos.y += 10;
     }
 
     if (mesh) {
@@ -125,6 +208,27 @@ function animate() {
 
     if (controls) {
         controls.update(delta);
+    }
+
+    if (particleSystem) {
+        const now = performance.now();
+        const elapsed = (now - particleStartTime) / 1000;
+        if (elapsed > 2) {
+            scene.remove(particleSystem);
+            particleSystem.geometry.dispose();
+            particleSystem.material.dispose();
+            particleSystem = null;
+        } else {
+            const positions = particleSystem.geometry.attributes.position.array;
+            const vels = particleSystem.userData.velocities;
+            for (let i = 0; i < positions.length / 3; i++) {
+                positions[i * 3] += vels[i * 3] * delta;
+                positions[i * 3 + 1] += vels[i * 3 + 1] * delta;
+                positions[i * 3 + 2] += vels[i * 3 + 2] * delta;
+            }
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+            particleSystem.material.opacity = 1 - (elapsed / 2);
+        }
     }
 
     renderer.render(scene, camera);

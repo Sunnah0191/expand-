@@ -43,7 +43,32 @@ export class World {
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
 
+        this.ambientParticles = this.createAmbientParticles();
+        this.group.add(this.ambientParticles);
+
         this.scene.add(this.group);
+    }
+
+    createAmbientParticles() {
+        const particleCount = 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 2000; // x
+            positions[i * 3 + 1] = Math.random() * 500;      // y
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 2000; // z
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            color: 0x88ccff,
+            size: 2,
+            transparent: true,
+            opacity: 0.6
+        });
+
+        return new THREE.Points(geometry, material);
     }
 
     update(delta) {
@@ -54,6 +79,11 @@ export class World {
         if (core) {
             core.rotation.y += 0.5 * delta;
             core.position.y = 120 + Math.sin(this.time * 2) * 5;
+        }
+
+        // Rotate ambient particles
+        if (this.ambientParticles) {
+            this.ambientParticles.rotation.y += 0.05 * delta;
         }
 
         // Update custom shaders
