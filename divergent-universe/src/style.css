@@ -75,9 +75,16 @@ body, html {
   transition: all 0.3s ease;
 }
 
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.8); border-color: var(--neon-cyan); }
+  100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); border-color: rgba(0, 240, 255, 0.5); }
+}
+
 .login-form input:focus, .login-form input:hover {
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  animation: neon-pulse 1.5s infinite;
 }
 
 .login-form button {
@@ -149,16 +156,24 @@ body, html {
   border-radius: 12px;
   backdrop-filter: blur(10px);
   pointer-events: auto; /* Catch clicks on UI */
-  display: none; /* Hidden by default */
+  display: none; /* Hidden by default - overridden to flex in JS */
+  gap: 30px;
 }
 
-#build-catalog h3 {
+.catalog-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-category h3 {
   margin: 0 0 15px 0;
   text-align: center;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
   color: #ccc;
+  text-transform: uppercase;
 }
 
 .catalog-grid {
@@ -196,8 +211,21 @@ body, html {
   width: 30px;
   height: 30px;
   background-color: #555;
+  border-radius: 4px;
 }
 
-.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
-.neon-pillar-icon { background: var(--neon-cyan); }
+/* Ландшафт */
+.rock-icon { background: #555; border: 2px solid #777; border-radius: 50%; }
+.crystal-icon { background: rgba(136, 204, 255, 0.5); border: 1px solid #88ccff; transform: rotate(45deg); width: 22px; height: 22px; }
+.neon-tree-icon { background: var(--neon-cyan); border-radius: 15px 15px 0 0; }
+
+/* Архитектура WuWa */
+.hover-tower-icon { background: #1a1a24; border: 1px solid #444; border-bottom: 2px dashed var(--neon-cyan); }
 .monolith-icon { background: #222; border: 1px solid #555; }
+.matte-bridge-icon { background: #333; height: 10px; margin-top: 10px; width: 40px; }
+
+/* Конструктор (Блоки) */
+.glass-cube-icon { background: rgba(255, 255, 255, 0.5); border: 1px solid white; }
+.chrome-cube-icon { background: linear-gradient(135deg, #fff 0%, #aaa 100%); border: 1px solid #ccc; }
+.neon-cube-icon { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.matte-cube-icon { background: #333; border: 1px solid #222; }
