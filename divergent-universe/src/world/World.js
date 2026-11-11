@@ -7,6 +7,39 @@ import { createIslandTwo } from './IslandTwo.js';
 import { createIslandThree } from './IslandThree.js';
 import { createIslandFour } from './IslandFour.js';
 
+function createAmbientParticles() {
+    const particleCount = 2000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 4000;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 1000 + 500; // Mostly above ground
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 4000;
+
+        velocities.push({
+            x: (Math.random() - 0.5) * 5,
+            y: (Math.random() - 0.5) * 2 - 1, // tend to fall slowly
+            z: (Math.random() - 0.5) * 5
+        });
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0x00f0ff,
+        size: 2,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    return { mesh: particles, velocities: velocities };
+}
+
 export class World {
     constructor(scene) {
         this.scene = scene;
@@ -42,6 +75,9 @@ export class World {
         i4.position.set(0, 50, -1600); // Edge of universe
         this.group.add(i4);
         this.islands.push({ mesh: i4, distance: 1600, direction: {x: 0, z: -1} });
+
+        this.ambientParticlesData = createAmbientParticles();
+        this.group.add(this.ambientParticlesData.mesh);
 
         this.scene.add(this.group);
     }
@@ -82,6 +118,27 @@ export class World {
 
             // Float up and down slightly
             island.position.y = Math.sin(this.time + i * 1.5) * 2;
+        }
+
+        // Update ambient particles
+        if (this.ambientParticlesData) {
+            const positions = this.ambientParticlesData.mesh.geometry.attributes.position.array;
+            const velocities = this.ambientParticlesData.velocities;
+
+            for (let i = 0; i < velocities.length; i++) {
+                positions[i * 3] += velocities[i].x * delta;
+                positions[i * 3 + 1] += velocities[i].y * delta;
+                positions[i * 3 + 2] += velocities[i].z * delta;
+
+                // Wrap around if they go too far down
+                if (positions[i * 3 + 1] < -100) {
+                    positions[i * 3 + 1] = 1000;
+                }
+            }
+            this.ambientParticlesData.mesh.geometry.attributes.position.needsUpdate = true;
+
+            // Slowly rotate the particle system as a whole
+            this.ambientParticlesData.mesh.rotation.y += 0.05 * delta;
         }
     }
 }
